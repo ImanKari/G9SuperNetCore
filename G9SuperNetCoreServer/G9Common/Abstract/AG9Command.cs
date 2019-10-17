@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using G9Common.CommandHandler;
 using G9Common.Interface;
 using G9Common.JsonHelper;
@@ -34,21 +33,6 @@ namespace G9Common.Abstract
         /// </summary>
         public string CommandName { get; }
 
-        /// <summary>
-        ///     Access to session
-        /// </summary>
-        private TAccount _account;
-
-        /// <summary>
-        ///     send command
-        /// </summary>
-        private readonly MethodInfo _sendCommand;
-
-        /// <summary>
-        ///     send command async
-        /// </summary>
-        private readonly MethodInfo _sendCommandAsync;
-
         #endregion
 
         #region Methods
@@ -68,13 +52,6 @@ namespace G9Common.Abstract
         {
             CommandName = GetType().Name;
             TypeOfSend = typeof(TSendData);
-
-            // Set send command
-            var method1 = typeof(TAccount).GetMethod("SendCommand");
-            _sendCommand = method1.MakeGenericMethod(GetType(), TypeOfSend);
-
-            var method2 = typeof(TAccount).GetMethod("SendCommandAsync");
-            _sendCommandAsync = method2.MakeGenericMethod(GetType(), TypeOfSend);
         }
 
         #endregion
@@ -95,7 +72,6 @@ namespace G9Common.Abstract
                     {
                         try
                         {
-                            _account = account;
                             ReceiveCommand(data.ToArray().FromJson<TReceiveData>(), account);
                         }
                         catch (Exception ex)
@@ -117,25 +93,6 @@ namespace G9Common.Abstract
         /// <param name="account">Access to account</param>
         /// <returns>return data</returns>
         public abstract void ReceiveCommand(TReceiveData data, TAccount account);
-
-        /// <summary>
-        ///     Send command
-        /// </summary>
-        /// <param name="data">Data for send</param>
-        /// <returns>Return 'true' if send is success</returns>
-        public bool SendCommand(TSendData data)
-        {
-            return (bool) _sendCommand.Invoke(_account, new[] {(object) data});
-        }
-
-        /// <summary>
-        ///     Send command async
-        /// </summary>
-        /// <param name="data">Data for send</param>
-        public void SendCommandAsync(TSendData data)
-        {
-            _sendCommandAsync.Invoke(_account, new[] {(object) data});
-        }
 
         /// <summary>
         ///     Method call when throw exception for this command
