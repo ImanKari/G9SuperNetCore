@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using G9Common.Abstract;
 using G9SuperNetCoreClient.Helper;
@@ -11,19 +12,31 @@ namespace G9SuperNetCoreClient.Abstract
         #region Fields And Properties
 
         /// <summary>
-        ///     Get unique Identity from session
-        /// </summary>
-        public long SessionId { private set; get; }
-
-        /// <summary>
-        ///     Get ip address of session
-        /// </summary>
-        public IPAddress SessionIpAddress { private set; get; }
-
-        /// <summary>
         ///     Access to session handler
         /// </summary>
         private G9ClientSessionHandler _sessionHandler;
+
+        #region LastCommand Utilities
+
+        /// <summary>
+        /// Field save last command
+        /// </summary>
+        private string _lastCommand;
+
+        /// <summary>
+        /// Specified last command use
+        /// </summary>
+        public override string LastCommand
+        {
+            protected set
+            {
+                _lastCommand = value;
+                LastCommandDateTime = DateTime.Now;
+            }
+            get => _lastCommand;
+        }
+
+        #endregion
 
         #endregion
 
@@ -42,6 +55,10 @@ namespace G9SuperNetCoreClient.Abstract
         {
             // Set session handler
             _sessionHandler = handler;
+
+            // Set ping utilities
+            PingDurationInMilliseconds = _sessionHandler.PingDurationInMilliseconds;
+            _sessionHandler.SetPing = newPing => Ping = newPing;
 
             // Set session id
             SessionId = oSessionId;

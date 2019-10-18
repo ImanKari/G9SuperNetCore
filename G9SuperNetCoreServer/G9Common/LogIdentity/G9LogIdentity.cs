@@ -44,6 +44,22 @@
         /// Log Identity => On accept call back in server
         /// </summary>
         public const string SERVER_ACCEPT_CALLBACK = "SERVER_ACCEPT_CALLBACK";
+        /// <summary>
+        /// Log Identity => On enable test mode command for all client
+        /// </summary>
+        public const string ENABLE_TEST_MODE_ALL_CLIENT = "ENABLE_TEST_MODE_ALL_CLIENT";
+        /// <summary>
+        /// Log Identity => On disable test mode command for all client
+        /// </summary>
+        public const string DISABLE_TEST_MODE_ALL_CLIENT = "DISABLE_TEST_MODE_ALL_CLIENT";
+        /// <summary>
+        /// Log Identity => On enable test mode command for single client
+        /// </summary>
+        public const string ENABLE_TEST_MODE_SINGLE_CLIENT = "ENABLE_TEST_MODE_SINGLE_CLIENT";
+        /// <summary>
+        /// Log Identity => On disable test mode command for single client
+        /// </summary>
+        public const string DISABLE_TEST_MODE_SINGLE_CLIENT = "DISABLE_TEST_MODE_SINGLE_CLIENT";
         #endregion
 
         /* ########################################## Command Identity ########################################## */
@@ -72,6 +88,18 @@
         /// Log Identity => Generate Packet
         /// </summary>
         public const string GENERATE_PACKET = "GENERATE_PACKET";
+        /// <summary>
+        /// Log Identity => Client Ping
+        /// </summary>
+        public const string CLIENT_PING = "CLIENT_PING";
+        /// <summary>
+        /// Log Identity => On test send and receive enable
+        /// </summary>
+        public const string TEST_SEND_RECEIVE = "TEST_SEND_RECEIVE";
+        /// <summary>
+        /// Log Identity => On test send and receive enable
+        /// </summary>
+        public const string ECHO_COMMAND = "ECHO_COMMAND";
         #endregion
 
         /* ########################################## Client Identity ########################################## */

@@ -6,7 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using G9Common.Abstract;
 using G9Common.CommandHandler;
-using G9Common.DefaultCommonCommand;
+using G9Common.Enums;
+using G9Common.HelperClass;
 using G9Common.Interface;
 using G9Common.JsonHelper;
 using G9Common.LogIdentity;
@@ -15,7 +16,6 @@ using G9Common.PacketManagement;
 using G9Common.Resource;
 using G9LogManagement.Enums;
 using G9SuperNetCoreClient.Abstract;
-using G9SuperNetCoreClient.ClientDefaultCommand;
 using G9SuperNetCoreClient.Config;
 using G9SuperNetCoreClient.Enums;
 using G9SuperNetCoreClient.Helper;
@@ -75,9 +75,15 @@ namespace G9SuperNetCoreClient.AbstractClient
         private readonly G9CommandHandler<TAccount> _commandHandler;
 
         /// <summary>
+        ///     Field used for save and access to account utilities
+        /// </summary>
+        private readonly G9AccountUtilities<TAccount, G9ClientAccountHandler, G9ClientSessionHandler>
+            _mainAccountUtilities;
+
+        /// <summary>
         ///     Access to main account
         /// </summary>
-        public readonly TAccount MainAccount;
+        public TAccount MainAccount => _mainAccountUtilities.Account;
 
         #region Send And Receive Bytes
 
@@ -128,15 +134,21 @@ namespace G9SuperNetCoreClient.AbstractClient
             // Set logging system
             _logging = customLogging ?? new G9LoggingClient();
 
+            // Initialize main account utilities
+            _mainAccountUtilities = new G9AccountUtilities<TAccount, G9ClientAccountHandler, G9ClientSessionHandler>();
+
             // Initialize account and session
+            _mainAccountUtilities.Account = new TAccount();
             var session = new TSession();
-            session.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(new G9ClientSessionHandler
-            {
-                SendCommandByName = SendCommandByName,
-                SendCommandByNameAsync = SendCommandByNameAsync
-            }, -1, IPAddress.Any);
-            MainAccount = new TAccount();
-            MainAccount.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(new G9ClientAccountHandler(), session);
+            session.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(_mainAccountUtilities.SessionHandler =
+                new G9ClientSessionHandler
+                {
+                    SendCommandByName = SendCommandByName,
+                    SendCommandByNameAsync = SendCommandByNameAsync
+                }, -1, IPAddress.Any);
+            var account = new TAccount();
+            _mainAccountUtilities.Account.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(
+                _mainAccountUtilities.AccountHandler = new G9ClientAccountHandler(), session);
 
             // Set configuration
             Configuration = clientConfig;
@@ -147,7 +159,8 @@ namespace G9SuperNetCoreClient.AbstractClient
 
             // Initialize state object
             _stateObject =
-                new G9SuperNetCoreStateObjectClient(_packetManagement.MaximumPacketSize, MainAccount.Session.SessionId);
+                new G9SuperNetCoreStateObjectClient(_packetManagement.MaximumPacketSize,
+                    _mainAccountUtilities.Account.Session.SessionId);
 
             // Set log
             if (_logging.LogIsActive(LogsType.EVENT))
@@ -160,11 +173,14 @@ namespace G9SuperNetCoreClient.AbstractClient
 
             // ######################## Add default command ########################
             // G9 Echo Command
-            _commandHandler.AddCustomCommand<string>(G9EchoCommand.G9CommandName, G9EchoCommand.ReceiveHandler,
-                G9EchoCommand.ErrorHandler);
+            _commandHandler.AddCustomCommand<string>(nameof(G9ReservedCommandName.G9EchoCommand),
+                G9EchoCommandPingCommandReceiveHandler, null);
             // G9 Test Send Receive
-            _commandHandler.AddCustomCommand<string>(G9TestSendReceive.G9CommandName, G9TestSendReceive.ReceiveHandler,
-                G9TestSendReceive.ErrorHandler);
+            _commandHandler.AddCustomCommand<string>(nameof(G9ReservedCommandName.G9TestSendReceive),
+                G9TestSendReceiveCommandReceiveHandler, null);
+            // G9 Ping Command
+            _commandHandler.AddCustomCommand<string>(nameof(G9ReservedCommandName.G9PingCommand),
+                PingCommandReceiveHandler, null);
         }
 
         #endregion
@@ -193,14 +209,14 @@ namespace G9SuperNetCoreClient.AbstractClient
                 // Set log
                 if (_logging.LogIsActive(LogsType.EVENT))
                 {
-                    var ipe = _clientSocket.RemoteEndPoint as IPEndPoint;
+                    var ipEndPoint = _clientSocket.RemoteEndPoint as IPEndPoint;
                     _logging.LogEvent(
-                        $"{LogMessage.SuccessClientConnection}\n{LogMessage.IpAddress}: {ipe.Address}\n{LogMessage.Port}: {ipe.Port}",
+                        $"{LogMessage.SuccessClientConnection}\n{LogMessage.IpAddress}: {ipEndPoint?.Address}\n{LogMessage.Port}: {ipEndPoint?.Port}",
                         G9LogIdentity.CLIENT_CONNECTED, LogMessage.SuccessfulOperation);
                 }
 
                 // Run event on connected
-                OnConnectedHandler(MainAccount);
+                OnConnectedHandler(_mainAccountUtilities.Account);
 
                 // Listen for receive
                 Receive(_clientSocket);
@@ -297,7 +313,7 @@ namespace G9SuperNetCoreClient.AbstractClient
 
 
                     // Progress packet
-                    _commandHandler.G9CallHandler(receivePacket, MainAccount);
+                    _commandHandler.G9CallHandler(receivePacket, _mainAccountUtilities.Account);
 
                     // Signal that all bytes have been received.  
                     _receiveDone.Set();
@@ -309,15 +325,13 @@ namespace G9SuperNetCoreClient.AbstractClient
             }
             catch (Exception ex)
             {
-
                 if (ex is SocketException exception && exception.ErrorCode == 10054)
                 {
                     // Run event disconnect
-                    OnDisconnectedHandler(MainAccount, DisconnectReason.DisconnectedFromServer);
+                    OnDisconnectedHandler(_mainAccountUtilities.Account, DisconnectReason.DisconnectedFromServer);
                 }
                 else
                 {
-
                     if (_logging.LogIsActive(LogsType.EXCEPTION))
                         _logging.LogException(ex, LogMessage.FailClientReceive, G9LogIdentity.CLIENT_RECEIVE,
                             LogMessage.FailedOperation);
@@ -420,19 +434,19 @@ namespace G9SuperNetCoreClient.AbstractClient
                 try
                 {
                     // Establish the remote endpoint for the socket.  
-                    var remoteEP = new IPEndPoint(Configuration.IpAddress, Configuration.PortNumber);
+                    var remoteEndPoint = new IPEndPoint(Configuration.IpAddress, Configuration.PortNumber);
 
                     // Create a TCP/IP socket.  
                     var client = new Socket(Configuration.IpAddress.AddressFamily,
                         SocketType.Stream, ProtocolType.Tcp);
 
                     // Connect to the remote endpoint.  
-                    client.BeginConnect(remoteEP,
+                    client.BeginConnect(remoteEndPoint,
                         ConnectCallback, client);
                     _connectDone.WaitOne();
 
                     // Run event on connected handler
-                    OnConnectedHandler(MainAccount);
+                    OnConnectedHandler(_mainAccountUtilities.Account);
 
                     return true;
                 }
@@ -487,9 +501,9 @@ namespace G9SuperNetCoreClient.AbstractClient
                     if (_logging.LogIsActive(LogsType.EVENT))
                         _logging.LogEvent(LogMessage.StopServer, G9LogIdentity.STOP_SERVER,
                             LogMessage.SuccessfulOperation);
-                    
+
                     // Run event on disconnect
-                    OnDisconnectedHandler(MainAccount, DisconnectReason.DisconnectedByProgram);
+                    OnDisconnectedHandler(_mainAccountUtilities.Account, DisconnectReason.DisconnectedByProgram);
 
                     return true;
                 }

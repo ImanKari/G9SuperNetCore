@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
 using G9Common.CommandHandler;
-using G9Common.DefaultCommonCommand;
 using G9Common.HelperClass;
 using G9Common.Interface;
 using G9Common.LogIdentity;
@@ -18,7 +15,6 @@ using G9SuperNetCoreServer.Config;
 using G9SuperNetCoreServer.Enums;
 using G9SuperNetCoreServer.HelperClass;
 using G9SuperNetCoreServer.Logging;
-using G9SuperNetCoreServer.ServerDefaultCommand;
 
 namespace G9SuperNetCoreServer.Core
 {
@@ -35,19 +31,11 @@ namespace G9SuperNetCoreServer.Core
 
         /// <summary>
         ///     Concurrent collection for save account and sessions
-        ///     Key: session id
-        ///     Val: account
+        ///     index: session id
+        ///     Val: account utilities
         /// </summary>
-        private readonly ConcurrentDictionary<long, TAccount> _accountCollection =
-            new ConcurrentDictionary<long, TAccount>();
-
-        /// <summary>
-        ///     Concurrent collection for save socket connection
-        ///     Key: session id
-        ///     Val: socket connection
-        /// </summary>
-        private readonly ConcurrentDictionary<long, Socket> _socketCollection =
-            new ConcurrentDictionary<long, Socket>();
+        private readonly G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>[]
+            _accountCollection;
 
         /// <summary>
         ///     Save maximum connection number
@@ -107,6 +95,11 @@ namespace G9SuperNetCoreServer.Core
             Func<long, string, object, Task<int>> sendCommandByNameAsync,
             Action<G9SendAndReceivePacket, TAccount> onUnhandledCommand, IG9Logging customLogging = null)
         {
+            // TODO: change fixed array to change sizable array
+            // Set array
+            _accountCollection =
+                new G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>[10000];
+
             // Set logging system
             Logging = customLogging ?? new G9LoggingServer();
 
@@ -120,14 +113,6 @@ namespace G9SuperNetCoreServer.Core
             // Initialize command handler
             CommandHandler = new G9CommandHandler<TAccount>(commandAssembly, Logging, Configuration.CommandSize,
                 onUnhandledCommand);
-
-            // ######################## Add default command ########################
-            // G9 Echo Command
-            CommandHandler.AddCustomCommand<string>(G9EchoCommand.G9CommandName, G9EchoCommand.ReceiveHandler,
-                G9EchoCommand.ErrorHandler);
-            // G9 Test Send Receive
-            CommandHandler.AddCustomCommand<string>(G9TestSendReceive.G9CommandName, G9TestSendReceive.ReceiveHandler,
-                G9TestSendReceive.ErrorHandler);
         }
 
         #endregion
@@ -161,34 +146,20 @@ namespace G9SuperNetCoreServer.Core
                 return (false, null);
             }
 
-            var newAccount = CreateAccountByAcceptedSocket(connectionSocket);
+            var newAccountUtilities = CreateAccountByAcceptedSocket(connectionSocket);
 
-            if (newAccount != null)
+            if (newAccountUtilities != null)
             {
                 if (Logging.LogIsActive(LogsType.INFO))
                     Logging.LogInformation(LogMessage.AccountAndSessionCreated, G9LogIdentity.CREATE_NEW_ACCOUNT,
                         LogMessage.CreateNewAccount);
-                // Try add account to collection
-                if (_accountCollection.TryAdd(_sessionIdentityCounter++, newAccount))
-                {
-                    if (Logging.LogIsActive(LogsType.INFO))
-                        Logging.LogInformation(LogMessage.SuccessAccountAdded, G9LogIdentity.CREATE_NEW_ACCOUNT,
-                            LogMessage.CreateNewAccount);
-                    return (true, newAccount);
-                }
 
-                if (Logging.LogIsActive(LogsType.ERROR))
-                    Logging.LogError(LogMessage.ProblemAddingAccount, G9LogIdentity.ACCEPT_CONNECTION,
-                        LogMessage.AccountAdded);
+                _accountCollection[_sessionIdentityCounter++] = newAccountUtilities;
 
-                // TODO: فرمت ارسال باید برای کامند مناسب درست بشه
-                connectionSocket.Send(
-                    Configuration.EncodingAndDecoding.EncodingType.GetBytes(G9ServerCommandMessage
-                        .REJECT_SERVER_ERROR));
-                connectionSocket.Disconnect(false);
-                connectionSocket.Close();
-                connectionSocket.Dispose();
-                return (false, null);
+                if (Logging.LogIsActive(LogsType.INFO))
+                    Logging.LogInformation(LogMessage.SuccessAccountAdded, G9LogIdentity.CREATE_NEW_ACCOUNT,
+                        LogMessage.CreateNewAccount);
+                return (true, newAccountUtilities.Account);
             }
 
             // TODO: فرمت ارسال باید برای کامند مناسب درست بشه
@@ -213,14 +184,10 @@ namespace G9SuperNetCoreServer.Core
 
         public void DisconnectSocketHandler(TAccount account, DisconnectReason disconnectReason)
         {
-            // Remove from collections
-            _accountCollection.TryRemove(account.Session.SessionId, out var accountConnection);
-            _socketCollection.TryRemove(account.Session.SessionId, out var connectionSocket);
-
             // Run on session closed in account
             try
             {
-                accountConnection?.OnSessionClosed(disconnectReason);
+                _accountCollection[account.Session.SessionId]?.Account.OnSessionClosed(disconnectReason);
             }
             catch
             {
@@ -228,9 +195,10 @@ namespace G9SuperNetCoreServer.Core
             }
 
             // Dispose and remove
-            connectionSocket.Dispose();
-            connectionSocket = null;
-            accountConnection = null;
+            _accountCollection[account.Session.SessionId]?.SessionSocket.Dispose();
+            _accountCollection[account.Session.SessionId] = null;
+            // Gc collect
+            GC.Collect();
         }
 
         #endregion
@@ -245,28 +213,26 @@ namespace G9SuperNetCoreServer.Core
 
         public void ClearAllSocketsAndAccounts(DisconnectReason disconnectReason)
         {
-            // Remove from collections
-            foreach (var aServerAccount in _accountCollection)
+            for (var i = 0; i < _accountCollection.Length; i++)
             {
                 // Run on session closed in account
                 try
                 {
-                    aServerAccount.Value?.OnSessionClosed(disconnectReason);
+                    _accountCollection[i]?.Account?.OnSessionClosed(disconnectReason);
                 }
                 catch
                 {
                     // Ignore
                 }
+
+                // Dispose session socket
+                _accountCollection[i]?.SessionSocket.Dispose();
+                // Remove all
+                _accountCollection[i] = null;
             }
 
-            foreach (var socket in _socketCollection)
-            {
-                socket.Value?.Dispose();
-            }
-
-            // Remove all
-            _accountCollection.Clear();
-            _socketCollection.Clear();
+            // Gc collect
+            GC.Collect();
         }
 
         #endregion
@@ -279,37 +245,39 @@ namespace G9SuperNetCoreServer.Core
 
         #region GenerateAccountByAcceptedSocket
 
-        private TAccount CreateAccountByAcceptedSocket(Socket acceptedScoket)
+        private G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>
+            CreateAccountByAcceptedSocket(Socket acceptedScoket)
         {
             try
             {
-                // Save socket connection
-                _socketCollection.TryAdd(_sessionIdentityCounter, acceptedScoket);
+                // Initialize result
+                var result = new G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>();
 
                 // Instance session and pass requirement to constructor
                 var session = new TSession();
-                session.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(new G9ServerSessionHandler
-                    {
-                        // Set send commands
-                        SendCommandByName = _sendCommandByName,
-                        SendCommandByNameAsync = _sendCommandByNameAsync
-                    },
-                    _sessionIdentityCounter, ((IPEndPoint) acceptedScoket.RemoteEndPoint).Address);
+                session.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(result.SessionHandler =
+                        new G9ServerSessionHandler
+                        {
+                            // Set send commands
+                            SendCommandByName = _sendCommandByName,
+                            SendCommandByNameAsync = _sendCommandByNameAsync,
+                            PingDurationInMilliseconds = (ushort) Configuration.GetPingTimeOut.TotalMilliseconds
+                        }, _sessionIdentityCounter,
+                    ((IPEndPoint) acceptedScoket.RemoteEndPoint).Address);
 
                 // Instance account and pass session to constructor
-                var newAccount = new TAccount();
-                newAccount.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(new G9ServerAccountHandler(),
-                    session);
+                var newAccount = result.Account = new TAccount();
+                newAccount.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(result.AccountHandler =
+                    new G9ServerAccountHandler(), session);
+
+                // Set socket
+                result.SessionSocket = acceptedScoket;
 
                 // return result
-                return newAccount;
+                return result;
             }
             catch (Exception ex)
             {
-                // Remove if add to collection
-                _socketCollection.TryRemove(_sessionIdentityCounter, out _);
-                _accountCollection.TryRemove(_sessionIdentityCounter, out _);
-
                 // set ex log
                 if (Logging.LogIsActive(LogsType.EXCEPTION))
                     Logging.LogException(ex, LogMessage.ProblemCreateNewAccountAndSession,
@@ -322,49 +290,36 @@ namespace G9SuperNetCoreServer.Core
         #endregion
 
         /// <summary>
-        ///     Scrolling all socket connection
+        ///     Scrolling all account utilities
         /// </summary>
         /// <param name="scrollingSocketAction">Action for scrolling</param>
 
-        #region ScrollingAllSocket
+        #region ScrollingAllAccountUtilities
 
-        public void ScrollingAllSocket(Action<Socket> scrollingSocketAction)
+        public void ScrollingAllAccountUtilities(
+            Action<G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>> scrollingSocketAction)
         {
-            foreach (var aServerAccount in _socketCollection) scrollingSocketAction?.Invoke(aServerAccount.Value);
+            for (var i = 0; i < _accountCollection.Length; i++)
+                if (_accountCollection[i] != null)
+                    scrollingSocketAction?.Invoke(_accountCollection[i]);
         }
 
         #endregion
 
         /// <summary>
-        ///     Get socket connection by session id
+        ///     Get account utilities
         /// </summary>
         /// <param name="sessionId">Session id for socket</param>
         /// <returns>Socket of session id</returns>
 
         #region GetSocketBySessionId
 
-        public Socket GetSocketBySessionId(long sessionId)
+        public G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>
+            GetAccountUtilitiesBySessionId(long sessionId)
         {
-            if (_socketCollection.ContainsKey(sessionId))
-                return _socketCollection[sessionId];
+            if (sessionId > -1 && sessionId < _accountCollection.Length)
+                return _accountCollection[sessionId];
             return null;
-        }
-
-        #endregion
-
-        /// <summary>
-        ///     Get account by session id
-        /// </summary>
-        /// <param name="sessionId">Specify session id</param>
-        /// <returns>TAccount type</returns>
-
-        #region GetAccountBySessionId
-
-        public TAccount GetAccountBySessionId(long sessionId)
-        {
-            if (sessionId == -1 || !_accountCollection.ContainsKey(sessionId))
-                return null;
-            return _accountCollection[sessionId];
         }
 
         #endregion

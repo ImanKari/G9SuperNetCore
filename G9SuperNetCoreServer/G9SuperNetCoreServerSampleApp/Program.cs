@@ -39,10 +39,7 @@ namespace G9SuperNetCoreServerSampleApp
             {
                 if (message == "G9TEST")
                 {
-                    for (var i = 0; i < 100; i++)
-                    {
-                        server.SendCommandToAllByName("G9EchoCommand", $"Server send a message {counter++}: {i}");
-                    }
+                    server.EnableCommandTestSendAndReceiveForAllClients();
                 }
                 else if (message == "STOP")
                 {

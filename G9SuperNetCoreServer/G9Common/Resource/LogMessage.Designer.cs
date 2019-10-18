@@ -124,6 +124,24 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to پینگ کلاینت.
+        /// </summary>
+        public static string ClientPing {
+            get {
+                return ResourceManager.GetString("ClientPing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تاریخ و زمان آخرین پینگ.
+        /// </summary>
+        public static string ClientPingDateTime {
+            get {
+                return ResourceManager.GetString("ClientPingDateTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to کد منحصر به فرد کلاینت.
         /// </summary>
         public static string ClientSessionIdentity {
@@ -151,6 +169,15 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to دریافت کامند اکو.
+        /// </summary>
+        public static string CommandEcho {
+            get {
+                return ResourceManager.GetString("CommandEcho", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to طول (تعداد کاراکتر ها) کامند وارد شده از مقدار مجاز بیشتر است.
         /// </summary>
         public static string CommandLengthError {
@@ -165,6 +192,15 @@ namespace G9Common.Resource {
         public static string CommandName {
             get {
                 return ResourceManager.GetString("CommandName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to دریافت از کامند تست ارسال و دریافت بین سرور و کلاینت.
+        /// </summary>
+        public static string CommanTestSendReceive {
+            get {
+                return ResourceManager.GetString("CommanTestSendReceive", resourceCulture);
             }
         }
         
@@ -201,6 +237,42 @@ namespace G9Common.Resource {
         public static string DataLength {
             get {
                 return ResourceManager.GetString("DataLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to توقف کامند تست ارسال و دریافت بین سرور و کلاینت برای تمامی کلاینت ها.
+        /// </summary>
+        public static string DisableCommandTestModeForAllClients {
+            get {
+                return ResourceManager.GetString("DisableCommandTestModeForAllClients", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to توقف کامند تست ارسال و دریافت بین سرور و کلاینت برای یک کلاینت.
+        /// </summary>
+        public static string DisableCommandTestModeForSingleSession {
+            get {
+                return ResourceManager.GetString("DisableCommandTestModeForSingleSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to فعال سازی کامند تست ارسال و دریافت بین سرور و کلاینت برای تمامی کلاینت ها.
+        /// </summary>
+        public static string EnableCommandTestModeForAllClients {
+            get {
+                return ResourceManager.GetString("EnableCommandTestModeForAllClients", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to فعال سازی کامند تست ارسال و دریافت بین سرور و کلاینت برای یک کلاینت.
+        /// </summary>
+        public static string EnableCommandTestModeForSingleSession {
+            get {
+                return ResourceManager.GetString("EnableCommandTestModeForSingleSession", resourceCulture);
             }
         }
         
@@ -322,6 +394,24 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to آخرین کامند استفاده شده.
+        /// </summary>
+        public static string LastCommandUsed {
+            get {
+                return ResourceManager.GetString("LastCommandUsed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تاریخ و زمان آخرین کامند استفاده شده.
+        /// </summary>
+        public static string LastCommandUsedDateTime {
+            get {
+                return ResourceManager.GetString("LastCommandUsedDateTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to طول (تعداد کاراکتر) وارد شده.
         /// </summary>
         public static string LengthEntered {
@@ -399,6 +489,15 @@ namespace G9Common.Resource {
         public static string ReceiveClientFromServer {
             get {
                 return ResourceManager.GetString("ReceiveClientFromServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to داده دریافتی.
+        /// </summary>
+        public static string ReceiveData {
+            get {
+                return ResourceManager.GetString("ReceiveData", resourceCulture);
             }
         }
         
@@ -534,6 +633,15 @@ namespace G9Common.Resource {
         public static string SuccessUnpackingReceiveData {
             get {
                 return ResourceManager.GetString("SuccessUnpackingReceiveData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تعداد تست.
+        /// </summary>
+        public static string TestNumber {
+            get {
+                return ResourceManager.GetString("TestNumber", resourceCulture);
             }
         }
         

@@ -1,6 +1,8 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using G9Common.Abstract;
+using G9Common.Enums;
 using G9SuperNetCoreServer.HelperClass;
 
 namespace G9SuperNetCoreServer.Abstarct
@@ -11,19 +13,35 @@ namespace G9SuperNetCoreServer.Abstarct
         #region Fields And Properties
 
         /// <summary>
-        ///     Get unique Identity from session
-        /// </summary>
-        public long SessionId { private set; get; }
-
-        /// <summary>
-        ///     Get ip address of session
-        /// </summary>
-        public IPAddress SessionIpAddress { private set; get; }
-
-        /// <summary>
         ///     Access to session handler
         /// </summary>
         private G9ServerSessionHandler _sessionHandler;
+
+        /// <summary>
+        ///     Specified enable command send and receive mode
+        /// </summary>
+        public bool EnableTestSendReceiveMode { private set; get; }
+
+        #region LastCommand Utilities
+
+        /// <summary>
+        ///     Field save last command
+        /// </summary>
+        private string _lastCommand;
+
+        /// <inheritdoc />
+        public override string LastCommand
+        {
+            protected set
+            {
+                _lastCommand = value;
+                LastCommandDateTime = DateTime.Now;
+                PingHandler();
+            }
+            get => _lastCommand;
+        }
+
+        #endregion
 
         #endregion
 
@@ -43,11 +61,77 @@ namespace G9SuperNetCoreServer.Abstarct
             // Set session handler
             _sessionHandler = handler;
 
+            // Set ping utilities
+            PingDurationInMilliseconds = _sessionHandler.PingDurationInMilliseconds;
+            _sessionHandler.SetPing = newPing => Ping = newPing;
+
+            // Set last command
+            _sessionHandler.SetLastCommand = lastCommandName => LastCommand = lastCommandName;
+
+            // Test mode utilities
+            _sessionHandler.EnableTestMode = EnableTestSendAndReceiveMode;
+            _sessionHandler.DisableTestMode = DisableTestSendAndReceiveMode;
+
             // Set session id
             SessionId = oSessionId;
 
             // Set ip
             SessionIpAddress = oIpAddress;
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Ping handler
+        ///     calculate ping automatically
+        /// </summary>
+
+        #region PingHandler
+
+        private void PingHandler()
+        {
+            if ((DateTime.Now - LastPingDateTime).TotalMilliseconds > PingDurationInMilliseconds)
+            {
+                LastPingDateTime = DateTime.Now;
+                SendCommandByNameAsync("G9PingCommand", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Enable test send and receive mode
+        /// </summary>
+        /// <param name="testMessage">
+        ///     Test message
+        ///     If set null => $"Test Mode - Session Id: {SessionId}"
+        /// </param>
+
+        #region EnableTestSendAndReceiveMode
+
+        private void EnableTestSendAndReceiveMode(string testMessage = null)
+        {
+            // Set message
+            if (string.IsNullOrEmpty(testMessage))
+                testMessage = $"Test Mode - Session Id: {SessionId}";
+            // Enable test mode
+            EnableTestSendReceiveMode = true;
+            // Send test mode command
+            SendCommandByNameAsync(nameof(G9ReservedCommandName.G9TestSendReceive), testMessage);
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Disable  test send and receive mode
+        /// </summary>
+
+        #region DisableTestSendAndReceiveMode
+
+        private void DisableTestSendAndReceiveMode()
+        {
+            // Disable test mode
+            EnableTestSendReceiveMode = false;
         }
 
         #endregion

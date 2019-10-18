@@ -264,8 +264,32 @@
   <data name="CantStopStoppedServer" xml:space="preserve">
     <value>سرور متوقف است، نمی توانید آن را مجددا متوقف کنید.</value>
   </data>
+  <data name="ClientPing" xml:space="preserve">
+    <value>پینگ کلاینت</value>
+  </data>
+  <data name="ClientPingDateTime" xml:space="preserve">
+    <value>تاریخ و زمان آخرین پینگ</value>
+  </data>
+  <data name="CommandEcho" xml:space="preserve">
+    <value>دریافت کامند اکو</value>
+  </data>
   <data name="CommandName" xml:space="preserve">
     <value>نام کامند</value>
+  </data>
+  <data name="CommanTestSendReceive" xml:space="preserve">
+    <value>دریافت از کامند تست ارسال و دریافت بین سرور و کلاینت</value>
+  </data>
+  <data name="DisableCommandTestModeForAllClients" xml:space="preserve">
+    <value>توقف کامند تست ارسال و دریافت بین سرور و کلاینت برای تمامی کلاینت ها</value>
+  </data>
+  <data name="DisableCommandTestModeForSingleSession" xml:space="preserve">
+    <value>توقف کامند تست ارسال و دریافت بین سرور و کلاینت برای یک کلاینت</value>
+  </data>
+  <data name="EnableCommandTestModeForAllClients" xml:space="preserve">
+    <value>فعال سازی کامند تست ارسال و دریافت بین سرور و کلاینت برای تمامی کلاینت ها</value>
+  </data>
+  <data name="EnableCommandTestModeForSingleSession" xml:space="preserve">
+    <value>فعال سازی کامند تست ارسال و دریافت بین سرور و کلاینت برای یک کلاینت</value>
   </data>
   <data name="FailSendComandByName" xml:space="preserve">
     <value>روند ارسال کامند همگام Sync با استفاده از نام با مشکل مواجه شده است</value>
@@ -276,11 +300,23 @@
   <data name="FailStopServer" xml:space="preserve">
     <value>در روند توقف سرور مشکلی ایجاد شده است</value>
   </data>
+  <data name="LastCommandUsed" xml:space="preserve">
+    <value>آخرین کامند استفاده شده</value>
+  </data>
+  <data name="LastCommandUsedDateTime" xml:space="preserve">
+    <value>تاریخ و زمان آخرین کامند استفاده شده</value>
+  </data>
+  <data name="ReceiveData" xml:space="preserve">
+    <value>داده دریافتی</value>
+  </data>
   <data name="ReceivedUnhandledCommand" xml:space="preserve">
     <value>یک کامند مدیریت نشده دریافت شده است</value>
   </data>
   <data name="StopServer" xml:space="preserve">
     <value>توقف سرور</value>
+  </data>
+  <data name="TestNumber" xml:space="preserve">
+    <value>تعداد تست</value>
   </data>
   <data name="UnhandledCommand" xml:space="preserve">
     <value>کامند مدیریت نشده</value>

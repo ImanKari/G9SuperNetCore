@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using G9Common.Abstract;
+using G9Common.Enums;
 using G9Common.Interface;
 using G9Common.JsonHelper;
 using G9Common.LogIdentity;
@@ -94,6 +95,17 @@ namespace G9SuperNetCoreServer.AbstractServer
             // Initialize core
             _core = new G9Core<TAccount, TSession>(superNetCoreConfig, commandAssembly, SendCommandByName,
                 SendCommandByNameAsync, OnUnhandledCommandHandler, customLogging);
+
+            // ######################## Add default command ########################
+            // G9 Echo Command
+            _core.CommandHandler.AddCustomCommand<string>(nameof(G9ReservedCommandName.G9EchoCommand),
+                G9EchoCommandPingCommandReceiveHandler, null);
+            // G9 Test Send Receive
+            _core.CommandHandler.AddCustomCommand<string>(nameof(G9ReservedCommandName.G9TestSendReceive),
+                G9TestSendReceiveCommandReceiveHandler, null);
+            // G9 Ping Command
+            _core.CommandHandler.AddCustomCommand<string>(nameof(G9ReservedCommandName.G9PingCommand),
+                PingCommandReceiveHandler, null);
 
             // Initialize packet management
             _packetManagement = new G9PacketManagement(_core.Configuration.CommandSize, _core.Configuration.BodySize,
@@ -187,6 +199,8 @@ namespace G9SuperNetCoreServer.AbstractServer
                 var handler = state.WorkSocket;
                 sessionId = state.SessionIdentity;
 
+                var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
+
                 // Read data from the client socket.   
                 var bytesRead = handler.EndReceive(asyncResult);
 
@@ -201,6 +215,9 @@ namespace G9SuperNetCoreServer.AbstractServer
                     // unpacking request
                     var receivePacket = _packetManagement.UnpackingRequestByData(packet);
 
+                    // Set last command (check ping automatically when set last command)
+                    accountUtilities.SessionHandler.SetLastCommand(receivePacket.Command);
+
                     // Set log
                     if (_core.Logging.LogIsActive(LogsType.INFO))
                         _core.Logging.LogInformation(
@@ -211,7 +228,8 @@ namespace G9SuperNetCoreServer.AbstractServer
                     Array.Clear(state.Buffer, 0, AG9SuperNetCoreStateObjectBase.BufferSize);
 
                     // Progress packet
-                    _core.CommandHandler.G9CallHandler(receivePacket, _core.GetAccountBySessionId(sessionId));
+                    _core.CommandHandler.G9CallHandler(receivePacket,
+                        _core.GetAccountUtilitiesBySessionId(sessionId).Account);
                 }
 
                 // Listen and get other packet
@@ -229,7 +247,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 if (ex is SocketException exception && exception.ErrorCode == 10054)
                 {
                     // Run event disconnect
-                    OnDisconnectedHandler(_core.GetAccountBySessionId(sessionId),
+                    OnDisconnectedHandler(_core.GetAccountUtilitiesBySessionId(sessionId).Account,
                         DisconnectReason.DisconnectedFromClient);
                 }
                 else
@@ -437,7 +455,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                     // Run event stop
                     OnStopHandler(ServerStopReason.StopWithOperator);
 
-                    _core.ScrollingAllSocket(s => { s.Dispose(); });
+                    _core.ScrollingAllAccountUtilities(s => { s.SessionSocket.Dispose(); });
 
                     // Close, Disconnect and dispose
                     _mainSocketListener.Dispose();
@@ -447,6 +465,9 @@ namespace G9SuperNetCoreServer.AbstractServer
                     if (_core.Logging.LogIsActive(LogsType.EVENT))
                         _core.Logging.LogEvent(LogMessage.StopServer, G9LogIdentity.STOP_SERVER,
                             LogMessage.SuccessfulOperation);
+
+                    // Call gc collect
+                    GC.Collect();
 
                     return true;
                 }
@@ -463,6 +484,92 @@ namespace G9SuperNetCoreServer.AbstractServer
                 }
             });
         }
+
+        #endregion
+
+        #region Test Mode Methods
+
+        /// <summary>
+        ///     Enable command test send and receive for all clients
+        /// </summary>
+        /// <param name="testMessage">
+        ///     Test message
+        ///     If set null => $"Test Mode - Session Id: {SessionId}"
+        /// </param>
+
+        #region EnableCommandTestSendAndReceiveForAllClients
+
+        public void EnableCommandTestSendAndReceiveForAllClients(string testMessage = null)
+        {
+            _core.ScrollingAllAccountUtilities(s => s.SessionHandler.EnableTestMode(testMessage));
+
+            // Set log
+            if (_core.Logging.LogIsActive(LogsType.EVENT))
+                _core.Logging.LogEvent(LogMessage.EnableCommandTestModeForAllClients,
+                    G9LogIdentity.ENABLE_TEST_MODE_ALL_CLIENT, LogMessage.SuccessfulOperation);
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Disable command test send and receive for all clients
+        /// </summary>
+
+        #region DisableCommandTestSendAndReceiveForAllClients
+
+        public void DisableCommandTestSendAndReceiveForAllClients()
+        {
+            _core.ScrollingAllAccountUtilities(s => s.SessionHandler.DisableTestMode());
+
+            // Set log
+            if (_core.Logging.LogIsActive(LogsType.EVENT))
+                _core.Logging.LogEvent(LogMessage.DisableCommandTestModeForAllClients,
+                    G9LogIdentity.DISABLE_TEST_MODE_ALL_CLIENT, LogMessage.SuccessfulOperation);
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Enable command test send and receive for single client
+        /// </summary>
+        /// <param name="sessionId">Specified session id for enable command send and receive</param>
+        /// <param name="testMessage">
+        ///     Test message
+        ///     If set null => $"Test Mode - Session Id: {SessionId}"
+        /// </param>
+
+        #region EnableCommandTestSendAndReceiveForAllClients
+
+        public void EnableCommandTestSendAndReceiveBySession(long sessionId, string testMessage = null)
+        {
+            _core.GetAccountUtilitiesBySessionId(sessionId).SessionHandler.EnableTestMode(testMessage);
+
+            // Set log
+            if (_core.Logging.LogIsActive(LogsType.EVENT))
+                _core.Logging.LogEvent(LogMessage.EnableCommandTestModeForSingleSession,
+                    G9LogIdentity.ENABLE_TEST_MODE_SINGLE_CLIENT, LogMessage.SuccessfulOperation);
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Disable command test send and receive for single client
+        /// </summary>
+        /// <param name="sessionId">Specified session id for enable command send and receive</param>
+
+        #region DisableCommandTestSendAndReceiveForAllClients
+
+        public void DisableCommandTestSendAndReceiveBySession(long sessionId)
+        {
+            _core.GetAccountUtilitiesBySessionId(sessionId).SessionHandler.DisableTestMode();
+
+            // Set log
+            if (_core.Logging.LogIsActive(LogsType.EVENT))
+                _core.Logging.LogEvent(LogMessage.DisableCommandTestModeForSingleSession,
+                    G9LogIdentity.DISABLE_TEST_MODE_SINGLE_CLIENT, LogMessage.SuccessfulOperation);
+        }
+
+        #endregion
 
         #endregion
 
@@ -516,7 +623,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 var packets = dataForSend.GetPacketsArray();
 
                 // Get socket by session id
-                var socket = _core.GetSocketBySessionId(sessionId);
+                var socket = _core.GetAccountUtilitiesBySessionId(sessionId).SessionSocket;
 
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
@@ -560,7 +667,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 var packets = dataForSend.GetPacketsArray();
 
                 // Get socket by session id
-                var socket = _core.GetSocketBySessionId(sessionId);
+                var socket = _core.GetAccountUtilitiesBySessionId(sessionId).SessionSocket;
 
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
@@ -601,7 +708,8 @@ namespace G9SuperNetCoreServer.AbstractServer
             for (var i = 0; i < dataForSend.TotalPackets; i++)
             {
                 var i1 = i;
-                _core.ScrollingAllSocket(socketConnection => socketConnection.Send(packets[i1]));
+                _core.ScrollingAllAccountUtilities(socketConnection =>
+                    socketConnection.SessionSocket.Send(packets[i1]));
             }
 
             return true;
