@@ -176,7 +176,8 @@ namespace G9Common.CommandHandler
             derivedTypes.ForEach(oType =>
             {
                 var instance = Activator.CreateInstance(oType);
-                _instanceCommandCollection.Add(oType.Name.PadLeft(_commandSize, '9'), instance);
+                _instanceCommandCollection.Add(oType.Name.PadLeft(_commandSize, '9').Substring(0, _commandSize),
+                    instance);
                 var method = oType.GetMethod("InitializeRequirement");
                 method.Invoke(instance, new object[1] {_accessToCommandDataTypeCollection});
             });
@@ -291,7 +292,7 @@ namespace G9Common.CommandHandler
             Action<Exception, TAccount> errorHandler)
         {
             _accessToCommandDataTypeCollection.Add(
-                commandName.PadLeft(_commandSize, '9'),
+                commandName.PadLeft(_commandSize, '9').Substring(0, _commandSize),
                 new CommandDataType<TAccount>(
                     // Access to method "ResponseService" in command
                     (data, account) =>
@@ -304,12 +305,18 @@ namespace G9Common.CommandHandler
                                     try
                                     {
                                         if (command == SendTypeForCommand.Asynchronous)
-                                            onSendFinish?.Invoke(
-                                                await account.SessionSendCommand.SendCommandByNameAsync(commandName,
-                                                    type));
+                                        {
+                                            var bytesSend = await account.SessionSendCommand.SendCommandByNameAsync(
+                                                commandName,
+                                                type);
+                                            onSendFinish?.Invoke(bytesSend);
+                                        }
                                         else
-                                            onSendFinish?.Invoke(
-                                                account.SessionSendCommand.SendCommandByName(commandName, type));
+                                        {
+                                            var bytesSend =
+                                                account.SessionSendCommand.SendCommandByName(commandName, type);
+                                            onSendFinish?.Invoke(bytesSend);
+                                        }
                                     }
                                     catch (Exception ex)
                                     {

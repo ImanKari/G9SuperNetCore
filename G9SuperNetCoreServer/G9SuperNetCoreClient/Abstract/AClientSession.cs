@@ -1,12 +1,11 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using G9Common.Abstract;
-using G9Common.Resource;
 using G9SuperNetCoreClient.Helper;
 
 namespace G9SuperNetCoreClient.Abstract
 {
+    /// <inheritdoc />
     public abstract class AClientSession : ASession
     {
         #region Fields And Properties
@@ -22,7 +21,7 @@ namespace G9SuperNetCoreClient.Abstract
         public IPAddress SessionIpAddress { private set; get; }
 
         /// <summary>
-        /// Access to session handler
+        ///     Access to session handler
         /// </summary>
         private G9ClientSessionHandler _sessionHandler;
 
@@ -37,7 +36,8 @@ namespace G9SuperNetCoreClient.Abstract
 
         #region InitializeAndHandlerAccountAndSessionAutomaticFirstTime
 
-        public void InitializeAndHandlerAccountAndSessionAutomaticFirstTime(G9ClientSessionHandler handler, long oSessionId,
+        public void InitializeAndHandlerAccountAndSessionAutomaticFirstTime(G9ClientSessionHandler handler,
+            long oSessionId,
             IPAddress oIpAddress)
         {
             // Set session handler
@@ -97,7 +97,5 @@ namespace G9SuperNetCoreClient.Abstract
         #endregion
 
         #endregion
-
-
     }
 }

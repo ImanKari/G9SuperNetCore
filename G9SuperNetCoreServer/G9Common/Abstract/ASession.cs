@@ -3,6 +3,9 @@ using G9Common.Interface;
 
 namespace G9Common.Abstract
 {
+    /// <summary>
+    ///     Class for management session
+    /// </summary>
     public abstract class ASession
     {
         /// <summary>

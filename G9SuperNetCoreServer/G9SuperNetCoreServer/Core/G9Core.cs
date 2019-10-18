@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
 using G9Common.CommandHandler;
+using G9Common.DefaultCommonCommand;
 using G9Common.HelperClass;
 using G9Common.Interface;
 using G9Common.LogIdentity;
@@ -118,6 +119,9 @@ namespace G9SuperNetCoreServer.Core
             // G9 Echo Command
             CommandHandler.AddCustomCommand<string>(G9EchoCommand.G9CommandName, G9EchoCommand.ReceiveHandler,
                 G9EchoCommand.ErrorHandler);
+            // G9 Test Send Receive
+            CommandHandler.AddCustomCommand<string>(G9TestSendReceive.G9CommandName, G9TestSendReceive.ReceiveHandler,
+                G9TestSendReceive.ErrorHandler);
         }
 
         #endregion

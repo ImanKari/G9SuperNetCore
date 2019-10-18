@@ -5,6 +5,7 @@ using G9SuperNetCoreServer.HelperClass;
 
 namespace G9SuperNetCoreServer.Abstarct
 {
+    /// <inheritdoc />
     public abstract class AServerSession : ASession
     {
         #region Fields And Properties

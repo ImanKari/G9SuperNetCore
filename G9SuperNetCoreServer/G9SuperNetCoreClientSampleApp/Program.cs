@@ -44,7 +44,7 @@ namespace G9SuperNetCoreClientSampleApp
                         client.SendCommandByName("G9EchoCommand", $"Client send a message {counter++}: {i}");
                     }
                 }
-                client.SendCommandByName("G9EchoCommand", $"Client send a message {counter++}: {message}");
+                client.SendCommandByName("G9TestSendReceive", $"Client send a message {counter++}: {message}");
             }
 
             Console.WriteLine("Press any key to exist.");

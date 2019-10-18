@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
@@ -62,10 +61,12 @@ namespace G9SuperNetCoreServer.AbstractServer
 
         #region G9SuperNetCoreServerBase
 
-        protected AG9SuperNetCoreServerBase(G9ServerConfig superNetCoreConfig, Assembly commandAssembly, IG9Logging customLogging = null)
+        protected AG9SuperNetCoreServerBase(G9ServerConfig superNetCoreConfig, Assembly commandAssembly,
+            IG9Logging customLogging = null)
         {
             // Initialize core
-            _core = new G9Core<TAccount, TSession>(superNetCoreConfig, commandAssembly, SendCommandByName, SendCommandByNameAsync, customLogging);
+            _core = new G9Core<TAccount, TSession>(superNetCoreConfig, commandAssembly, SendCommandByName,
+                SendCommandByNameAsync, customLogging);
 
             // Initialize packet management
             _packetManagement = new G9PacketManagement(_core.Configuration.CommandSize, _core.Configuration.BodySize,
@@ -174,9 +175,6 @@ namespace G9SuperNetCoreServer.AbstractServer
 
                     // Progress packet
                     _core.CommandHandler.G9CallHandler(receivePacket, _core.GetAccountBySessionId(sessionId));
-
-                    // Send call back
-                    Send(handler, new ReadOnlySpan<byte>());
                 }
 
                 // Listen and get other packet
@@ -399,10 +397,10 @@ namespace G9SuperNetCoreServer.AbstractServer
             var packets = dataForSend.GetPacketsArray();
 
             // Get socket by session id
-            var socket =_core.GetSocketBySessionId(sessionId);
+            var socket = _core.GetSocketBySessionId(sessionId);
 
             // Set send data
-            int sendBytes = 0;
+            var sendBytes = 0;
 
             // Send total packets
             for (var i = 0; i < dataForSend.TotalPackets; i++)
@@ -435,7 +433,7 @@ namespace G9SuperNetCoreServer.AbstractServer
             var socket = _core.GetSocketBySessionId(sessionId);
 
             // Set send data
-            int sendBytes = 0;
+            var sendBytes = 0;
 
             // Send total packets
             for (var i = 0; i < dataForSend.TotalPackets; i++)

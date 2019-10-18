@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using G9Common.Abstract;
 using G9Common.CommandHandler;
+using G9Common.DefaultCommonCommand;
 using G9Common.Interface;
 using G9Common.JsonHelper;
 using G9Common.LogIdentity;
@@ -103,7 +104,11 @@ namespace G9SuperNetCoreClient.AbstractClient
 
             // Initialize account and session
             var session = new TSession();
-            session.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(new G9ClientSessionHandler(), -1, IPAddress.Any);
+            session.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(new G9ClientSessionHandler
+            {
+                SendCommandByName = SendCommandByName,
+                SendCommandByNameAsync = SendCommandByNameAsync
+            }, -1, IPAddress.Any);
             MainAccount = new TAccount();
             MainAccount.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(new G9ClientAccountHandler(), session);
 
@@ -115,7 +120,8 @@ namespace G9SuperNetCoreClient.AbstractClient
                 Configuration.EncodingAndDecoding, _logging);
 
             // Initialize state object
-            _stateObject = new G9SuperNetCoreStateObjectClient(_packetManagement.MaximumPacketSize, MainAccount.Session.SessionId);
+            _stateObject =
+                new G9SuperNetCoreStateObjectClient(_packetManagement.MaximumPacketSize, MainAccount.Session.SessionId);
 
             // Set log
             if (_logging.LogIsActive(LogsType.EVENT))
@@ -129,6 +135,9 @@ namespace G9SuperNetCoreClient.AbstractClient
             // G9 Echo Command
             _commandHandler.AddCustomCommand<string>(G9EchoCommand.G9CommandName, G9EchoCommand.ReceiveHandler,
                 G9EchoCommand.ErrorHandler);
+            // G9 Test Send Receive
+            _commandHandler.AddCustomCommand<string>(G9TestSendReceive.G9CommandName, G9TestSendReceive.ReceiveHandler,
+                G9TestSendReceive.ErrorHandler);
         }
 
         #endregion
@@ -278,7 +287,7 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         #region Send
 
-        private void Send(Socket clientSocket, ReadOnlySpan<byte> data)
+        private int Send(Socket clientSocket, ReadOnlySpan<byte> data)
         {
             // Begin sending the data to the remote device.  
             clientSocket.BeginSend(data.ToArray(), 0, data.Length, 0,
@@ -288,6 +297,8 @@ namespace G9SuperNetCoreClient.AbstractClient
             if (_logging.LogIsActive(LogsType.EVENT))
                 _logging.LogEvent($"{LogMessage.RequestSendData}\n{LogMessage.DataLength}: {data.Length}",
                     $"{G9LogIdentity.CLIENT_SEND_DATA}", LogMessage.SuccessfulOperation);
+
+            return data.Length;
         }
 
         #endregion
@@ -434,7 +445,7 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         #region SendCommandByName
 
-        public bool SendCommandByName(string name, object data)
+        public int SendCommandByName(string name, object data)
         {
             // Ready data for send
             var dataForSend = ReadyDataForSend(name, data);
@@ -442,15 +453,58 @@ namespace G9SuperNetCoreClient.AbstractClient
             // Get total packets
             var packets = dataForSend.GetPacketsArray();
 
+            // Set send data
+            var sendBytes = 0;
+
             // Send total packets
             for (var i = 0; i < dataForSend.TotalPackets; i++)
                 // Try to send
-                Send(_clientSocket, packets[i]);
+                sendBytes = Send(_clientSocket, packets[i]);
 
-            return true;
+            return sendBytes;
         }
 
         #endregion
+
+        /// <summary>
+        ///     Send async command request by name
+        /// </summary>
+        /// <param name="name">Name of command</param>
+        /// <param name="data">Data for send</param>
+        /// <returns>Return => Task int specify byte to send. if don't send return 0</returns>
+
+        #region SendCommandByNameAsync
+
+        public async Task<int> SendCommandByNameAsync(string name, object data)
+        {
+            // Ready data for send
+            var dataForSend = ReadyDataForSend(name, data);
+
+            // Get total packets
+            var packets = dataForSend.GetPacketsArray();
+
+            // Set send data
+            var sendBytes = 0;
+
+            // Send total packets
+            for (var i = 0; i < dataForSend.TotalPackets; i++)
+                // Try to send
+                sendBytes = Send(_clientSocket, packets[i]);
+
+            return sendBytes;
+        }
+
+        #endregion
+
+        private int SendCommandByName(long sessionId, string name, object data)
+        {
+            return SendCommandByName(name, data);
+        }
+
+        private async Task<int> SendCommandByNameAsync(long sessionId, string name, object data)
+        {
+            return await SendCommandByNameAsync(name, data);
+        }
 
         #endregion
     }
