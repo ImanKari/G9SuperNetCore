@@ -1,4 +1,5 @@
-﻿using G9Common.Enums;
+﻿using System;
+using G9Common.Enums;
 
 namespace G9Common.Abstract
 {
@@ -9,10 +10,6 @@ namespace G9Common.Abstract
         /// </summary>
         public abstract ASession SessionSendCommand { get; }
 
-        /// <summary>
-        ///     Call when session close
-        /// </summary>
-        /// <param name="reason">Get reason of close</param>
-        public abstract void OnSessionClose(CloseReason reason);
+        
     }
 }

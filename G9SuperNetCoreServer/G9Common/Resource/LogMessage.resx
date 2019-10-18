@@ -139,7 +139,7 @@
     <value>دلیل بسته شدن</value>
   </data>
   <data name="Command" xml:space="preserve">
-    <value>فرمان</value>
+    <value>کامند</value>
   </data>
   <data name="CommandLengthError" xml:space="preserve">
     <value>طول (تعداد کاراکتر ها) کامند وارد شده از مقدار مجاز بیشتر است</value>
@@ -260,5 +260,29 @@
   </data>
   <data name="RunningCommand" xml:space="preserve">
     <value>کامند در حال اجرا</value>
+  </data>
+  <data name="CantStopStoppedServer" xml:space="preserve">
+    <value>سرور متوقف است، نمی توانید آن را مجددا متوقف کنید.</value>
+  </data>
+  <data name="CommandName" xml:space="preserve">
+    <value>نام کامند</value>
+  </data>
+  <data name="FailSendComandByName" xml:space="preserve">
+    <value>روند ارسال کامند همگام Sync با استفاده از نام با مشکل مواجه شده است</value>
+  </data>
+  <data name="FailSendComandByNameAsync" xml:space="preserve">
+    <value>روند ارسال کامند ناهمگام Async با استفاده از نام با مشکل مواجه شده است</value>
+  </data>
+  <data name="FailStopServer" xml:space="preserve">
+    <value>در روند توقف سرور مشکلی ایجاد شده است</value>
+  </data>
+  <data name="ReceivedUnhandledCommand" xml:space="preserve">
+    <value>یک کامند مدیریت نشده دریافت شده است</value>
+  </data>
+  <data name="StopServer" xml:space="preserve">
+    <value>توقف سرور</value>
+  </data>
+  <data name="UnhandledCommand" xml:space="preserve">
+    <value>کامند مدیریت نشده</value>
   </data>
 </root>

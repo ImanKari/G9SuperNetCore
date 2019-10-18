@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
@@ -9,10 +10,12 @@ using G9Common.DefaultCommonCommand;
 using G9Common.HelperClass;
 using G9Common.Interface;
 using G9Common.LogIdentity;
+using G9Common.Packet;
 using G9Common.Resource;
 using G9LogManagement.Enums;
 using G9SuperNetCoreServer.Abstarct;
 using G9SuperNetCoreServer.Config;
+using G9SuperNetCoreServer.Enums;
 using G9SuperNetCoreServer.HelperClass;
 using G9SuperNetCoreServer.Logging;
 using G9SuperNetCoreServer.ServerDefaultCommand;
@@ -94,13 +97,15 @@ namespace G9SuperNetCoreServer.Core
         /// <param name="commandAssembly">Specified command assembly (find command in specified assembly)</param>
         /// <param name="sendCommandByName">Specify func send command by name</param>
         /// <param name="sendCommandByNameAsync">Specify func send command by name async</param>
+        /// <param name="onUnhandledCommand">Specified event on unhandled command</param>
         /// <param name="customLogging">Specified custom logging system</param>
 
         #region G9Core
 
         public G9Core(G9ServerConfig superNetCoreConfig, Assembly commandAssembly,
             Func<long, string, object, int> sendCommandByName,
-            Func<long, string, object, Task<int>> sendCommandByNameAsync, IG9Logging customLogging = null)
+            Func<long, string, object, Task<int>> sendCommandByNameAsync,
+            Action<G9SendAndReceivePacket, TAccount> onUnhandledCommand, IG9Logging customLogging = null)
         {
             // Set logging system
             Logging = customLogging ?? new G9LoggingServer();
@@ -113,7 +118,8 @@ namespace G9SuperNetCoreServer.Core
             Configuration = superNetCoreConfig;
 
             // Initialize command handler
-            CommandHandler = new G9CommandHandler<TAccount>(commandAssembly, Logging, Configuration.CommandSize);
+            CommandHandler = new G9CommandHandler<TAccount>(commandAssembly, Logging, Configuration.CommandSize,
+                onUnhandledCommand);
 
             // ######################## Add default command ########################
             // G9 Echo Command
@@ -136,7 +142,7 @@ namespace G9SuperNetCoreServer.Core
 
         #region TryAcceptConnection
 
-        public (bool, long) TryAcceptConnection(Socket connectionSocket)
+        public (bool, TAccount) TryAcceptConnection(Socket connectionSocket)
         {
             if (_maximumConnectionCounter >= Configuration.MaxConnectionNumber)
             {
@@ -152,7 +158,7 @@ namespace G9SuperNetCoreServer.Core
                 connectionSocket.Disconnect(false);
                 connectionSocket.Close();
                 connectionSocket.Dispose();
-                return (false, -1);
+                return (false, null);
             }
 
             var newAccount = CreateAccountByAcceptedSocket(connectionSocket);
@@ -163,12 +169,12 @@ namespace G9SuperNetCoreServer.Core
                     Logging.LogInformation(LogMessage.AccountAndSessionCreated, G9LogIdentity.CREATE_NEW_ACCOUNT,
                         LogMessage.CreateNewAccount);
                 // Try add account to collection
-                if (_accountCollection.TryAdd(_sessionIdentityCounter, newAccount))
+                if (_accountCollection.TryAdd(_sessionIdentityCounter++, newAccount))
                 {
                     if (Logging.LogIsActive(LogsType.INFO))
                         Logging.LogInformation(LogMessage.SuccessAccountAdded, G9LogIdentity.CREATE_NEW_ACCOUNT,
                             LogMessage.CreateNewAccount);
-                    return (true, _sessionIdentityCounter++);
+                    return (true, newAccount);
                 }
 
                 if (Logging.LogIsActive(LogsType.ERROR))
@@ -182,7 +188,7 @@ namespace G9SuperNetCoreServer.Core
                 connectionSocket.Disconnect(false);
                 connectionSocket.Close();
                 connectionSocket.Dispose();
-                return (false, -1);
+                return (false, null);
             }
 
             // TODO: فرمت ارسال باید برای کامند مناسب درست بشه
@@ -191,7 +197,76 @@ namespace G9SuperNetCoreServer.Core
             connectionSocket.Disconnect(false);
             connectionSocket.Close();
             connectionSocket.Dispose();
-            return (false, -1);
+            return (false, null);
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Disconnect session handler
+        ///     remove from collections
+        /// </summary>
+        /// <param name="account">Specified account</param>
+        /// <param name="disconnectReason">Specify disconnect reason</param>
+
+        #region DisconnectSocketHandler
+
+        public void DisconnectSocketHandler(TAccount account, DisconnectReason disconnectReason)
+        {
+            // Remove from collections
+            _accountCollection.TryRemove(account.Session.SessionId, out var accountConnection);
+            _socketCollection.TryRemove(account.Session.SessionId, out var connectionSocket);
+
+            // Run on session closed in account
+            try
+            {
+                accountConnection?.OnSessionClosed(disconnectReason);
+            }
+            catch
+            {
+                // Ignore
+            }
+
+            // Dispose and remove
+            connectionSocket.Dispose();
+            connectionSocket = null;
+            accountConnection = null;
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Clear all socket and account
+        ///     clear all collections
+        /// </summary>
+        /// <param name="disconnectReason">Specify disconnect reason</param>
+
+        #region ClearAllSocketsAndAccounts
+
+        public void ClearAllSocketsAndAccounts(DisconnectReason disconnectReason)
+        {
+            // Remove from collections
+            foreach (var aServerAccount in _accountCollection)
+            {
+                // Run on session closed in account
+                try
+                {
+                    aServerAccount.Value?.OnSessionClosed(disconnectReason);
+                }
+                catch
+                {
+                    // Ignore
+                }
+            }
+
+            foreach (var socket in _socketCollection)
+            {
+                socket.Value?.Dispose();
+            }
+
+            // Remove all
+            _accountCollection.Clear();
+            _socketCollection.Clear();
         }
 
         #endregion
@@ -213,7 +288,7 @@ namespace G9SuperNetCoreServer.Core
 
                 // Instance session and pass requirement to constructor
                 var session = new TSession();
-                session.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(new G9ServerSessionHandler()
+                session.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(new G9ServerSessionHandler
                     {
                         // Set send commands
                         SendCommandByName = _sendCommandByName,
@@ -225,9 +300,6 @@ namespace G9SuperNetCoreServer.Core
                 var newAccount = new TAccount();
                 newAccount.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(new G9ServerAccountHandler(),
                     session);
-
-                // Plus session identity
-                _sessionIdentityCounter++;
 
                 // return result
                 return newAccount;

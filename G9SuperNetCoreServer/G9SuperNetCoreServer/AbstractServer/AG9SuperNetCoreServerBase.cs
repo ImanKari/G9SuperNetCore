@@ -15,11 +15,12 @@ using G9LogManagement.Enums;
 using G9SuperNetCoreServer.Abstarct;
 using G9SuperNetCoreServer.Config;
 using G9SuperNetCoreServer.Core;
+using G9SuperNetCoreServer.Enums;
 using G9SuperNetCoreServer.HelperClass;
 
 namespace G9SuperNetCoreServer.AbstractServer
 {
-    public abstract class AG9SuperNetCoreServerBase<TAccount, TSession>
+    public abstract partial class AG9SuperNetCoreServerBase<TAccount, TSession>
         where TAccount : AServerAccount<TSession>, new()
         where TSession : AServerSession, new()
     {
@@ -45,6 +46,32 @@ namespace G9SuperNetCoreServer.AbstractServer
         /// </summary>
         private readonly G9PacketManagement _packetManagement;
 
+        #region Send And Receive Bytes
+
+        /// <summary>
+        ///     Save total send bytes
+        /// </summary>
+        private long _totalSendBytes;
+
+        /// <summary>
+        ///     Access to total send bytes
+        /// </summary>
+        // ReSharper disable once ConvertToAutoProperty
+        public long TotalSendBytes => _totalSendBytes;
+
+        /// <summary>
+        ///     Save total receive bytes
+        /// </summary>
+        private long _totalReceiveBytes;
+
+        /// <summary>
+        ///     Access to total receive bytes
+        /// </summary>
+        // ReSharper disable once ConvertToAutoProperty
+        public long TotalReceiveBytes => _totalReceiveBytes;
+
+        #endregion
+
         #endregion
 
         #region Methods
@@ -66,7 +93,7 @@ namespace G9SuperNetCoreServer.AbstractServer
         {
             // Initialize core
             _core = new G9Core<TAccount, TSession>(superNetCoreConfig, commandAssembly, SendCommandByName,
-                SendCommandByNameAsync, customLogging);
+                SendCommandByNameAsync, OnUnhandledCommandHandler, customLogging);
 
             // Initialize packet management
             _packetManagement = new G9PacketManagement(_core.Configuration.CommandSize, _core.Configuration.BodySize,
@@ -101,17 +128,21 @@ namespace G9SuperNetCoreServer.AbstractServer
                 var handler = listener.EndAccept(asyncResult);
 
                 // Try to accept connection
-                var (accept, sessionIdentity) = _core.TryAcceptConnection(handler);
+                var (accept, account) = _core.TryAcceptConnection(handler);
 
                 // Return if not accepted
                 if (!accept) return;
 
                 // Create the state object.  
-                var state = new G9SuperNetCoreStateObjectServer(_packetManagement.MaximumPacketSize, sessionIdentity)
+                var state = new G9SuperNetCoreStateObjectServer(_packetManagement.MaximumPacketSize,
+                    account.Session.SessionId)
                 {
                     WorkSocket = handler
                 };
                 sessionId = state.SessionIdentity;
+
+                // Run event on connected
+                OnConnectedHandler(account);
 
                 // Ready for begin receive
                 handler.BeginReceive(state.Buffer, 0, AG9SuperNetCoreStateObjectBase.BufferSize, 0,
@@ -129,6 +160,9 @@ namespace G9SuperNetCoreServer.AbstractServer
                     _core.Logging.LogException(ex,
                         $"{LogMessage.FailClinetConnection}\n{LogMessage.ClientSessionIdentity}: {(sessionId == -1 ? "NONE" : sessionId.ToString())}",
                         G9LogIdentity.SERVER_ACCEPT_CALLBACK, LogMessage.FailedOperation);
+
+                // Run event on connected error
+                OnErrorHandler(ex, ServerErrorReason.ClientConnectedError);
             }
         }
 
@@ -161,6 +195,9 @@ namespace G9SuperNetCoreServer.AbstractServer
                     // Use like span
                     ReadOnlySpan<byte> packet = state.Buffer;
 
+                    // Plus total receive
+                    _totalReceiveBytes += packet.Length;
+
                     // unpacking request
                     var receivePacket = _packetManagement.UnpackingRequestByData(packet);
 
@@ -189,10 +226,22 @@ namespace G9SuperNetCoreServer.AbstractServer
             }
             catch (Exception ex)
             {
-                if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
-                    _core.Logging.LogException(ex,
-                        $"{LogMessage.FailClinetConnection}\n{LogMessage.ClientSessionIdentity}: {(sessionId == -1 ? "NONE" : sessionId.ToString())}",
-                        G9LogIdentity.SERVER_RECEIVE_DATA, LogMessage.FailedOperation);
+                if (ex is SocketException exception && exception.ErrorCode == 10054)
+                {
+                    // Run event disconnect
+                    OnDisconnectedHandler(_core.GetAccountBySessionId(sessionId),
+                        DisconnectReason.DisconnectedFromClient);
+                }
+                else
+                {
+                    if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                        _core.Logging.LogException(ex,
+                            $"{LogMessage.FailClinetConnection}\n{LogMessage.ClientSessionIdentity}: {(sessionId == -1 ? "NONE" : sessionId.ToString())}",
+                            G9LogIdentity.SERVER_RECEIVE_DATA, LogMessage.FailedOperation);
+
+                    // Run event on connected error
+                    OnErrorHandler(ex, ServerErrorReason.ErrorReceiveDataFromClient);
+                }
             }
         }
 
@@ -238,20 +287,23 @@ namespace G9SuperNetCoreServer.AbstractServer
                 // Complete sending the data to the remote device.  
                 var bytesSent = handler.EndSend(asyncResult);
 
+                // Plus total send
+                _totalSendBytes += bytesSent;
+
                 // Set log
                 if (_core.Logging.LogIsActive(LogsType.INFO))
                     _core.Logging.LogInformation(
                         $"{LogMessage.SuccessRequestSendData}\n{LogMessage.DataLength}: {bytesSent}",
                         G9LogIdentity.SERVER_SEND_DATA, LogMessage.SuccessfulOperation);
-
-                //handler.Shutdown(SocketShutdown.Send);
-                //handler.Close();
             }
             catch (Exception ex)
             {
                 if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
                     _core.Logging.LogException(ex, LogMessage.FailRequestSendData, G9LogIdentity.SERVER_SEND_DATA,
                         LogMessage.FailedOperation);
+
+                // Run event on connected error
+                OnErrorHandler(ex, ServerErrorReason.ErrorSendDataToClient);
             }
         }
 
@@ -268,7 +320,7 @@ namespace G9SuperNetCoreServer.AbstractServer
 
         #region Start
 
-        public void Start()
+        public async Task Start()
         {
             // Set log
             if (_core.Logging.LogIsActive(LogsType.EVENT))
@@ -276,7 +328,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                     LogMessage.SuccessfulOperation);
 
             // Run task
-            Task.Run(() =>
+            await Task.Run(() =>
             {
                 // Establish the local endpoint for the socket.  
                 var localEndPoint = new IPEndPoint(_core.Configuration.IpAddress, _core.Configuration.PortNumber);
@@ -297,6 +349,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                     if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
                         _core.Logging.LogException(ex, LogMessage.ProblemCreateServerSocket,
                             G9LogIdentity.CREATE_LISTENER, LogMessage.FailedOperation);
+                    OnErrorHandler(ex, ServerErrorReason.ErrorInStartServer);
                     return;
                 }
 
@@ -316,12 +369,16 @@ namespace G9SuperNetCoreServer.AbstractServer
                     if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
                         _core.Logging.LogException(ex, LogMessage.FailBindAndListenSocket, G9LogIdentity.BIND_LISTENER,
                             LogMessage.FailedOperation);
+                    OnErrorHandler(ex, ServerErrorReason.ErrorInStartServer);
                     return;
                 }
 
+                // Set on start requirement
+                OnStartHandler();
+
                 // Bind the socket to the local endpoint and listen for incoming connections.  
                 // Infinity loop for binding connection
-                while (true)
+                while (IsStarted)
                     try
                     {
                         // Set the event to nonsignaled state.  
@@ -345,7 +402,65 @@ namespace G9SuperNetCoreServer.AbstractServer
                         if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
                             _core.Logging.LogException(ex, LogMessage.FailtOnWaitForConnection,
                                 G9LogIdentity.WAIT_LISTENER, LogMessage.FailedOperation);
+                        OnErrorHandler(ex, ServerErrorReason.ClientConnectedError);
                     }
+            });
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Stop server
+        ///     Releases all resources used by server
+        /// </summary>
+
+        #region Stop
+
+        public async Task<bool> Stop()
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    if (_mainSocketListener is null)
+                    {
+                        // Set log
+                        if (_core.Logging.LogIsActive(LogsType.ERROR))
+                            _core.Logging.LogError(LogMessage.CantStopStoppedServer,
+                                G9LogIdentity.STOP_SERVER, LogMessage.FailedOperation);
+                        // Run event
+                        OnErrorHandler(new Exception(LogMessage.CantStopStoppedServer),
+                            ServerErrorReason.ServerIsStoppedAndReceiveRequestForStop);
+                        return false;
+                    }
+
+                    // Run event stop
+                    OnStopHandler(ServerStopReason.StopWithOperator);
+
+                    _core.ScrollingAllSocket(s => { s.Dispose(); });
+
+                    // Close, Disconnect and dispose
+                    _mainSocketListener.Dispose();
+                    _mainSocketListener = null;
+
+                    // Set log
+                    if (_core.Logging.LogIsActive(LogsType.EVENT))
+                        _core.Logging.LogEvent(LogMessage.StopServer, G9LogIdentity.STOP_SERVER,
+                            LogMessage.SuccessfulOperation);
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    // Set log
+                    if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                        _core.Logging.LogException(ex, LogMessage.FailStopServer,
+                            G9LogIdentity.STOP_SERVER, LogMessage.FailedOperation);
+                    // Run event
+                    OnErrorHandler(ex, ServerErrorReason.ErrorInStopServer);
+
+                    return false;
+                }
             });
         }
 
@@ -390,22 +505,32 @@ namespace G9SuperNetCoreServer.AbstractServer
 
         public int SendCommandByName(long sessionId, string name, object data)
         {
-            // Ready data for send
-            var dataForSend = ReadyDataForSend(name, data);
-
-            // Get total packets
-            var packets = dataForSend.GetPacketsArray();
-
-            // Get socket by session id
-            var socket = _core.GetSocketBySessionId(sessionId);
-
             // Set send data
             var sendBytes = 0;
+            try
+            {
+                // Ready data for send
+                var dataForSend = ReadyDataForSend(name, data);
 
-            // Send total packets
-            for (var i = 0; i < dataForSend.TotalPackets; i++)
-                //Try to send
-                sendBytes += socket.Send(packets[i]);
+                // Get total packets
+                var packets = dataForSend.GetPacketsArray();
+
+                // Get socket by session id
+                var socket = _core.GetSocketBySessionId(sessionId);
+
+                // Send total packets
+                for (var i = 0; i < dataForSend.TotalPackets; i++)
+                    //Try to send
+                    sendBytes += socket.Send(packets[i]);
+            }
+            catch (Exception ex)
+            {
+                if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                    _core.Logging.LogException(ex, LogMessage.FailSendComandByName,
+                        G9LogIdentity.SERVER_SEND_DATA, LogMessage.FailedOperation);
+                OnErrorHandler(ex, ServerErrorReason.ErrorReadyToSendDataToClient);
+            }
+
             return sendBytes;
         }
 
@@ -423,24 +548,33 @@ namespace G9SuperNetCoreServer.AbstractServer
 
         public async Task<int> SendCommandByNameAsync(long sessionId, string name, object data)
         {
-            // Ready data for send
-            var dataForSend = ReadyDataForSend(name, data);
-
-            // Get total packets
-            var packets = dataForSend.GetPacketsArray();
-
-            // Get socket by session id
-            var socket = _core.GetSocketBySessionId(sessionId);
-
             // Set send data
             var sendBytes = 0;
 
-            // Send total packets
-            for (var i = 0; i < dataForSend.TotalPackets; i++)
-                // Try to send
-                sendBytes += await socket.SendAsync(new ArraySegment<byte>(packets[i]), SocketFlags.None);
+            try
+            {
+                // Ready data for send
+                var dataForSend = ReadyDataForSend(name, data);
 
-            // if don't send
+                // Get total packets
+                var packets = dataForSend.GetPacketsArray();
+
+                // Get socket by session id
+                var socket = _core.GetSocketBySessionId(sessionId);
+
+                // Send total packets
+                for (var i = 0; i < dataForSend.TotalPackets; i++)
+                    // Try to send
+                    sendBytes += await socket.SendAsync(new ArraySegment<byte>(packets[i]), SocketFlags.None);
+            }
+            catch (Exception ex)
+            {
+                if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                    _core.Logging.LogException(ex, LogMessage.FailSendComandByNameAsync,
+                        G9LogIdentity.SERVER_SEND_DATA, LogMessage.FailedOperation);
+                OnErrorHandler(ex, ServerErrorReason.ErrorReadyToSendDataToClient);
+            }
+
             return sendBytes;
         }
 

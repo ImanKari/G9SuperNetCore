@@ -24,22 +24,6 @@ namespace G9Common.CommandHandler
     public class G9CommandHandler<TAccount>
         where TAccount : AAccount, new()
     {
-        #region Events And Delegates
-
-        /// <summary>
-        ///     Delegate for Unhandled commands
-        /// </summary>
-        /// <param name="callServiceDataType">Receive data</param>
-        /// <param name="account">account send command</param>
-        public delegate string Unhandled(G9SendAndReceivePacket callServiceDataType, TAccount account);
-
-        /// <summary>
-        ///     Event used for unhandled command
-        ///     Call when command not exists
-        /// </summary>
-        public event Unhandled UnhandledCommand;
-
-        #endregion
 
         #region Fields And Properties
 
@@ -68,6 +52,11 @@ namespace G9Common.CommandHandler
         /// </summary>
         public readonly int _commandSize;
 
+        /// <summary>
+        ///     Save event on unhandled command
+        /// </summary>
+        private Action<G9SendAndReceivePacket, TAccount> _onUnhandledCommand;
+
         #endregion
 
         #region Methods
@@ -83,20 +72,28 @@ namespace G9Common.CommandHandler
         ///     Example: if set "n" length is "n*16" => if set 1 length is 16 then maximum command name length is 16 byte or
         ///     character
         /// </param>
+        /// <param name="onUnhandledCommand">Specified event on unhandled command</param>
 
         #region G9CommandHandler
 
-        public G9CommandHandler(Assembly commandAssembly, IG9Logging logging, int oCommandSize)
+        public G9CommandHandler(Assembly commandAssembly, IG9Logging logging, int oCommandSize, Action<G9SendAndReceivePacket, TAccount> onUnhandledCommand)
         {
             // Set assembly of commands
             _commandAssembly = commandAssembly ?? throw new ArgumentNullException(nameof(commandAssembly));
+
             // Set command size
             _commandSize = oCommandSize * 16;
+
             // Set logging
             _logging = logging;
+
+            // Set on unhandled command
+            _onUnhandledCommand = onUnhandledCommand;
+
             // Initialize collection
             _accessToCommandDataTypeCollection = new SortedDictionary<string, CommandDataType<TAccount>>();
             _instanceCommandCollection = new SortedDictionary<string, object>();
+
             // Initialize all command
             InitializeAllCommand();
         }
@@ -125,7 +122,7 @@ namespace G9Common.CommandHandler
 
                     if (!_accessToCommandDataTypeCollection.ContainsKey(request.Command))
                     {
-                        UnhandledCommand?.Invoke(request, account);
+                        _onUnhandledCommand?.Invoke(request, account);
                         return;
                     }
 
@@ -137,7 +134,7 @@ namespace G9Common.CommandHandler
                     // Set log
                     if (_logging.LogIsActive(LogsType.EVENT))
                         _logging.LogEvent(
-                            $"{LogMessage.RunningCommand}: {request.Command}", G9LogIdentity.SERVER_RUNNING_COMMAND,
+                            $"{LogMessage.RunningCommand}: {request.Command}", G9LogIdentity.RUNNING_COMMAND,
                             LogMessage.SuccessfulOperation);
 
                     // Execute command with information
@@ -148,7 +145,7 @@ namespace G9Common.CommandHandler
                     // Add to log exception
                     if (_logging.LogIsActive(LogsType.EXCEPTION))
                         _logging.LogException(ex, LogMessage.ErrorInRunningCommand,
-                            G9LogIdentity.SERVER_RUNNING_COMMAND, LogMessage.FailedOperation);
+                            G9LogIdentity.RUNNING_COMMAND, LogMessage.FailedOperation);
 
                     // If not null call OnError in this command
                     command?.AccessToMethodOnErrorInCommand?.Invoke(ex, account);

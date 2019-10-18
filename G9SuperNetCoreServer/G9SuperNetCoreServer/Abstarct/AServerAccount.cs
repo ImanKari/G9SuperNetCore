@@ -1,6 +1,5 @@
-﻿using System;
-using G9Common.Abstract;
-using G9Common.Enums;
+﻿using G9Common.Abstract;
+using G9SuperNetCoreServer.Enums;
 using G9SuperNetCoreServer.HelperClass;
 
 namespace G9SuperNetCoreServer.Abstarct
@@ -19,7 +18,7 @@ namespace G9SuperNetCoreServer.Abstarct
         public TSession Session { private set; get; }
 
         /// <summary>
-        /// Access to handler
+        ///     Access to handler
         /// </summary>
         private G9ServerAccountHandler _handler;
 
@@ -43,6 +42,17 @@ namespace G9SuperNetCoreServer.Abstarct
             // Set session
             Session = oSession;
         }
+
+        #endregion
+
+        /// <summary>
+        ///     Call when session close
+        /// </summary>
+        /// <param name="reason">Get reason of close</param>
+
+        #region OnSessionClosed
+
+        public abstract void OnSessionClosed(DisconnectReason reason);
 
         #endregion
 

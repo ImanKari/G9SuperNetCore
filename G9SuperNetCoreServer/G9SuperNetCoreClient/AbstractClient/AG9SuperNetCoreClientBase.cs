@@ -17,12 +17,13 @@ using G9LogManagement.Enums;
 using G9SuperNetCoreClient.Abstract;
 using G9SuperNetCoreClient.ClientDefaultCommand;
 using G9SuperNetCoreClient.Config;
+using G9SuperNetCoreClient.Enums;
 using G9SuperNetCoreClient.Helper;
 using G9SuperNetCoreClient.Logging;
 
 namespace G9SuperNetCoreClient.AbstractClient
 {
-    public abstract class AG9SuperNetCoreClientBase<TAccount, TSession>
+    public abstract partial class AG9SuperNetCoreClientBase<TAccount, TSession>
         where TAccount : AClientAccount<TSession>, new()
         where TSession : AClientSession, new()
     {
@@ -68,7 +69,6 @@ namespace G9SuperNetCoreClient.AbstractClient
         /// </summary>
         private readonly ManualResetEvent _sendDone = new ManualResetEvent(false);
 
-
         /// <summary>
         ///     Access to command handler
         /// </summary>
@@ -78,6 +78,32 @@ namespace G9SuperNetCoreClient.AbstractClient
         ///     Access to main account
         /// </summary>
         public readonly TAccount MainAccount;
+
+        #region Send And Receive Bytes
+
+        /// <summary>
+        ///     Save total send bytes
+        /// </summary>
+        private long _totalSendBytes;
+
+        /// <summary>
+        ///     Access to total send bytes
+        /// </summary>
+        // ReSharper disable once ConvertToAutoProperty
+        public long TotalSendBytes => _totalSendBytes;
+
+        /// <summary>
+        ///     Save total receive bytes
+        /// </summary>
+        private long _totalReceiveBytes;
+
+        /// <summary>
+        ///     Access to total receive bytes
+        /// </summary>
+        // ReSharper disable once ConvertToAutoProperty
+        public long TotalReceiveBytes => _totalReceiveBytes;
+
+        #endregion
 
         #endregion
 
@@ -129,7 +155,8 @@ namespace G9SuperNetCoreClient.AbstractClient
                     LogMessage.SuccessfulOperation);
 
             // Initialize command handler
-            _commandHandler = new G9CommandHandler<TAccount>(commandAssembly, _logging, Configuration.CommandSize);
+            _commandHandler = new G9CommandHandler<TAccount>(commandAssembly, _logging, Configuration.CommandSize,
+                OnUnhandledCommandHandler);
 
             // ######################## Add default command ########################
             // G9 Echo Command
@@ -172,6 +199,9 @@ namespace G9SuperNetCoreClient.AbstractClient
                         G9LogIdentity.CLIENT_CONNECTED, LogMessage.SuccessfulOperation);
                 }
 
+                // Run event on connected
+                OnConnectedHandler(MainAccount);
+
                 // Listen for receive
                 Receive(_clientSocket);
             }
@@ -180,6 +210,8 @@ namespace G9SuperNetCoreClient.AbstractClient
                 if (_logging.LogIsActive(LogsType.EXCEPTION))
                     _logging.LogException(ex, LogMessage.FailClinetConnection, G9LogIdentity.CLIENT_CONNECTED,
                         LogMessage.FailedOperation);
+                // Run event on connected error
+                OnErrorHandler(ex, ClientErrorReason.ClientConnectedError);
             }
         }
 
@@ -213,6 +245,8 @@ namespace G9SuperNetCoreClient.AbstractClient
                 if (_logging.LogIsActive(LogsType.EXCEPTION))
                     _logging.LogException(e, LogMessage.FailClientReceive, G9LogIdentity.CLIENT_RECEIVE,
                         LogMessage.FailedOperation);
+
+                OnErrorHandler(e, ClientErrorReason.ErrorInReceiveData);
             }
         }
 
@@ -246,6 +280,9 @@ namespace G9SuperNetCoreClient.AbstractClient
                     // Use like span
                     ReadOnlySpan<byte> packet = _stateObject.Buffer;
 
+                    // Plus receive bytes
+                    _totalReceiveBytes += packet.Length;
+
                     // unpacking request
                     var receivePacket = _packetManagement.UnpackingRequestByData(packet);
 
@@ -270,9 +307,23 @@ namespace G9SuperNetCoreClient.AbstractClient
                 client.BeginReceive(_stateObject.Buffer, 0, AG9SuperNetCoreStateObjectBase.BufferSize, 0,
                     ReceiveCallback, _stateObject);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e.ToString());
+
+                if (ex is SocketException exception && exception.ErrorCode == 10054)
+                {
+                    // Run event disconnect
+                    OnDisconnectedHandler(MainAccount, DisconnectReason.DisconnectedFromServer);
+                }
+                else
+                {
+
+                    if (_logging.LogIsActive(LogsType.EXCEPTION))
+                        _logging.LogException(ex, LogMessage.FailClientReceive, G9LogIdentity.CLIENT_RECEIVE,
+                            LogMessage.FailedOperation);
+
+                    OnErrorHandler(ex, ClientErrorReason.ErrorInReceiveData);
+                }
             }
         }
 
@@ -324,6 +375,9 @@ namespace G9SuperNetCoreClient.AbstractClient
                 // Signal that all bytes have been sent.  
                 _sendDone.Set();
 
+                // Plus send bytes
+                _totalSendBytes += bytesSent;
+
                 // Set log
                 if (_logging.LogIsActive(LogsType.INFO))
                     _logging.LogInformation(
@@ -335,6 +389,8 @@ namespace G9SuperNetCoreClient.AbstractClient
                 if (_logging.LogIsActive(LogsType.EXCEPTION))
                     _logging.LogException(ex, LogMessage.FailRequestSendData, G9LogIdentity.CLIENT_SEND_DATA,
                         LogMessage.FailedOperation);
+
+                OnErrorHandler(ex, ClientErrorReason.ErrorSendDataToServer);
             }
         }
 
@@ -375,11 +431,21 @@ namespace G9SuperNetCoreClient.AbstractClient
                         ConnectCallback, client);
                     _connectDone.WaitOne();
 
+                    // Run event on connected handler
+                    OnConnectedHandler(MainAccount);
+
                     return true;
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.ToString());
+                    // Set log
+                    if (_logging.LogIsActive(LogsType.EXCEPTION))
+                        _logging.LogException(e, LogMessage.FailClinetConnection, G9LogIdentity.START_CLIENT_CONNECTION,
+                            LogMessage.FailedOperation);
+
+                    // Run Event on error
+                    OnErrorHandler(e, ClientErrorReason.ClientConnectedError);
+
                     return false;
                 }
             });
@@ -387,24 +453,59 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         #endregion
 
-        #region SendSynchronize
+        /// <summary>
+        ///     Disconnect from server
+        ///     Initialize client and try to connect server
+        /// </summary>
 
-        protected void SendSynchronize(ReadOnlySpan<byte> message)
+        #region Disconnect
+
+        public async Task<bool> Disconnect()
         {
-            _sendDone.Reset();
-            Send(_clientSocket, message);
-            _sendDone.WaitOne();
-        }
+            return await Task.Run(() =>
+            {
+                // Connect to a remote device.  
+                try
+                {
+                    if (_clientSocket is null)
+                    {
+                        // Set log
+                        if (_logging.LogIsActive(LogsType.ERROR))
+                            _logging.LogError(LogMessage.CantStopStoppedServer,
+                                G9LogIdentity.STOP_SERVER, LogMessage.FailedOperation);
+                        // Run event
+                        OnErrorHandler(new Exception(LogMessage.CantStopStoppedServer),
+                            ClientErrorReason.ClientDisconnectedAndReceiveRequestForDisconnect);
+                        return false;
+                    }
 
-        #endregion
+                    // Close, Disconnect and dispose
+                    _clientSocket.Dispose();
+                    _clientSocket = null;
 
-        #region SendASynchronize
+                    // Set log
+                    if (_logging.LogIsActive(LogsType.EVENT))
+                        _logging.LogEvent(LogMessage.StopServer, G9LogIdentity.STOP_SERVER,
+                            LogMessage.SuccessfulOperation);
+                    
+                    // Run event on disconnect
+                    OnDisconnectedHandler(MainAccount, DisconnectReason.DisconnectedByProgram);
 
-        protected void SendASynchronize(ReadOnlySpan<byte> message)
-        {
-            _sendDone.Reset();
-            Send(_clientSocket, message);
-            _sendDone.WaitOne();
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    // Set log
+                    if (_logging.LogIsActive(LogsType.EXCEPTION))
+                        _logging.LogException(e, LogMessage.FailClinetConnection, G9LogIdentity.START_CLIENT_CONNECTION,
+                            LogMessage.FailedOperation);
+
+                    // Run Event on error
+                    OnErrorHandler(e, ClientErrorReason.ClientConnectedError);
+
+                    return false;
+                }
+            });
         }
 
         #endregion
@@ -447,19 +548,31 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         public int SendCommandByName(string name, object data)
         {
-            // Ready data for send
-            var dataForSend = ReadyDataForSend(name, data);
-
-            // Get total packets
-            var packets = dataForSend.GetPacketsArray();
-
             // Set send data
             var sendBytes = 0;
+            try
+            {
+                // Ready data for send
+                var dataForSend = ReadyDataForSend(name, data);
 
-            // Send total packets
-            for (var i = 0; i < dataForSend.TotalPackets; i++)
-                // Try to send
-                sendBytes = Send(_clientSocket, packets[i]);
+                // Get total packets
+                var packets = dataForSend.GetPacketsArray();
+
+                // Send total packets
+                for (var i = 0; i < dataForSend.TotalPackets; i++)
+                    // Try to send
+                    sendBytes = Send(_clientSocket, packets[i]);
+            }
+            catch (Exception ex)
+            {
+                // Set log
+                if (_logging.LogIsActive(LogsType.EXCEPTION))
+                    _logging.LogException(ex, LogMessage.FailSendComandByName,
+                        G9LogIdentity.CLIENT_SEND_DATA, LogMessage.FailedOperation);
+
+                // Run event on error
+                OnErrorHandler(ex, ClientErrorReason.ErrorReadyToSendDataToServer);
+            }
 
             return sendBytes;
         }
@@ -477,24 +590,41 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         public async Task<int> SendCommandByNameAsync(string name, object data)
         {
-            // Ready data for send
-            var dataForSend = ReadyDataForSend(name, data);
+            return await Task.Run(() =>
+            {
+                // Set send data
+                var sendBytes = 0;
+                try
+                {
+                    // Ready data for send
+                    var dataForSend = ReadyDataForSend(name, data);
 
-            // Get total packets
-            var packets = dataForSend.GetPacketsArray();
+                    // Get total packets
+                    var packets = dataForSend.GetPacketsArray();
 
-            // Set send data
-            var sendBytes = 0;
+                    // Send total packets
+                    for (var i = 0; i < dataForSend.TotalPackets; i++)
+                        // Try to send
+                        sendBytes = Send(_clientSocket, packets[i]);
+                }
+                catch (Exception ex)
+                {
+                    // Set log
+                    if (_logging.LogIsActive(LogsType.EXCEPTION))
+                        _logging.LogException(ex, LogMessage.FailSendComandByNameAsync,
+                            G9LogIdentity.CLIENT_SEND_DATA, LogMessage.FailedOperation);
 
-            // Send total packets
-            for (var i = 0; i < dataForSend.TotalPackets; i++)
-                // Try to send
-                sendBytes = Send(_clientSocket, packets[i]);
+                    // Run event on error
+                    OnErrorHandler(ex, ClientErrorReason.ErrorReadyToSendDataToServer);
+                }
 
-            return sendBytes;
+                return sendBytes;
+            });
         }
 
         #endregion
+
+        #region Helper Class For Send
 
         private int SendCommandByName(long sessionId, string name, object data)
         {
@@ -507,7 +637,9 @@ namespace G9SuperNetCoreClient.AbstractClient
         }
 
         #endregion
-    }
 
-    #endregion
+        #endregion
+
+        #endregion
+    }
 }

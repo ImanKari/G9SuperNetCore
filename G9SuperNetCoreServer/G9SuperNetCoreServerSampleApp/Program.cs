@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Reflection;
+using System.Threading.Tasks;
 using G9Common.Enums;
 using G9SuperNetCoreServer;
 using G9SuperNetCoreServer.Config;
@@ -10,7 +11,7 @@ namespace G9SuperNetCoreServerSampleApp
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(
@@ -43,7 +44,12 @@ namespace G9SuperNetCoreServerSampleApp
                         server.SendCommandToAllByName("G9EchoCommand", $"Server send a message {counter++}: {i}");
                     }
                 }
-                server.SendCommandToAllByName("G9EchoCommand", $"Server send a message {counter++}: {message}");
+                else if (message == "STOP")
+                {
+                    await server.Stop();
+                }
+                else
+                    server.SendCommandToAllByName("G9EchoCommand", $"Server send a message {counter++}: {message}");
             }
 
             Console.WriteLine("Press any key to exist.");

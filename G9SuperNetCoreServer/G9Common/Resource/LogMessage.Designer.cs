@@ -115,6 +115,15 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to سرور متوقف است، نمی توانید آن را مجددا متوقف کنید..
+        /// </summary>
+        public static string CantStopStoppedServer {
+            get {
+                return ResourceManager.GetString("CantStopStoppedServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to کد منحصر به فرد کلاینت.
         /// </summary>
         public static string ClientSessionIdentity {
@@ -133,7 +142,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to فرمان.
+        ///   Looks up a localized string similar to کامند.
         /// </summary>
         public static string Command {
             get {
@@ -147,6 +156,15 @@ namespace G9Common.Resource {
         public static string CommandLengthError {
             get {
                 return ResourceManager.GetString("CommandLengthError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to نام کامند.
+        /// </summary>
+        public static string CommandName {
+            get {
+                return ResourceManager.GetString("CommandName", resourceCulture);
             }
         }
         
@@ -259,6 +277,33 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to روند ارسال کامند همگام Sync با استفاده از نام با مشکل مواجه شده است.
+        /// </summary>
+        public static string FailSendComandByName {
+            get {
+                return ResourceManager.GetString("FailSendComandByName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to روند ارسال کامند ناهمگام Async با استفاده از نام با مشکل مواجه شده است.
+        /// </summary>
+        public static string FailSendComandByNameAsync {
+            get {
+                return ResourceManager.GetString("FailSendComandByNameAsync", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to در روند توقف سرور مشکلی ایجاد شده است.
+        /// </summary>
+        public static string FailStopServer {
+            get {
+                return ResourceManager.GetString("FailStopServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to در حالت انتظار برای اتصال کانکشن مشکلی ایجاد شده است.
         /// </summary>
         public static string FailtOnWaitForConnection {
@@ -358,6 +403,15 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to یک کامند مدیریت نشده دریافت شده است.
+        /// </summary>
+        public static string ReceivedUnhandledCommand {
+            get {
+                return ResourceManager.GetString("ReceivedUnhandledCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to درخواست ارسال دیتا.
         /// </summary>
         public static string RequestSendData {
@@ -399,6 +453,15 @@ namespace G9Common.Resource {
         public static string StartServer {
             get {
                 return ResourceManager.GetString("StartServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to توقف سرور.
+        /// </summary>
+        public static string StopServer {
+            get {
+                return ResourceManager.GetString("StopServer", resourceCulture);
             }
         }
         
@@ -471,6 +534,15 @@ namespace G9Common.Resource {
         public static string SuccessUnpackingReceiveData {
             get {
                 return ResourceManager.GetString("SuccessUnpackingReceiveData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to کامند مدیریت نشده.
+        /// </summary>
+        public static string UnhandledCommand {
+            get {
+                return ResourceManager.GetString("UnhandledCommand", resourceCulture);
             }
         }
         

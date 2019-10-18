@@ -2,6 +2,8 @@
 {
     public struct G9LogIdentity
     {
+        /* ########################################## Server Identity ########################################## */
+        #region Server Identity
         /// <summary>
         /// Log Identity => On create new server
         /// </summary>
@@ -10,6 +12,10 @@
         /// Log Identity => On start server
         /// </summary>
         public const string START_SERVER = "START_SERVER";
+        /// <summary>
+        /// Log Identity => On stop server
+        /// </summary>
+        public const string STOP_SERVER = "STOP_SERVER";
         /// <summary>
         /// Log Identity => On create socket listener
         /// </summary>
@@ -38,10 +44,22 @@
         /// Log Identity => On accept call back in server
         /// </summary>
         public const string SERVER_ACCEPT_CALLBACK = "SERVER_ACCEPT_CALLBACK";
+        #endregion
+
+        /* ########################################## Command Identity ########################################## */
+        #region Command Identity
         /// <summary>
-        /// Log Command => On command running
+        /// Log Identity => On command running
         /// </summary>
-        public const string SERVER_RUNNING_COMMAND = "SERVER_RUNNING_COMMAND";
+        public const string RUNNING_COMMAND = "RUNNING_COMMAND";
+        /// <summary>
+        /// Log Identity => On receive unhandled command
+        /// </summary>
+        public const string RECEIVE_UNHANDLED_COMMAND = "RECEIVE_UNHANDLED_COMMAND";
+        #endregion
+
+        /* ########################################## Common Identity ########################################## */
+        #region Common Identity
         /// <summary>
         /// Log Identity => On create new account and session
         /// </summary>
@@ -50,6 +68,14 @@
         /// Log Identity => On user log USER_ID_ + 'SessionId'
         /// </summary>
         public const string USER_ID_ = "USER_ID_";
+        /// <summary>
+        /// Log Identity => Generate Packet
+        /// </summary>
+        public const string GENERATE_PACKET = "GENERATE_PACKET";
+        #endregion
+
+        /* ########################################## Client Identity ########################################## */
+        #region Client Identity
         /// <summary>
         /// Log Identity => On create new client
         /// </summary>
@@ -70,10 +96,8 @@
         /// Log Identity => On send data in client
         /// </summary>
         public const string CLIENT_SEND_DATA = "CLIENT_SEND_DATA";
-        /// <summary>
-        /// Log Identity => Generate Packet
-        /// </summary>
-        public const string GENERATE_PACKET = "GENERATE_PACKET";
+        #endregion
+        
 
     }
 }
