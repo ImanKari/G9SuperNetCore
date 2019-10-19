@@ -511,6 +511,15 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to دریافت بسته (پاکت) بیش از حد مجاز تعیین شده در کانفیگ سرور.
+        /// </summary>
+        public static string ReceiveRequestOverTheLimit {
+            get {
+                return ResourceManager.GetString("ReceiveRequestOverTheLimit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to درخواست ارسال دیتا.
         /// </summary>
         public static string RequestSendData {
@@ -669,6 +678,15 @@ namespace G9Common.Resource {
         public static string Waiting {
             get {
                 return ResourceManager.GetString("Waiting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to اخطار.
+        /// </summary>
+        public static string Warning {
+            get {
+                return ResourceManager.GetString("Warning", resourceCulture);
             }
         }
     }

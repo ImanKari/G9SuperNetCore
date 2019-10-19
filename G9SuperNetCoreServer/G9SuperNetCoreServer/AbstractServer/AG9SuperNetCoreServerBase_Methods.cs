@@ -16,7 +16,6 @@ namespace G9SuperNetCoreServer.AbstractServer
         where TAccount : AServerAccount<TSession>, new()
         where TSession : AServerSession, new()
     {
-
         #region Methods
 
         /// <summary>
@@ -191,7 +190,7 @@ namespace G9SuperNetCoreServer.AbstractServer
         {
             // Set flag and start
             EnableCommandTestSendReceiveAllClients = true;
-            _core.ScrollingAllAccountUtilities(s => s.SessionHandler.EnableTestMode(testMessage));
+            _core.ScrollingAllAccountUtilities(s => s.SessionHandler.Core_EnableTestMode(testMessage));
 
             // Set log
             if (_core.Logging.LogIsActive(LogsType.EVENT))
@@ -210,7 +209,7 @@ namespace G9SuperNetCoreServer.AbstractServer
         public void DisableCommandTestSendAndReceiveForAllClients()
         {
             // Set flag and stop
-            _core.ScrollingAllAccountUtilities(s => s.SessionHandler.DisableTestMode());
+            _core.ScrollingAllAccountUtilities(s => s.SessionHandler.Core_DisableTestMode());
             EnableCommandTestSendReceiveAllClients = false;
 
             // Set log
@@ -234,7 +233,7 @@ namespace G9SuperNetCoreServer.AbstractServer
 
         public void EnableCommandTestSendAndReceiveBySession(uint sessionId, string testMessage = null)
         {
-            _core.GetAccountUtilitiesBySessionId(sessionId).SessionHandler.EnableTestMode(testMessage);
+            _core.GetAccountUtilitiesBySessionId(sessionId).SessionHandler.Core_EnableTestMode(testMessage);
 
             // Set log
             if (_core.Logging.LogIsActive(LogsType.EVENT))
@@ -253,7 +252,7 @@ namespace G9SuperNetCoreServer.AbstractServer
 
         public void DisableCommandTestSendAndReceiveBySession(uint sessionId)
         {
-            _core.GetAccountUtilitiesBySessionId(sessionId).SessionHandler.DisableTestMode();
+            _core.GetAccountUtilitiesBySessionId(sessionId).SessionHandler.Core_DisableTestMode();
 
             // Set log
             if (_core.Logging.LogIsActive(LogsType.EVENT))

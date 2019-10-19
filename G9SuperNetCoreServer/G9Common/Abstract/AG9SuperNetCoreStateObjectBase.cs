@@ -2,7 +2,9 @@
 
 namespace G9Common.Abstract
 {
-    // State object for reading client data asynchronously  
+    /// <summary>
+    ///     State object for reading client data asynchronously
+    /// </summary>
     public abstract class AG9SuperNetCoreStateObjectBase
     {
         #region Methods

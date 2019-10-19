@@ -117,6 +117,7 @@ namespace G9SuperNetCoreClient.AbstractClient
         ///     Management disconnected
         /// </summary>
         /// <param name="account">Disconnected account</param>
+        /// <param name="disconnectReason">Reason of disconnect</param>
 
         #region OnDisconnectedHandler
 

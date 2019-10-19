@@ -60,6 +60,10 @@
         /// Log Identity => On disable test mode command for single client
         /// </summary>
         public const string DISABLE_TEST_MODE_SINGLE_CLIENT = "DISABLE_TEST_MODE_SINGLE_CLIENT";
+        /// <summary>
+        /// Log Identity => On session receive request over the limit in second
+        /// </summary>
+        public const string RECEIVE_REQUEST_OVER_THE_LIMIT = "RECEIVE_REQUEST_OVER_THE_LIMIT";
         #endregion
 
         /* ########################################## Command Identity ########################################## */

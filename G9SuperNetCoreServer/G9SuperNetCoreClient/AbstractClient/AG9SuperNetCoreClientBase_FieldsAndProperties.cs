@@ -79,26 +79,24 @@ namespace G9SuperNetCoreClient.AbstractClient
         #region Send And Receive Bytes
 
         /// <summary>
-        ///     Save total send bytes
-        /// </summary>
-        private ulong _totalSendBytes;
-
-        /// <summary>
         ///     Access to total send bytes
         /// </summary>
-        // ReSharper disable once ConvertToAutoProperty
-        public ulong TotalSendBytes => _totalSendBytes;
-
-        /// <summary>
-        ///     Save total receive bytes
-        /// </summary>
-        private ulong _totalReceiveBytes;
+        public ulong TotalSendBytes { private set; get; }
 
         /// <summary>
         ///     Access to total receive bytes
         /// </summary>
-        // ReSharper disable once ConvertToAutoProperty
-        public ulong TotalReceiveBytes => _totalReceiveBytes;
+        public ulong TotalReceiveBytes { private set; get; }
+
+        /// <summary>
+        ///     Access to total send packet count
+        /// </summary>
+        public uint TotalSendPacket { private set; get; }
+
+        /// <summary>
+        ///     Access to total receive packet count
+        /// </summary>
+        public uint TotalReceivePacket { private set; get; }
 
         #endregion
     }

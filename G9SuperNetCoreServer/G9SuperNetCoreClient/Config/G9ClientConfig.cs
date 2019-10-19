@@ -28,7 +28,7 @@ namespace G9SuperNetCoreClient.Config
         ///     Specify type of encoding and decoding
         ///     If set null adjusted default value => UTF-8
         /// </param>
-        public G9ClientConfig(IPAddress oIpAddress, int oPortNumber, SocketMode oMode, int oCommandSize = 1, int oBodySize = 8, G9Encoding oEncodingAndDecoding = null)
+        public G9ClientConfig(IPAddress oIpAddress, ushort oPortNumber, SocketMode oMode, byte oCommandSize = 1, byte oBodySize = 8, G9Encoding oEncodingAndDecoding = null)
             : base(oIpAddress, oPortNumber, oMode, oCommandSize, oBodySize, oEncodingAndDecoding)
         {
 

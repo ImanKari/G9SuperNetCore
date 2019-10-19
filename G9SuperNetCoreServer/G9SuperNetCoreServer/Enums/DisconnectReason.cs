@@ -17,6 +17,13 @@
         /// <summary>
         ///     When server stopped and close all session and account
         /// </summary>
-        ServerStopped
+        ServerStopped,
+
+
+        /// <summary>
+        ///     If Session Receive Request Over The Limit In Second
+        ///     Limit specified in server configuration
+        /// </summary>
+        ReceiveRequestOverTheLimit
     }
 }

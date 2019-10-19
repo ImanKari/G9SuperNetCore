@@ -33,8 +33,8 @@ namespace G9Common.Configuration
 
         #region G9SuperSocketConfig
 
-        public AG9BaseConfig(IPAddress oIpAddress, int oPortNumber, SocketMode oMode,
-            int oCommandSize = 1, int oBodySize = 8, G9Encoding oEncodingAndDecoding = null)
+        public AG9BaseConfig(IPAddress oIpAddress, ushort oPortNumber, SocketMode oMode,
+            byte oCommandSize = 1, byte oBodySize = 8, G9Encoding oEncodingAndDecoding = null)
         {
             // Set ip address
             IpAddress = oIpAddress is null || Equals(oIpAddress, IPAddress.None)
@@ -74,12 +74,12 @@ namespace G9Common.Configuration
         ///     Specify space busy for body size
         ///     Just 1 byte => size between 1 to 255
         /// </summary>
-        public const int PacketBodySizeSpaceBusy = 1;
+        public const byte PacketBodySizeSpaceBusy = 1;
 
         /// <summary>
         ///     Sum 'PacketTypeSizeSpaceBusy' and 'PacketBodySizeSpaceBusy'
         /// </summary>
-        public const int PacketTypeAndBodySpaceBusy = 2;
+        public const byte PacketTypeAndBodySpaceBusy = 2;
 
         /// <summary>
         ///     Specify packet request id => is 16 byte
@@ -97,7 +97,7 @@ namespace G9Common.Configuration
         /// <summary>
         ///     Specify server port number
         /// </summary>
-        public readonly int PortNumber;
+        public readonly ushort PortNumber;
 
         /// <summary>
         ///     Specify socket mode
@@ -110,14 +110,14 @@ namespace G9Common.Configuration
         ///     Example: if set "n" length is "n*16" => if set 1 length is 16 then maximum command name length is 16 byte or
         ///     character
         /// </summary>
-        public readonly int CommandSize;
+        public readonly byte CommandSize;
 
         /// <summary>
         ///     Specify max body length size
         ///     Example: if set "n" length is "n*16" => if set 8 length is 128 then maximum body length is 128 byte or character
         ///     Minimum is 1 maximum is 255
         /// </summary>
-        public readonly int BodySize;
+        public readonly byte BodySize;
 
         /// <summary>
         ///     Specify encoding and decoding type

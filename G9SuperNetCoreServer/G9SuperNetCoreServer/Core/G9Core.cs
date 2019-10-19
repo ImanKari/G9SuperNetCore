@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
@@ -58,7 +59,7 @@ namespace G9SuperNetCoreServer.Core
         public readonly G9CommandHandler<TAccount> CommandHandler;
 
         /// <summary>
-        ///     Access to action send command by name
+        ///     Access to func send command by name
         ///     long => session id
         ///     string => command name
         ///     object => data for send
@@ -66,12 +67,17 @@ namespace G9SuperNetCoreServer.Core
         private readonly Func<uint, string, object, int> _sendCommandByName;
 
         /// <summary>
-        ///     Access to action send command by name async
+        ///     Access to func send command by name async
         ///     long => session id
         ///     string => command name
         ///     object => data for send
         /// </summary>
         private readonly Func<uint, string, object, Task<int>> _sendCommandByNameAsync;
+
+        /// <summary>
+        ///     Access to event OnSessionReceiveRequestOverTheLimitInSecond 
+        /// </summary>
+        private readonly Action<TAccount> _onSessionReceiveRequestOverTheLimitInSecond;
 
         #endregion
 
@@ -85,6 +91,7 @@ namespace G9SuperNetCoreServer.Core
         /// <param name="commandAssembly">Specified command assembly (find command in specified assembly)</param>
         /// <param name="sendCommandByName">Specify func send command by name</param>
         /// <param name="sendCommandByNameAsync">Specify func send command by name async</param>
+        /// <param name="onSessionReceiveRequestOverTheLimitInSecond">Specify action for event OnSessionReceiveRequestOverTheLimitInSecond</param>
         /// <param name="onUnhandledCommand">Specified event on unhandled command</param>
         /// <param name="customLogging">Specified custom logging system</param>
 
@@ -93,6 +100,7 @@ namespace G9SuperNetCoreServer.Core
         public G9Core(G9ServerConfig superNetCoreConfig, Assembly commandAssembly,
             Func<uint, string, object, int> sendCommandByName,
             Func<uint, string, object, Task<int>> sendCommandByNameAsync,
+            Action<TAccount> onSessionReceiveRequestOverTheLimitInSecond,
             Action<G9SendAndReceivePacket, TAccount> onUnhandledCommand, IG9Logging customLogging = null)
         {
             // TODO: change fixed array to change sizable array
@@ -106,6 +114,7 @@ namespace G9SuperNetCoreServer.Core
             // Set send command
             _sendCommandByName = sendCommandByName;
             _sendCommandByNameAsync = sendCommandByNameAsync;
+            _onSessionReceiveRequestOverTheLimitInSecond = onSessionReceiveRequestOverTheLimitInSecond;
 
             // Set configuration
             Configuration = superNetCoreConfig;
@@ -173,16 +182,18 @@ namespace G9SuperNetCoreServer.Core
 
         #endregion
 
+        #region DisconnectAndCloseSession - Overides
+
         /// <summary>
-        ///     Disconnect session handler
-        ///     remove from collections
+        ///     Disconnect and close session
+        ///     remove from collection and dispose resource
         /// </summary>
         /// <param name="account">Specified account</param>
         /// <param name="disconnectReason">Specify disconnect reason</param>
 
-        #region DisconnectSocketHandler
+        #region DisconnectAndCloseSession
 
-        public void DisconnectSocketHandler(TAccount account, DisconnectReason disconnectReason)
+        public void DisconnectAndCloseSession(TAccount account, DisconnectReason disconnectReason)
         {
             // Run on session closed in account
             try
@@ -204,14 +215,46 @@ namespace G9SuperNetCoreServer.Core
         #endregion
 
         /// <summary>
+        ///     Disconnect and close session
+        ///     remove from collection and dispose resource
+        /// </summary>
+        /// <param name="sessionId">Specified session id</param>
+        /// <param name="disconnectReason">Specify disconnect reason</param>
+
+        #region DisconnectAndCloseSession
+
+        public void DisconnectAndCloseSession(uint sessionId, DisconnectReason disconnectReason)
+        {
+            // Run on session closed in account
+            try
+            {
+                _accountCollection[sessionId]?.Account.OnSessionClosed(disconnectReason);
+            }
+            catch
+            {
+                // Ignore
+            }
+
+            // Dispose and remove
+            _accountCollection[sessionId]?.SessionSocket.Dispose();
+            _accountCollection[sessionId] = null;
+            // Gc collect
+            GC.Collect();
+        }
+
+        #endregion
+
+        #endregion
+
+        /// <summary>
         ///     Clear all socket and account
         ///     clear all collections
         /// </summary>
         /// <param name="disconnectReason">Specify disconnect reason</param>
 
-        #region ClearAllSocketsAndAccounts
+        #region ClearAllAccountsAndSessions
 
-        public void ClearAllSocketsAndAccounts(DisconnectReason disconnectReason)
+        public void ClearAllAccountsAndSessions(DisconnectReason disconnectReason)
         {
             for (var i = 0; i < _accountCollection.Length; i++)
             {
@@ -243,7 +286,7 @@ namespace G9SuperNetCoreServer.Core
         /// <param name="acceptedScoket">connection socket</param>
         /// <returns>Created account</returns>
 
-        #region GenerateAccountByAcceptedSocket
+        #region CreateAccountByAcceptedSocket
 
         private G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>
             CreateAccountByAcceptedSocket(Socket acceptedScoket)
@@ -259,11 +302,19 @@ namespace G9SuperNetCoreServer.Core
                         new G9ServerSessionHandler
                         {
                             // Set send commands
-                            SendCommandByName = _sendCommandByName,
-                            SendCommandByNameAsync = _sendCommandByNameAsync,
-                            PingDurationInMilliseconds = (ushort) Configuration.GetPingTimeOut.TotalMilliseconds
+                            Session_SendCommandByName = _sendCommandByName,
+                            Session_SendCommandByNameAsync = _sendCommandByNameAsync,
+                            // Set ping duration
+                            PingDurationInMilliseconds = (ushort) Configuration.GetPingTimeOut.TotalMilliseconds,
+                            // Set event
+                            Session_OnSessionReceiveRequestOverTheLimitInSecond = sessionId => GetAccountUtilitiesBySessionId(sessionId)
+
                         }, _sessionIdentityCounter,
                     ((IPEndPoint) acceptedScoket.RemoteEndPoint).Address);
+                
+                // ########### Set requirement###########
+                // Set max request
+                result.SessionHandler.Core_SetMaxRequestRequirement(Configuration.MaxRequestPerSecond);
 
                 // Instance account and pass session to constructor
                 var newAccount = result.Account = new TAccount();
@@ -302,6 +353,22 @@ namespace G9SuperNetCoreServer.Core
             for (var i = 0; i < _accountCollection.Length; i++)
                 if (_accountCollection[i] != null)
                     scrollingSocketAction?.Invoke(_accountCollection[i]);
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Select account utilities with func
+        /// </summary>
+        /// <param name="predicate">Predicate func</param>
+
+        #region SelectAccountUtilities
+
+        public IEnumerable<TResult> SelectAccountUtilities<TResult>(
+            Func<IList<G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>>,
+                IEnumerable<TResult>> predicate)
+        {
+            return predicate?.Invoke(_accountCollection);
         }
 
         #endregion

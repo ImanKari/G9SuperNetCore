@@ -62,6 +62,14 @@ namespace G9SuperNetCoreServer.AbstractServer
         public event G9Delegates<TAccount, ServerStopReason, ServerErrorReason, DisconnectReason>.Disconnected
             OnDisconnected;
 
+        /// <summary>
+        ///     Event SessionReceiveRequestOverTheLimit
+        ///     Call when Session Receive Request Over The Limit In Second
+        ///     Limit specified in server configuration
+        /// </summary>
+        public event G9Delegates<TAccount, ServerStopReason, ServerErrorReason, DisconnectReason>.RequestOverTheLimit
+            OnSessionReceiveRequestOverTheLimitInSecond;
+
         #endregion
 
         #region Methods
@@ -99,7 +107,7 @@ namespace G9SuperNetCoreServer.AbstractServer
             IsStarted = false;
 
             // Clear all sessions
-            _core.ClearAllSocketsAndAccounts(DisconnectReason.ServerStopped);
+            _core.ClearAllAccountsAndSessions(DisconnectReason.ServerStopped);
 
             // Run event
             OnStop?.Invoke(stopReason);
@@ -168,19 +176,46 @@ namespace G9SuperNetCoreServer.AbstractServer
         ///     Management disconnect client
         /// </summary>
         /// <param name="account">Connected account</param>
+        /// <param name="disconnectReason">Reason of disconnect</param>
 
         #region OnConnectedHandler
 
         private void OnDisconnectedHandler(TAccount account, DisconnectReason disconnectReason)
         {
             // Server disconnect handler
-            _core.DisconnectSocketHandler(account, disconnectReason);
+            _core.DisconnectAndCloseSession(account, disconnectReason);
 
             // Run event
             OnDisconnected?.Invoke(account, disconnectReason);
 
             // Set session counter
             NumberOfCurrentSession--;
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     If Session Receive Request Over The Limit In Second
+        ///     Limit specified in server configuration
+        /// </summary>
+        /// <param name="account">Account over the limit</param>
+
+        #region OnSessionReceiveRequestOverTheLimitInSecond
+
+        private void OnSessionReceiveRequestOverTheLimitInSecondHandler(TAccount account)
+        {
+            // Run event
+            OnSessionReceiveRequestOverTheLimitInSecond?.Invoke(account);
+
+            // If enable auto kick => closed session and remove from collection
+            if (_core.Configuration.EnableAutoKickClientForMaxRequest)
+                _core.DisconnectAndCloseSession(account, DisconnectReason.ReceiveRequestOverTheLimit);
+
+            // Set log
+            if (_core.Logging.LogIsActive(LogsType.WARN))
+                _core.Logging.LogWarning(
+                    $"{LogMessage.ReceiveRequestOverTheLimit}\n{account.Session.GetSessionInfo()}",
+                    G9LogIdentity.RECEIVE_REQUEST_OVER_THE_LIMIT, LogMessage.Warning);
         }
 
         #endregion

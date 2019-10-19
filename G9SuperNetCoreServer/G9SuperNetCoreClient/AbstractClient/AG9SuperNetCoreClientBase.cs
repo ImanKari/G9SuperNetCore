@@ -54,8 +54,8 @@ namespace G9SuperNetCoreClient.AbstractClient
             session.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(_mainAccountUtilities.SessionHandler =
                 new G9ClientSessionHandler
                 {
-                    SendCommandByName = SendCommandByName,
-                    SendCommandByNameAsync = SendCommandByNameAsync
+                    Session_SendCommandByName = SendCommandByName,
+                    Session_SendCommandByNameAsync = SendCommandByNameAsync
                 }, 0, IPAddress.Any);
             var account = new TAccount();
             _mainAccountUtilities.Account.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(
@@ -201,14 +201,17 @@ namespace G9SuperNetCoreClient.AbstractClient
 
                 if (bytesRead > 0)
                 {
-                    // There might be more data, so store the data received so far.  
-                    //state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
-
                     // Use like span
                     ReadOnlySpan<byte> packet = _stateObject.Buffer;
 
-                    // Plus receive bytes
-                    _totalReceiveBytes += (ulong) packet.Length;
+                    var receiveBytes = (ushort) packet.Length;
+
+                    // Plus receive bytes and packet
+                    TotalReceiveBytes += receiveBytes;
+                    TotalReceivePacket++;
+
+                    // Plus receive bytes and packet in session
+                    _mainAccountUtilities.SessionHandler.Core_PlusSessionTotalReceiveBytes(receiveBytes);
 
                     // unpacking request
                     var receivePacket = _packetManagement.UnpackingRequestByData(packet);
@@ -295,13 +298,17 @@ namespace G9SuperNetCoreClient.AbstractClient
                 var client = (Socket) asyncResult.AsyncState;
 
                 // Complete sending the data to the remote device.  
-                var bytesSent = client.EndSend(asyncResult);
+                var bytesSent = (ushort)client.EndSend(asyncResult);
 
                 // Signal that all bytes have been sent.  
                 _sendDone.Set();
 
-                // Plus send bytes
-                _totalSendBytes += (ulong) bytesSent;
+                // Plus send bytes and packet
+                TotalSendBytes += bytesSent;
+                TotalSendPacket++;
+
+                // Plus send bytes and packet in session
+                _mainAccountUtilities.SessionHandler.Core_PlusSessionTotalSendBytes(bytesSent);
 
                 // Set log
                 if (_logging.LogIsActive(LogsType.INFO))

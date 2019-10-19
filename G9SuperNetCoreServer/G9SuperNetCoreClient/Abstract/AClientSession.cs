@@ -58,7 +58,19 @@ namespace G9SuperNetCoreClient.Abstract
 
             // Set ping utilities
             PingDurationInMilliseconds = _sessionHandler.PingDurationInMilliseconds;
-            _sessionHandler.SetPing = newPing => Ping = newPing;
+            _sessionHandler.Core_SetPing = newPing => Ping = newPing;
+
+            // Plus send and receive and packets for current session
+            _sessionHandler.Core_PlusSessionTotalReceiveBytes = receiveBytes =>
+            {
+                SessionTotalReceiveBytes += receiveBytes;
+                SessionTotalReceivePacket++;
+            };
+            _sessionHandler.Core_PlusSessionTotalSendBytes = sendBytes =>
+            {
+                SessionTotalSendBytes += sendBytes;
+                SessionTotalSendPacket++;
+            };
 
             // Set session id
             SessionId = oSessionId;
@@ -75,7 +87,7 @@ namespace G9SuperNetCoreClient.Abstract
 
         public override Task<int> SendCommandByNameAsync(string name, object data)
         {
-            return _sessionHandler.SendCommandByNameAsync(SessionId, name, data);
+            return _sessionHandler.Session_SendCommandByNameAsync(SessionId, name, data);
         }
 
         #endregion
@@ -86,7 +98,7 @@ namespace G9SuperNetCoreClient.Abstract
 
         public override int SendCommandByName(string name, object data)
         {
-            return _sessionHandler.SendCommandByName(SessionId, name, data);
+            return _sessionHandler.Session_SendCommandByName(SessionId, name, data);
         }
 
         #endregion
@@ -97,7 +109,7 @@ namespace G9SuperNetCoreClient.Abstract
 
         public override Task<int> SendCommandAsync<TCommand, TTypeSend>(TTypeSend data)
         {
-            return _sessionHandler.SendCommandByNameAsync(SessionId, nameof(TCommand), data);
+            return _sessionHandler.Session_SendCommandByNameAsync(SessionId, nameof(TCommand), data);
         }
 
         #endregion
@@ -108,7 +120,7 @@ namespace G9SuperNetCoreClient.Abstract
 
         public override int SendCommand<TCommand, TTypeSend>(TTypeSend data)
         {
-            return _sessionHandler.SendCommandByName(SessionId, nameof(TCommand), data);
+            return _sessionHandler.Session_SendCommandByName(SessionId, nameof(TCommand), data);
         }
 
         #endregion

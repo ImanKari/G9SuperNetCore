@@ -43,6 +43,29 @@ namespace G9SuperNetCoreServer.Abstarct
 
         #endregion
 
+        #region Max Request Utilities
+
+        /// <summary>
+        /// Specified check max request is enable
+        /// </summary>
+        private bool _enableCheckMaxRequest;
+        /// <summary>
+        ///     Save date time for check max request
+        ///     one second previous
+        /// </summary>
+        private DateTime _checkMaxRequestDateTime;
+        /// <summary>
+        /// Specify counter for max request
+        /// </summary>
+        private ushort _counterForMaxRequest;
+        /// <summary>
+        ///     Specify maximum request from client per second
+        ///     Set 0 => infinity
+        /// </summary>
+        private ushort _maxRequestPerSecond;
+
+        #endregion
+
         #endregion
 
         #region Methods
@@ -63,14 +86,41 @@ namespace G9SuperNetCoreServer.Abstarct
 
             // Set ping utilities
             PingDurationInMilliseconds = _sessionHandler.PingDurationInMilliseconds;
-            _sessionHandler.SetPing = newPing => Ping = newPing;
+            _sessionHandler.Core_SetPing = newPing => Ping = newPing;
+
+            // Plus send and receive and packets for current session
+            _sessionHandler.Core_PlusSessionTotalReceiveBytes = receiveBytes =>
+            {
+                SessionTotalReceiveBytes += receiveBytes;
+                SessionTotalReceivePacket++;
+            };
+            _sessionHandler.Core_PlusSessionTotalSendBytes = sendBytes =>
+            {
+                SessionTotalSendBytes += sendBytes;
+                SessionTotalSendPacket++;
+            };
+
+            // Set check max request
+            _sessionHandler.Core_SetMaxRequestRequirement = maximumRequestPerSecond =>
+            {
+                if (maximumRequestPerSecond == 0)
+                {
+                    _enableCheckMaxRequest = false;
+                    return;
+                }
+                else
+                {
+                    _enableCheckMaxRequest = true;
+                    _maxRequestPerSecond = maximumRequestPerSecond;
+                }
+            };
 
             // Set last command
-            _sessionHandler.SetLastCommand = lastCommandName => LastCommand = lastCommandName;
+            _sessionHandler.Core_SetLastCommand = lastCommandName => LastCommand = lastCommandName;
 
             // Test mode utilities
-            _sessionHandler.EnableTestMode = EnableTestSendAndReceiveMode;
-            _sessionHandler.DisableTestMode = DisableTestSendAndReceiveMode;
+            _sessionHandler.Core_EnableTestMode = EnableTestSendAndReceiveMode;
+            _sessionHandler.Core_DisableTestMode = DisableTestSendAndReceiveMode;
 
             // Set session id
             SessionId = oSessionId;
@@ -142,7 +192,7 @@ namespace G9SuperNetCoreServer.Abstarct
 
         public override Task<int> SendCommandByNameAsync(string name, object data)
         {
-            return _sessionHandler.SendCommandByNameAsync(SessionId, name, data);
+            return _sessionHandler.Session_SendCommandByNameAsync(SessionId, name, data);
         }
 
         #endregion
@@ -153,7 +203,7 @@ namespace G9SuperNetCoreServer.Abstarct
 
         public override int SendCommandByName(string name, object data)
         {
-            return _sessionHandler.SendCommandByName(SessionId, name, data);
+            return _sessionHandler.Session_SendCommandByName(SessionId, name, data);
         }
 
         #endregion
@@ -164,7 +214,7 @@ namespace G9SuperNetCoreServer.Abstarct
 
         public override Task<int> SendCommandAsync<TCommand, TTypeSend>(TTypeSend data)
         {
-            return _sessionHandler.SendCommandByNameAsync(SessionId, nameof(TCommand), data);
+            return _sessionHandler.Session_SendCommandByNameAsync(SessionId, nameof(TCommand), data);
         }
 
         #endregion
@@ -175,11 +225,52 @@ namespace G9SuperNetCoreServer.Abstarct
 
         public override int SendCommand<TCommand, TTypeSend>(TTypeSend data)
         {
-            return _sessionHandler.SendCommandByName(SessionId, nameof(TCommand), data);
+            return _sessionHandler.Session_SendCommandByName(SessionId, nameof(TCommand), data);
         }
 
         #endregion
 
+        /// <summary>
+        /// Check max request over the limit in second
+        /// </summary>
+
+        #region CheckMaxRequestOverTheLimitInSecond
+
+        public void CheckMaxRequestOverTheLimitInSecond()
+        {
+            if (_enableCheckMaxRequest && !EnableTestSendReceiveMode)
+            {
+                // Checked over flow
+                try
+                {
+                    checked
+                    {
+                        _counterForMaxRequest++;
+                    }
+                }
+                catch
+                {
+                    _counterForMaxRequest = ushort.MaxValue;
+                }
+
+                // check if time higher than one second
+                if ((DateTime.Now - _checkMaxRequestDateTime).TotalSeconds > 1)
+                {
+                    _checkMaxRequestDateTime = DateTime.Now;
+
+                    // Check counter with max request limit
+                    if (_counterForMaxRequest > _maxRequestPerSecond)
+                    {
+                        // If Receive Request Over The Limit In Second
+                        _sessionHandler?.Session_OnSessionReceiveRequestOverTheLimitInSecond?.Invoke(SessionId);
+                    }
+
+                    _counterForMaxRequest = 0;
+                }
+            }
+        }
+
+        #endregion
         #endregion
     }
 }

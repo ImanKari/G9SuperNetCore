@@ -69,6 +69,11 @@ namespace G9Common.Abstract
         public uint SessionId { protected set; get; }
 
         /// <summary>
+        /// Specified session start date time
+        /// </summary>
+        public DateTime SessionStartDateTime { get; } = DateTime.Now;
+
+        /// <summary>
         ///     Get ip address of session
         /// </summary>
         public IPAddress SessionIpAddress { protected set; get; }
@@ -116,6 +121,30 @@ namespace G9Common.Abstract
         ///     Specify date time of used last command
         /// </summary>
         public DateTime LastCommandDateTime { protected set; get; }
+
+        #endregion
+
+        #region Session Send And Receive Utilities
+
+        /// <summary>
+        ///     Specified total send in bytes for current session
+        /// </summary>
+        public uint SessionTotalSendBytes { protected set; get; }
+
+        /// <summary>
+        ///     Specified number of total send packet for current session
+        /// </summary>
+        public uint SessionTotalSendPacket { protected set; get; }
+
+        /// <summary>
+        ///     Specified total receive in bytes for current session
+        /// </summary>
+        public uint SessionTotalReceiveBytes { protected set; get; }
+
+        /// <summary>
+        ///     Specified number of total receive packet for current session
+        /// </summary>
+        public uint SessionTotalReceivePacket { protected set; get; }
 
         #endregion
 

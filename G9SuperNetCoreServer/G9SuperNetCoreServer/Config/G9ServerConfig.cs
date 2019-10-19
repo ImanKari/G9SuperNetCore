@@ -54,9 +54,9 @@ namespace G9SuperNetCoreServer.Config
 
         #region G9SuperSocketServerConfig
 
-        public G9ServerConfig(string oServerName, IPAddress oIpAddress, int oPortNumber, SocketMode oMode,
-            TimeSpan? oGetPingTimeOut = null, TimeSpan? oClearIdleSessionTimeOut = null, int oCommandSize = 1,
-            int oBodySize = 8, int oMaxConnectionNumber = 0, int oMaxRequestPerSecond = 0,
+        public G9ServerConfig(string oServerName, IPAddress oIpAddress, ushort oPortNumber, SocketMode oMode,
+            TimeSpan? oGetPingTimeOut = null, TimeSpan? oClearIdleSessionTimeOut = null, byte oCommandSize = 1,
+            byte oBodySize = 8, ushort oMaxConnectionNumber = 0, ushort oMaxRequestPerSecond = 0,
             bool oEnableAutoKickClientForMaxRequest = false, G9Encoding oEncodingAndDecoding = null
         )
             : base(oIpAddress, oPortNumber, oMode, oCommandSize, oBodySize, oEncodingAndDecoding)
@@ -66,8 +66,8 @@ namespace G9SuperNetCoreServer.Config
                 ? throw new ArgumentException($"Argument {nameof(oServerName)} not correct!", nameof(oServerName))
                 : oServerName;
             // Set max connection number
-            MaxConnectionNumber = oMaxConnectionNumber < 1
-                ? int.MaxValue
+            MaxConnectionNumber = oMaxConnectionNumber == 0
+                ? ushort.MaxValue
                 : oMaxConnectionNumber;
             // Set max request per second
             MaxRequestPerSecond = oMaxRequestPerSecond;
@@ -94,13 +94,13 @@ namespace G9SuperNetCoreServer.Config
         ///     Specify max of connection for server
         ///     Set 0 => infinity
         /// </summary>
-        public int MaxConnectionNumber { set; get; }
+        public ushort MaxConnectionNumber { set; get; }
 
         /// <summary>
         ///     Specify maximum request from client per second
         ///     Set 0 => infinity
         /// </summary>
-        public int MaxRequestPerSecond { set; get; }
+        public ushort MaxRequestPerSecond { set; get; }
 
         /// <summary>
         ///     Specify auto kick client If the number of requests exceeded the limit 'MaxRequestPerSecond'
@@ -119,7 +119,6 @@ namespace G9SuperNetCoreServer.Config
         ///     Default value is 3963 millisecond
         /// </summary>
         public TimeSpan GetPingTimeOut { set; get; }
-
 
         #endregion
     }

@@ -37,7 +37,7 @@ namespace G9SuperNetCoreServer.AbstractServer
         {
             // Initialize core
             _core = new G9Core<TAccount, TSession>(superNetCoreConfig, commandAssembly, SendCommandByName,
-                SendCommandByNameAsync, OnUnhandledCommandHandler, customLogging);
+                SendCommandByNameAsync, OnSessionReceiveRequestOverTheLimitInSecondHandler, OnUnhandledCommandHandler, customLogging);
 
             // ######################## Add default command ########################
             // G9 Echo Command
@@ -152,14 +152,20 @@ namespace G9SuperNetCoreServer.AbstractServer
                     // Use like span
                     ReadOnlySpan<byte> packet = state.Buffer;
 
-                    // Plus total receive
-                    _totalReceiveBytes += (ulong) packet.Length;
+                    var receiveBytes = (ushort) packet.Length;
+
+                    // Plus total receive bytes and packet
+                    TotalReceiveBytes += receiveBytes;
+                    TotalReceivePacket++;
 
                     // unpacking request
                     var receivePacket = _packetManagement.UnpackingRequestByData(packet);
 
                     // Set last command (check ping automatically when set last command)
-                    accountUtilities.SessionHandler.SetLastCommand(receivePacket.Command);
+                    accountUtilities.SessionHandler.Core_SetLastCommand(receivePacket.Command);
+
+                    // Plus receive bytes for session
+                    accountUtilities.SessionHandler.Core_PlusSessionTotalReceiveBytes(receiveBytes);
 
                     // Set log
                     if (_core.Logging.LogIsActive(LogsType.INFO))
@@ -221,13 +227,18 @@ namespace G9SuperNetCoreServer.AbstractServer
             try
             {
                 // Retrieve the socket from the state object.  
-                var handler = (Socket) asyncResult.AsyncState;
+                var handler = (G9SuperNetCoreStateObjectServer) asyncResult.AsyncState;
 
                 // Complete sending the data to the remote device.  
-                var bytesSent = handler.EndSend(asyncResult);
+                var bytesSent = (ushort) handler.WorkSocket.EndSend(asyncResult);
 
-                // Plus total send
-                _totalSendBytes += (ulong) bytesSent;
+                // Plus send bytes for session
+                _core.GetAccountUtilitiesBySessionId(handler.SessionIdentity).SessionHandler
+                    .Core_PlusSessionTotalSendBytes(bytesSent);
+
+                // Plus total send bytes and packet
+                TotalSendBytes += bytesSent;
+                TotalSendPacket++;
 
                 // Set log
                 if (_core.Logging.LogIsActive(LogsType.INFO))

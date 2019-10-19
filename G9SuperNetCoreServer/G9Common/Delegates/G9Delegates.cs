@@ -49,5 +49,11 @@ namespace G9Common.Delegates
         /// </summary>
         /// <param name="stopReason">Reason of disconnected</param>
         public delegate void Disconnected(TAccount account, TDisconnectReason stopReason);
+
+        /// <summary>
+        ///     Delegate for Request Over The Limit
+        /// </summary>
+        /// <param name="account"></param>
+        public delegate void RequestOverTheLimit(TAccount account);
     }
 }

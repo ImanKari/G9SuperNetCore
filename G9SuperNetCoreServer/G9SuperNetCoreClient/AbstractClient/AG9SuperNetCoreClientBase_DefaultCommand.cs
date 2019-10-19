@@ -27,7 +27,7 @@ namespace G9SuperNetCoreClient.AbstractClient
             }
             else if (ushort.TryParse(receiveData, out var receivePingResult))
             {
-                _mainAccountUtilities.SessionHandler.SetPing(receivePingResult);
+                _mainAccountUtilities.SessionHandler.Core_SetPing(receivePingResult);
                 if (_logging.LogIsActive(LogsType.INFO))
                     _logging.LogInformation(Account.Session.GetSessionInfo(), G9LogIdentity.CLIENT_PING,
                         LogMessage.ClientPing);
