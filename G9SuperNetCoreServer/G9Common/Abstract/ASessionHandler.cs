@@ -52,9 +52,10 @@ namespace G9Common.Abstract
         ///     uint => session id
         ///     string => command name
         ///     object => data for send
+        ///     bool => If set true, check command exists
         ///     Return => int number specify byte to send. if don't send return 0
         /// </summary>
-        public Func<uint, string, object, int> Session_SendCommandByName;
+        public Func<uint, string, object, bool, bool, int> Session_SendCommandByName;
 
         /// <summary>
         ///     ### Execute From Session ###
@@ -62,9 +63,10 @@ namespace G9Common.Abstract
         ///     uint => session id
         ///     string => command name
         ///     object => data for send
+        ///     bool => bool => If set true, check command exists
         ///     Return => Task int number specify byte to send. if don't send return 0
         /// </summary>
-        public Func<uint, string, object, Task<int>> Session_SendCommandByNameAsync;
+        public Func<uint, string, object, bool, bool, Task<int>> Session_SendCommandByNameAsync;
 
         #endregion
 

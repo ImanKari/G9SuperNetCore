@@ -16,27 +16,54 @@ namespace G9Common.Abstract
         /// <summary>
         ///     Send async command request by name
         /// </summary>
-        /// <param name="name">Name of command</param>
-        /// <param name="data">Data for send</param>
+        /// <param name="commandName">Name of command</param>
+        /// <param name="commandData">Data for send</param>
+        /// <param name="checkCommandExists">
+        ///     If set true, check command exists
+        ///     If not exists throw exception
+        /// </param>
+        /// <param name="checkCommandSendType">
+        ///     If set true, check command send type
+        ///     If func send data type not equal with command send type throw exception
+        /// </param>
         /// <returns>Return => Task int specify byte to send. if don't send return 0</returns>
-        public abstract Task<int> SendCommandByNameAsync(string name, object data);
+        public abstract Task<int> SendCommandByNameAsync(string commandName, object commandData,
+            bool checkCommandExists = true, bool checkCommandSendType = true);
 
         /// <summary>
         ///     Send command request by name
         /// </summary>
-        /// <param name="name">Name of command</param>
-        /// <param name="data">Data for send</param>
+        /// <param name="commandName">Name of command</param>
+        /// <param name="commandData">Data for send</param>
+        /// <param name="checkCommandExists">
+        ///     If set true, check command exists
+        ///     If not exists throw exception
+        /// </param>
+        /// <param name="checkCommandSendType">
+        ///     If set true, check command send type
+        ///     If func send data type not equal with command send type throw exception
+        /// </param>
         /// <returns>Return => int number specify byte to send. if don't send return 0</returns>
-        public abstract int SendCommandByName(string name, object data);
+        public abstract int SendCommandByName(string commandName, object commandData, bool checkCommandExists = true,
+            bool checkCommandSendType = true);
 
         /// <summary>
         ///     Send async request by command async
         /// </summary>
         /// <typeparam name="TCommand">Command for send</typeparam>
         /// <typeparam name="TTypeSend">Type of data for send</typeparam>
-        /// <param name="data">Data for send</param>
+        /// <param name="commandData">Data for send</param>
+        /// <param name="checkCommandExists">
+        ///     If set true, check command exists
+        ///     If not exists throw exception
+        /// </param>
+        /// <param name="checkCommandSendType">
+        ///     If set true, check command send type
+        ///     If func send data type not equal with command send type throw exception
+        /// </param>
         /// <returns>Return => Task int specify byte to send. if don't send return 0</returns>
-        public abstract Task<int> SendCommandAsync<TCommand, TTypeSend>(TTypeSend data)
+        public abstract Task<int> SendCommandAsync<TCommand, TTypeSend>(TTypeSend commandData, bool checkCommandExists = true,
+            bool checkCommandSendType = true)
             where TCommand : IG9CommandWithSend;
 
         /// <summary>
@@ -44,9 +71,18 @@ namespace G9Common.Abstract
         /// </summary>
         /// <typeparam name="TCommand">Command for send</typeparam>
         /// <typeparam name="TTypeSend">Type of data for send</typeparam>
-        /// <param name="data">Data for send</param>
+        /// <param name="commandData">Data for send</param>
+        /// <param name="checkCommandExists">
+        ///     If set true, check command exists
+        ///     If not exists throw exception
+        /// </param>
+        /// <param name="checkCommandSendType">
+        ///     If set true, check command send type
+        ///     If func send data type not equal with command send type throw exception
+        /// </param>
         /// <returns>Return => int number specify byte to send. if don't send return 0</returns>
-        public abstract int SendCommand<TCommand, TTypeSend>(TTypeSend data)
+        public abstract int SendCommand<TCommand, TTypeSend>(TTypeSend commandData, bool checkCommandExists = true,
+            bool checkCommandSendType = true)
             where TCommand : IG9CommandWithSend;
 
         /// <summary>
@@ -69,7 +105,7 @@ namespace G9Common.Abstract
         public uint SessionId { protected set; get; }
 
         /// <summary>
-        /// Specified session start date time
+        ///     Specified session start date time
         /// </summary>
         public DateTime SessionStartDateTime { get; } = DateTime.Now;
 

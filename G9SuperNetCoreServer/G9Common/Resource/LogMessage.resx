@@ -276,8 +276,20 @@
   <data name="CommandName" xml:space="preserve">
     <value>نام کامند</value>
   </data>
+  <data name="CommandNotFound" xml:space="preserve">
+    <value>کامندی با نام مورد نظر وجود ندارد</value>
+  </data>
+  <data name="CommandSendType" xml:space="preserve">
+    <value>نوع داده ارسالی کامند</value>
+  </data>
+  <data name="CommandSendTypeNotCorrect" xml:space="preserve">
+    <value>مقدار ارسالی برای این کامند درست نیست.</value>
+  </data>
   <data name="CommanTestSendReceive" xml:space="preserve">
     <value>دریافت از کامند تست ارسال و دریافت بین سرور و کلاینت</value>
+  </data>
+  <data name="CurrentSessionCount" xml:space="preserve">
+    <value>تعداد کل نشست های متصل (کلاینت ها)</value>
   </data>
   <data name="DisableCommandTestModeForAllClients" xml:space="preserve">
     <value>توقف کامند تست ارسال و دریافت بین سرور و کلاینت برای تمامی کلاینت ها</value>
@@ -297,6 +309,12 @@
   <data name="FailSendComandByNameAsync" xml:space="preserve">
     <value>روند ارسال کامند ناهمگام Async با استفاده از نام با مشکل مواجه شده است</value>
   </data>
+  <data name="FailSendComandByNameToAll" xml:space="preserve">
+    <value>در روند ارسال کامند به تمامی کلاینت ها خطایی رخ داده است</value>
+  </data>
+  <data name="FailSendComandByNameToAllAsync" xml:space="preserve">
+    <value>در روند ارسال کامند به صورت ناهمگام  به تمامی کلاینت ها خطایی رخ داده است</value>
+  </data>
   <data name="FailStopServer" xml:space="preserve">
     <value>در روند توقف سرور مشکلی ایجاد شده است</value>
   </data>
@@ -315,11 +333,35 @@
   <data name="ReceiveRequestOverTheLimit" xml:space="preserve">
     <value>دریافت بسته (پاکت) بیش از حد مجاز تعیین شده در کانفیگ سرور</value>
   </data>
+  <data name="SendTypeWithFunction" xml:space="preserve">
+    <value>نوع داده ارسالی توسط تابع</value>
+  </data>
+  <data name="ServerStartDateTime" xml:space="preserve">
+    <value>زمان و تاریخ شروع کار سرور</value>
+  </data>
+  <data name="ServerTotalReceiveBytes" xml:space="preserve">
+    <value>کل دیتای دریافتی توسط سرور به بایت</value>
+  </data>
+  <data name="ServerTotalReceivePacket" xml:space="preserve">
+    <value>تعداد کل پکت دریافتی توسط سرور</value>
+  </data>
+  <data name="ServerTotalSendBytes" xml:space="preserve">
+    <value>کل دیتای ارسالی توسط سرور به بایت</value>
+  </data>
+  <data name="ServerTotalSendPacket" xml:space="preserve">
+    <value>تعداد کل پکت ارسالی توسط سرور</value>
+  </data>
+  <data name="ServerUpTime" xml:space="preserve">
+    <value>مدت زمان کارکرد</value>
+  </data>
   <data name="StopServer" xml:space="preserve">
     <value>توقف سرور</value>
   </data>
   <data name="TestNumber" xml:space="preserve">
     <value>تعداد تست</value>
+  </data>
+  <data name="TotalSessionFromStartServerCount" xml:space="preserve">
+    <value>تعداد کل نشست های که از زمان شروع سرور تا به الان به سرور متصل شده اند</value>
   </data>
   <data name="UnhandledCommand" xml:space="preserve">
     <value>کامند مدیریت نشده</value>

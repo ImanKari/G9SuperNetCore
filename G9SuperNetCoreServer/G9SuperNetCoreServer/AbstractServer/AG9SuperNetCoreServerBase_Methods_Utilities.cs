@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using G9Common.Resource;
 using G9LogManagement.Enums;
 using G9SuperNetCoreServer.Abstarct;
 using G9SuperNetCoreServer.Enums;
@@ -317,6 +318,19 @@ namespace G9SuperNetCoreServer.AbstractServer
             }
         }
 
+        #endregion
+
+        /// <summary>
+        /// Get server information
+        /// </summary>
+        /// <returns>Get server information like string</returns>
+        #region GetServerInfo
+        public string GetServerInfo()
+        {
+            var serverUpTime = DateTime.Now - ServerStartDateTime;
+            return
+                $"{LogMessage.ServerStartDateTime}: {ServerStartDateTime:yyyy/MM/dd HH:mm:ss}\n{LogMessage.ServerUpTime}: {serverUpTime:G}\n{LogMessage.ServerTotalSendBytes}: {TotalSendBytes}\t{LogMessage.ServerTotalReceiveBytes}: {TotalReceiveBytes}\n{LogMessage.ServerTotalSendPacket}: {TotalSendPacket}\t{LogMessage.ServerTotalReceivePacket}: {TotalReceivePacket}\n{LogMessage.TotalSessionFromStartServerCount}: {NumberOfSessionFromStartServer}\t{LogMessage.CurrentSessionCount}: {NumberOfCurrentSession}";
+        }
         #endregion
 
         #endregion

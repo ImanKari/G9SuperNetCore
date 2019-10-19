@@ -33,6 +33,11 @@
         ErrorReadyToSendDataToClient,
 
         /// <summary>
+        ///     Error when data preparation for send to all clients
+        /// </summary>
+        ErrorReadyToSendDataToAllClients,
+
+        /// <summary>
         ///     Error when server is stopped and receive request again for stop
         /// </summary>
         ServerIsStoppedAndReceiveRequestForStop,

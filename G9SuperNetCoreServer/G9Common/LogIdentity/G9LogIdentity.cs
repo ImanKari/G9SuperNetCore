@@ -37,6 +37,10 @@
         /// </summary>
         public const string SERVER_SEND_DATA = "SERVER_SEND_DATA";
         /// <summary>
+        /// Log Identity => On send data in server for all clients
+        /// </summary>
+        public const string SERVER_SEND_DATA_ALL_CLIENTS = "SERVER_SEND_DATA_ALL_CLIENTS";
+        /// <summary>
         /// Log Identity => On receive data in server
         /// </summary>
         public const string SERVER_RECEIVE_DATA = "SERVER_RECEIVE_DATA";

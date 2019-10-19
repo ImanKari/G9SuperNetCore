@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Threading;
 using G9Common.Abstract;
 using G9Common.Enums;
 using G9Common.Interface;
@@ -88,20 +89,20 @@ namespace G9SuperNetCoreServer.AbstractServer
                 // Return if not accepted
                 if (!accept) return;
 
-                // Create the state object.  
-                var state = new G9SuperNetCoreStateObjectServer(_packetManagement.MaximumPacketSize,
+                // Create the state object for receive 
+                var stateReceive = new G9SuperNetCoreStateObjectServer(_packetManagement.MaximumPacketSize,
                     account.Session.SessionId)
                 {
                     WorkSocket = handler
                 };
-                sessionId = state.SessionIdentity;
+                sessionId = stateReceive.SessionIdentity;
 
                 // Run event on connected
                 OnConnectedHandler(account);
 
                 // Ready for begin receive
-                handler.BeginReceive(state.Buffer, 0, AG9SuperNetCoreStateObjectBase.BufferSize, 0,
-                    ReadCallback, state);
+                handler.BeginReceive(stateReceive.Buffer, 0, AG9SuperNetCoreStateObjectBase.BufferSize, 0,
+                    ReadCallback, stateReceive);
 
                 // Set log
                 if (_core.Logging.LogIsActive(LogsType.EVENT))
@@ -123,6 +124,7 @@ namespace G9SuperNetCoreServer.AbstractServer
 
         #endregion
 
+
         /// <summary>
         ///     Read call back
         ///     Handle receive data
@@ -133,33 +135,30 @@ namespace G9SuperNetCoreServer.AbstractServer
 
         private void ReadCallback(IAsyncResult asyncResult)
         {
+            // Specify session id
             uint sessionId = 0;
+            // Retrieve the state object and the handler socket  
+            // from the asynchronous state object.  
+            var state = (G9SuperNetCoreStateObjectServer)asyncResult.AsyncState;
             try
             {
-                // Retrieve the state object and the handler socket  
-                // from the asynchronous state object.  
-                var state = (G9SuperNetCoreStateObjectServer) asyncResult.AsyncState;
-                var handler = state.WorkSocket;
                 sessionId = state.SessionIdentity;
 
                 var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
 
                 // Read data from the client socket.   
-                var bytesRead = handler.EndReceive(asyncResult);
+                var bytesRead = state.WorkSocket.EndReceive(asyncResult);
 
                 if (bytesRead > 0)
                 {
-                    // Use like span
-                    ReadOnlySpan<byte> packet = state.Buffer;
-
-                    var receiveBytes = (ushort) packet.Length;
+                    var receiveBytes = (ushort) state.Buffer.Length;
 
                     // Plus total receive bytes and packet
                     TotalReceiveBytes += receiveBytes;
                     TotalReceivePacket++;
 
                     // unpacking request
-                    var receivePacket = _packetManagement.UnpackingRequestByData(packet);
+                    var receivePacket = _packetManagement.UnpackingRequestByData(state.Buffer);
 
                     // Set last command (check ping automatically when set last command)
                     accountUtilities.SessionHandler.Core_SetLastCommand(receivePacket.Command);
@@ -181,10 +180,6 @@ namespace G9SuperNetCoreServer.AbstractServer
                         _core.GetAccountUtilitiesBySessionId(sessionId).Account);
                 }
 
-                // Listen and get other packet
-                handler.BeginReceive(state.Buffer, 0, AG9SuperNetCoreStateObjectBase.BufferSize, 0,
-                    ReadCallback, state);
-
                 // Set log
                 if (_core.Logging.LogIsActive(LogsType.EVENT))
                     _core.Logging.LogEvent(
@@ -193,6 +188,10 @@ namespace G9SuperNetCoreServer.AbstractServer
             }
             catch (Exception ex)
             {
+                if (state?.Buffer != null)
+                    // Clear Data
+                    Array.Clear(state.Buffer, 0, AG9SuperNetCoreStateObjectBase.BufferSize);
+
                 if (ex is SocketException exception && exception.ErrorCode == 10054)
                 {
                     // Run event disconnect
@@ -210,6 +209,43 @@ namespace G9SuperNetCoreServer.AbstractServer
                     OnErrorHandler(ex, ServerErrorReason.ErrorReceiveDataFromClient);
                 }
             }
+            finally
+            {
+                // Listen and get other packet
+                state?.WorkSocket.BeginReceive(state.Buffer, 0, AG9SuperNetCoreStateObjectBase.BufferSize, 0,
+                    ReadCallback, state);
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Send data to client
+        /// </summary>
+        /// <param name="handler">Socket handler for send</param>
+        /// <param name="sessionId">Specified session id</param>
+        /// <param name="byteData">Specify byte data for send</param>
+
+        #region Send
+
+        private WaitHandle Send(Socket handler, uint sessionId, byte[] byteData)
+        {
+            // Create the state object for sent
+            var stateSend = new G9SuperNetCoreStateObjectServer(_packetManagement.MaximumPacketSize, sessionId)
+            {
+                WorkSocket = handler,
+                Buffer = byteData
+            };
+
+            // Set log
+            if (_core.Logging.LogIsActive(LogsType.EVENT))
+                _core.Logging.LogEvent($"{LogMessage.RequestSendData}\n{LogMessage.DataLength}: {byteData.Length}",
+                    G9LogIdentity.SERVER_SEND_DATA, LogMessage.SuccessfulOperation);
+
+            // Begin sending the data to the remote device.  
+            return handler.BeginSend(stateSend.Buffer, 0, byteData.Length, 0,
+                SendCallback, stateSend)
+                ?.AsyncWaitHandle;
         }
 
         #endregion
@@ -224,16 +260,16 @@ namespace G9SuperNetCoreServer.AbstractServer
 
         private void SendCallback(IAsyncResult asyncResult)
         {
+            // Retrieve the socket from the state object.  
+            var state = (G9SuperNetCoreStateObjectServer)asyncResult.AsyncState;
+
             try
             {
-                // Retrieve the socket from the state object.  
-                var handler = (G9SuperNetCoreStateObjectServer) asyncResult.AsyncState;
-
                 // Complete sending the data to the remote device.  
-                var bytesSent = (ushort) handler.WorkSocket.EndSend(asyncResult);
+                var bytesSent = (ushort) state.WorkSocket.EndSend(asyncResult);
 
                 // Plus send bytes for session
-                _core.GetAccountUtilitiesBySessionId(handler.SessionIdentity).SessionHandler
+                _core.GetAccountUtilitiesBySessionId(state.SessionIdentity).SessionHandler
                     .Core_PlusSessionTotalSendBytes(bytesSent);
 
                 // Plus total send bytes and packet

@@ -53,6 +53,12 @@ namespace G9SuperNetCoreServerSampleApp
                 {
                     server.SendCommandToAllByName(nameof(CounterCommand), 0);
                 }
+                else if (message == "INFO")
+                {
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.WriteLine(server.GetServerInfo());
+                    Console.ResetColor();
+                }
                 else
                     server.SendCommandToAllByName("G9EchoCommand", $"Server send a message {counter++}: {message}");
             }

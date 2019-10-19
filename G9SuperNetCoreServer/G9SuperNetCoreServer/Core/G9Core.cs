@@ -62,17 +62,19 @@ namespace G9SuperNetCoreServer.Core
         ///     Access to func send command by name
         ///     long => session id
         ///     string => command name
+        ///     bool => If set true, check command exists
         ///     object => data for send
         /// </summary>
-        private readonly Func<uint, string, object, int> _sendCommandByName;
+        private readonly Func<uint, string, object, bool, bool, int> _sendCommandByName;
 
         /// <summary>
         ///     Access to func send command by name async
         ///     long => session id
         ///     string => command name
+        ///     bool => If set true, check command exists
         ///     object => data for send
         /// </summary>
-        private readonly Func<uint, string, object, Task<int>> _sendCommandByNameAsync;
+        private readonly Func<uint, string, object, bool, bool, Task<int>> _sendCommandByNameAsync;
 
         /// <summary>
         ///     Access to event OnSessionReceiveRequestOverTheLimitInSecond 
@@ -98,8 +100,8 @@ namespace G9SuperNetCoreServer.Core
         #region G9Core
 
         public G9Core(G9ServerConfig superNetCoreConfig, Assembly commandAssembly,
-            Func<uint, string, object, int> sendCommandByName,
-            Func<uint, string, object, Task<int>> sendCommandByNameAsync,
+            Func<uint, string, object, bool, bool, int> sendCommandByName,
+            Func<uint, string, object, bool, bool, Task<int>> sendCommandByNameAsync,
             Action<TAccount> onSessionReceiveRequestOverTheLimitInSecond,
             Action<G9SendAndReceivePacket, TAccount> onUnhandledCommand, IG9Logging customLogging = null)
         {

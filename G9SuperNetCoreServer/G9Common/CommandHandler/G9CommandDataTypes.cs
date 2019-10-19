@@ -20,15 +20,21 @@ namespace G9Common.CommandHandler
         /// </summary>
         /// <param name="accessToMethodReceiveCommand">Specify method "ReceiveCommand" in command</param>
         /// <param name="accessToMethodOnErrorInCommand">Specify method "OnError" in command</param>
+        /// <param name="commandReceiveType">Specified receive type for command</param>
+        /// <param name="commandSendType">Specified send type for command</param>
 
         #region CommandDataType
 
         public CommandDataType(
             Action<ReadOnlyMemory<byte>, TAccount> accessToMethodReceiveCommand,
-            Action<Exception, TAccount> accessToMethodOnErrorInCommand)
+            Action<Exception, TAccount> accessToMethodOnErrorInCommand,
+            Type commandReceiveType,
+            Type commandSendType)
         {
             AccessToMethodReceiveCommand = accessToMethodReceiveCommand;
             AccessToMethodOnErrorInCommand = accessToMethodOnErrorInCommand;
+            CommandReceiveType = commandReceiveType;
+            CommandSendType = commandSendType;
         }
 
         #endregion
@@ -40,12 +46,22 @@ namespace G9Common.CommandHandler
         /// <summary>
         ///     Access to method "ResponseService" in command
         /// </summary>
-        public Action<ReadOnlyMemory<byte>, TAccount> AccessToMethodReceiveCommand { get; }
+        public readonly Action<ReadOnlyMemory<byte>, TAccount> AccessToMethodReceiveCommand;
 
         /// <summary>
         ///     Access to method "OnError" in command
         /// </summary>
-        public Action<Exception, TAccount> AccessToMethodOnErrorInCommand { get; }
+        public readonly Action<Exception, TAccount> AccessToMethodOnErrorInCommand;
+
+        /// <summary>
+        ///     Access to receive type for command
+        /// </summary>
+        public readonly Type CommandReceiveType;
+
+        /// <summary>
+        ///     Access to send type for command
+        /// </summary>
+        public readonly Type CommandSendType;
 
         #endregion
     }

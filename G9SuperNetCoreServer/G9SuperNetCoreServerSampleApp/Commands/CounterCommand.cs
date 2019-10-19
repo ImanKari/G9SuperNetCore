@@ -9,7 +9,7 @@ namespace G9SuperNetCoreClientSampleApp.Commands
         public override void ReceiveCommand(int data, ServerAccountSample account)
         {
             Console.WriteLine($"Receive Counter: {data}");
-            account.Session.SendCommandByNameAsync(nameof(CounterCommand), data+1);
+            account.Session.SendCommandAsync<CounterCommand, int>(data + 1);
         }
 
         public override void OnError(Exception exceptionError, ServerAccountSample account)

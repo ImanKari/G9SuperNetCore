@@ -85,9 +85,9 @@ namespace G9SuperNetCoreClient.Abstract
 
         #region SendCommandByNameAsync
 
-        public override Task<int> SendCommandByNameAsync(string name, object data)
+        public override Task<int> SendCommandByNameAsync(string commandName, object commandData, bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            return _sessionHandler.Session_SendCommandByNameAsync(SessionId, name, data);
+            return _sessionHandler.Session_SendCommandByNameAsync(SessionId, commandName, commandData, checkCommandExists, checkCommandSendType);
         }
 
         #endregion
@@ -96,9 +96,9 @@ namespace G9SuperNetCoreClient.Abstract
 
         #region SendCommandByName
 
-        public override int SendCommandByName(string name, object data)
+        public override int SendCommandByName(string commandName, object commandData, bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            return _sessionHandler.Session_SendCommandByName(SessionId, name, data);
+            return _sessionHandler.Session_SendCommandByName(SessionId, commandName, commandData, checkCommandExists, checkCommandSendType);
         }
 
         #endregion
@@ -107,9 +107,9 @@ namespace G9SuperNetCoreClient.Abstract
 
         #region SendCommandAsync
 
-        public override Task<int> SendCommandAsync<TCommand, TTypeSend>(TTypeSend data)
+        public override Task<int> SendCommandAsync<TCommand, TTypeSend>(TTypeSend commandData, bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            return _sessionHandler.Session_SendCommandByNameAsync(SessionId, nameof(TCommand), data);
+            return _sessionHandler.Session_SendCommandByNameAsync(SessionId, typeof(TCommand).Name, commandData, checkCommandExists, checkCommandSendType);
         }
 
         #endregion
@@ -118,9 +118,9 @@ namespace G9SuperNetCoreClient.Abstract
 
         #region SendCommand
 
-        public override int SendCommand<TCommand, TTypeSend>(TTypeSend data)
+        public override int SendCommand<TCommand, TTypeSend>(TTypeSend commandData, bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            return _sessionHandler.Session_SendCommandByName(SessionId, nameof(TCommand), data);
+            return _sessionHandler.Session_SendCommandByName(SessionId, typeof(TCommand).Name, commandData, checkCommandExists, checkCommandSendType);
         }
 
         #endregion

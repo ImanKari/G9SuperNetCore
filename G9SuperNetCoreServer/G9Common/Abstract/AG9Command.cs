@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using G9Common.CommandHandler;
 using G9Common.Interface;
 using G9Common.JsonHelper;
@@ -13,13 +12,13 @@ namespace G9Common.Abstract
     /// <summary>
     ///     Class used for command with send and receive
     /// </summary>
-    /// <typeparam name="TSendData">Specify send data type</typeparam>
-    /// <typeparam name="TReceiveData">Specify receive data type</typeparam>
+    /// <typeparam name="TSendType">Specify send data type</typeparam>
+    /// <typeparam name="TReceiveType">Specify receive data type</typeparam>
     /// <typeparam name="TAccount">Access to account</typeparam>
 
     #region AG9Command<TSendData, TReceiveData, TAccount>
 
-    public abstract class AG9Command<TSendData, TReceiveData, TAccount> : IG9CommandWithSend
+    public abstract class AG9Command<TSendType, TReceiveType, TAccount> : IG9CommandWithSend
         where TAccount : AAccount, new()
     {
         #region Fields And Properties
@@ -56,7 +55,7 @@ namespace G9Common.Abstract
         protected AG9Command()
         {
             CommandName = GetType().Name;
-            TypeOfSend = typeof(TSendData);
+            TypeOfSend = typeof(TSendType);
         }
 
         #endregion
@@ -79,7 +78,7 @@ namespace G9Common.Abstract
                         {
                             try
                             {
-                                ReceiveCommand(data.ToArray().FromJson<TReceiveData>(), account);
+                                ReceiveCommand(data.ToArray().FromJson<TReceiveType>(), account);
                             }
                             catch (Exception ex)
                             {
@@ -87,7 +86,11 @@ namespace G9Common.Abstract
                             }
                         },
                         // Access to method "OnError" in command
-                        OnError
+                        OnError,
+                        // Specified receive type
+                        typeof(TReceiveType),
+                        // Specified send type
+                        typeof(TSendType)
                     ));
                 _initializeCommand = true;
             }
@@ -101,7 +104,7 @@ namespace G9Common.Abstract
         /// <param name="data">Received data</param>
         /// <param name="account">Access to account</param>
         /// <returns>return data</returns>
-        public abstract void ReceiveCommand(TReceiveData data, TAccount account);
+        public abstract void ReceiveCommand(TReceiveType data, TAccount account);
 
         /// <summary>
         ///     Method call when throw exception for this command
@@ -119,13 +122,13 @@ namespace G9Common.Abstract
     /// <summary>
     ///     Class used for command with send and receive
     /// </summary>
-    /// <typeparam name="TSendAndReceiveData">Specify send and receive data type</typeparam>
+    /// <typeparam name="TSendAndReceiveType">Specify send and receive data type</typeparam>
     /// <typeparam name="TAccount">Access to account</typeparam>
 
     #region AG9Command<TSendAndReceiveData, TReceiverAccount>
 
-    public abstract class AG9Command<TSendAndReceiveData, TAccount>
-        : AG9Command<TSendAndReceiveData, TSendAndReceiveData, TAccount>
+    public abstract class AG9Command<TSendAndReceiveType, TAccount>
+        : AG9Command<TSendAndReceiveType, TSendAndReceiveType, TAccount>
         where TAccount : AAccount, new()
     {
     }

@@ -24,7 +24,6 @@ namespace G9Common.CommandHandler
     public class G9CommandHandler<TAccount>
         where TAccount : AAccount, new()
     {
-
         #region Fields And Properties
 
         /// <summary>
@@ -55,7 +54,7 @@ namespace G9Common.CommandHandler
         /// <summary>
         ///     Save event on unhandled command
         /// </summary>
-        private Action<G9SendAndReceivePacket, TAccount> _onUnhandledCommand;
+        private readonly Action<G9SendAndReceivePacket, TAccount> _onUnhandledCommand;
 
         #endregion
 
@@ -76,7 +75,8 @@ namespace G9Common.CommandHandler
 
         #region G9CommandHandler
 
-        public G9CommandHandler(Assembly commandAssembly, IG9Logging logging, int oCommandSize, Action<G9SendAndReceivePacket, TAccount> onUnhandledCommand)
+        public G9CommandHandler(Assembly commandAssembly, IG9Logging logging, int oCommandSize,
+            Action<G9SendAndReceivePacket, TAccount> onUnhandledCommand)
         {
             // Set assembly of commands
             _commandAssembly = commandAssembly ?? throw new ArgumentNullException(nameof(commandAssembly));
@@ -173,7 +173,8 @@ namespace G9Common.CommandHandler
             // Instance action for add command data type
             Action<string, CommandDataType<TAccount>> addCommandDataType = (commandName, commandDataType) =>
             {
-                _accessToCommandDataTypeCollection.Add(commandName.GenerateStandardCommandName(_commandSize), commandDataType);
+                _accessToCommandDataTypeCollection.Add(commandName.GenerateStandardCommandName(_commandSize),
+                    commandDataType);
             };
 
             derivedTypes.ForEach(oType =>
@@ -182,7 +183,7 @@ namespace G9Common.CommandHandler
                 _instanceCommandCollection.Add(oType.Name.GenerateStandardCommandName(_commandSize),
                     instance);
                 var method = oType.GetMethod("InitializeRequirement");
-                method.Invoke(instance, new object[1] { addCommandDataType });
+                method.Invoke(instance, new object[1] {addCommandDataType});
             });
 
             #endregion
@@ -334,7 +335,11 @@ namespace G9Common.CommandHandler
                         }
                     },
                     // Access to method "OnError" in command
-                    errorHandler
+                    errorHandler,
+                    // Specified receive type
+                    typeof(TReceiveType),
+                    // Specified send type
+                    typeof(TSendType)
                 )
             );
         }
@@ -343,8 +348,37 @@ namespace G9Common.CommandHandler
 
         #endregion
 
+        /// <summary>
+        ///     Check command exists
+        /// </summary>
+        /// <param name="commandName">Specified command name</param>
+        /// <returns>return 'true' if exists</returns>
 
-        
+        #region CheckCommandExist
+
+        public bool CheckCommandExist(string commandName)
+        {
+            return _accessToCommandDataTypeCollection.ContainsKey(
+                commandName.GenerateStandardCommandName(_commandSize));
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Get command send type
+        /// </summary>
+        /// <param name="commandName">Specified command name</param>
+        /// <returns>return type of send for command</returns>
+
+        #region GetCommandSendType
+
+        public Type GetCommandSendType(string commandName)
+        {
+            return _accessToCommandDataTypeCollection[
+                commandName.GenerateStandardCommandName(_commandSize)]?.CommandSendType;
+        }
+
+        #endregion
 
         #endregion
     }

@@ -196,6 +196,33 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to کامندی با نام مورد نظر وجود ندارد.
+        /// </summary>
+        public static string CommandNotFound {
+            get {
+                return ResourceManager.GetString("CommandNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to نوع داده ارسالی کامند.
+        /// </summary>
+        public static string CommandSendType {
+            get {
+                return ResourceManager.GetString("CommandSendType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to مقدار ارسالی برای این کامند درست نیست..
+        /// </summary>
+        public static string CommandSendTypeNotCorrect {
+            get {
+                return ResourceManager.GetString("CommandSendTypeNotCorrect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to دریافت از کامند تست ارسال و دریافت بین سرور و کلاینت.
         /// </summary>
         public static string CommanTestSendReceive {
@@ -228,6 +255,15 @@ namespace G9Common.Resource {
         public static string CreateNewAccount {
             get {
                 return ResourceManager.GetString("CreateNewAccount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تعداد کل نشست های متصل (کلاینت ها).
+        /// </summary>
+        public static string CurrentSessionCount {
+            get {
+                return ResourceManager.GetString("CurrentSessionCount", resourceCulture);
             }
         }
         
@@ -363,6 +399,24 @@ namespace G9Common.Resource {
         public static string FailSendComandByNameAsync {
             get {
                 return ResourceManager.GetString("FailSendComandByNameAsync", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to در روند ارسال کامند به تمامی کلاینت ها خطایی رخ داده است.
+        /// </summary>
+        public static string FailSendComandByNameToAll {
+            get {
+                return ResourceManager.GetString("FailSendComandByNameToAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to در روند ارسال کامند به صورت ناهمگام  به تمامی کلاینت ها خطایی رخ داده است.
+        /// </summary>
+        public static string FailSendComandByNameToAllAsync {
+            get {
+                return ResourceManager.GetString("FailSendComandByNameToAllAsync", resourceCulture);
             }
         }
         
@@ -538,6 +592,69 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to نوع داده ارسالی توسط تابع.
+        /// </summary>
+        public static string SendTypeWithFunction {
+            get {
+                return ResourceManager.GetString("SendTypeWithFunction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to زمان و تاریخ شروع کار سرور.
+        /// </summary>
+        public static string ServerStartDateTime {
+            get {
+                return ResourceManager.GetString("ServerStartDateTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to کل دیتای دریافتی توسط سرور به بایت.
+        /// </summary>
+        public static string ServerTotalReceiveBytes {
+            get {
+                return ResourceManager.GetString("ServerTotalReceiveBytes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تعداد کل پکت دریافتی توسط سرور.
+        /// </summary>
+        public static string ServerTotalReceivePacket {
+            get {
+                return ResourceManager.GetString("ServerTotalReceivePacket", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to کل دیتای ارسالی توسط سرور به بایت.
+        /// </summary>
+        public static string ServerTotalSendBytes {
+            get {
+                return ResourceManager.GetString("ServerTotalSendBytes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تعداد کل پکت ارسالی توسط سرور.
+        /// </summary>
+        public static string ServerTotalSendPacket {
+            get {
+                return ResourceManager.GetString("ServerTotalSendPacket", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to مدت زمان کارکرد.
+        /// </summary>
+        public static string ServerUpTime {
+            get {
+                return ResourceManager.GetString("ServerUpTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to طول (تعداد کاراکتر) مجاز.
         /// </summary>
         public static string StandardLength {
@@ -651,6 +768,15 @@ namespace G9Common.Resource {
         public static string TestNumber {
             get {
                 return ResourceManager.GetString("TestNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to تعداد کل نشست های که از زمان شروع سرور تا به الان به سرور متصل شده اند.
+        /// </summary>
+        public static string TotalSessionFromStartServerCount {
+            get {
+                return ResourceManager.GetString("TotalSessionFromStartServerCount", resourceCulture);
             }
         }
         

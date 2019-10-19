@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using G9Common.HelperClass;
+using G9Common.Interface;
 using G9Common.JsonHelper;
 using G9Common.LogIdentity;
 using G9Common.Packet;
@@ -291,24 +292,45 @@ namespace G9SuperNetCoreServer.AbstractServer
 
         #endregion
 
+        #region Send Command By Name
+
         /// <summary>
         ///     Send command request by name
         /// </summary>
         /// <param name="sessionId">Session id for send</param>
-        /// <param name="name">Name of command</param>
-        /// <param name="data">Data for send</param>
+        /// <param name="commandName">Name of command</param>
+        /// <param name="commandData">Data for send</param>
+        /// <param name="checkCommandExists">
+        ///     If set true, check command exists
+        ///     If not exists throw exception
+        /// </param>
+        /// <param name="checkCommandSendType">
+        ///     If set true, check command send type
+        ///     If func send data type not equal with command send type throw exception
+        /// </param>
         /// <returns>Return => int number specify byte to send. if don't send return 0</returns>
 
         #region SendCommandByName
 
-        public int SendCommandByName(uint sessionId, string name, object data)
+        public int SendCommandByName(uint sessionId, string commandName, object commandData,
+            bool checkCommandExists = true, bool checkCommandSendType = true)
         {
             // Set send data
             var sendBytes = 0;
             try
             {
+                // Check exists command
+                if (checkCommandExists && !_core.CommandHandler.CheckCommandExist(commandName))
+                    throw new Exception($"{LogMessage.Command}\n{LogMessage.CommandName}: {commandName}");
+
+                // Check exists command
+                if (checkCommandSendType &&
+                    _core.CommandHandler.GetCommandSendType(commandName) != commandData.GetType())
+                    throw new Exception(
+                        $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
+
                 // Ready data for send
-                var dataForSend = ReadyDataForSend(name, data);
+                var dataForSend = ReadyDataForSend(commandName, commandData);
 
                 // Get total packets
                 var packets = dataForSend.GetPacketsArray();
@@ -318,8 +340,7 @@ namespace G9SuperNetCoreServer.AbstractServer
 
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
-                    //Try to send
-                    sendBytes += socket.Send(packets[i]);
+                    Send(socket, sessionId, packets[i])?.WaitOne();
             }
             catch (Exception ex)
             {
@@ -338,21 +359,40 @@ namespace G9SuperNetCoreServer.AbstractServer
         ///     Send async command request by name
         /// </summary>
         /// <param name="sessionId">Session id for send</param>
-        /// <param name="name">Name of command</param>
-        /// <param name="data">Data for send</param>
+        /// <param name="commandName">Name of command</param>
+        /// <param name="commandData">Data for send</param>
+        /// <param name="checkCommandExists">
+        ///     If set true, check command exists
+        ///     If not exists throw exception
+        /// </param>
+        /// <param name="checkCommandSendType">
+        ///     If set true, check command send type
+        ///     If func send data type not equal with command send type throw exception
+        /// </param>
         /// <returns>Return => Task int specify byte to send. if don't send return 0</returns>
 
         #region SendCommandByNameAsync
 
-        public async Task<int> SendCommandByNameAsync(uint sessionId, string name, object data)
+        public async Task<int> SendCommandByNameAsync(uint sessionId, string commandName, object commandData,
+            bool checkCommandExists = true, bool checkCommandSendType = true)
         {
             // Set send data
             var sendBytes = 0;
 
             try
             {
+                // Check exists command
+                if (checkCommandExists && !_core.CommandHandler.CheckCommandExist(commandName))
+                    throw new Exception($"{LogMessage.Command}\n{LogMessage.CommandName}: {commandName}");
+
+                // Check exists command
+                if (checkCommandSendType &&
+                    _core.CommandHandler.GetCommandSendType(commandName) != commandData.GetType())
+                    throw new Exception(
+                        $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
+
                 // Ready data for send
-                var dataForSend = ReadyDataForSend(name, data);
+                var dataForSend = ReadyDataForSend(commandName, commandData);
 
                 // Get total packets
                 var packets = dataForSend.GetPacketsArray();
@@ -363,7 +403,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
                     // Try to send
-                    sendBytes += await socket.SendAsync(new ArraySegment<byte>(packets[i]), SocketFlags.None);
+                    Send(socket, sessionId, packets[i]);
             }
             catch (Exception ex)
             {
@@ -379,32 +419,245 @@ namespace G9SuperNetCoreServer.AbstractServer
         #endregion
 
         /// <summary>
-        ///     Send command request to all connectionby name
+        ///     Send command request to all clients by name
         /// </summary>
-        /// <param name="name">Name of command</param>
-        /// <param name="data">Data for send</param>
+        /// <param name="commandName">Name of command</param>
+        /// <param name="commandData">Data for send</param>
+        /// <param name="checkCommandExists">
+        ///     If set true, check command exists
+        ///     If not exists throw exception
+        /// </param>
+        /// <param name="checkCommandSendType">
+        ///     If set true, check command send type
+        ///     If func send data type not equal with command send type throw exception
+        /// </param>
         /// <returns>Return 'true' if send is success</returns>
 
         #region SendCommandToAllByName
 
-        public bool SendCommandToAllByName(string name, object data)
+        public bool SendCommandToAllByName(string commandName, object commandData, bool checkCommandExists = true,
+            bool checkCommandSendType = true)
         {
-            // Ready data for send
-            var dataForSend = ReadyDataForSend(name, data);
-
-            // Get total packets
-            var packets = dataForSend.GetPacketsArray();
-
-            // Send total packets
-            for (var i = 0; i < dataForSend.TotalPackets; i++)
+            try
             {
-                var i1 = i;
-                _core.ScrollingAllAccountUtilities(socketConnection =>
-                    socketConnection.SessionSocket.Send(packets[i1]));
-            }
+                // Check exists command
+                if (checkCommandExists && !_core.CommandHandler.CheckCommandExist(commandName))
+                    throw new Exception($"{LogMessage.Command}\n{LogMessage.CommandName}: {commandName}");
 
-            return true;
+                // Check exists command
+                if (checkCommandSendType &&
+                    _core.CommandHandler.GetCommandSendType(commandName) != commandData.GetType())
+                    throw new Exception(
+                        $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
+
+                // Ready data for send
+                var dataForSend = ReadyDataForSend(commandName, commandData);
+
+                // Get total packets
+                var packets = dataForSend.GetPacketsArray();
+
+                // Send total packets
+                for (var i = 0; i < dataForSend.TotalPackets; i++)
+                {
+                    var i1 = i;
+                    _core.ScrollingAllAccountUtilities(socketConnection =>
+                        Send(socketConnection.SessionSocket, socketConnection.Account.Session.SessionId, packets[i1])?.WaitOne());
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Set log
+                if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                    _core.Logging.LogException(ex, LogMessage.FailSendComandByNameToAll,
+                        G9LogIdentity.SERVER_SEND_DATA_ALL_CLIENTS, LogMessage.FailedOperation);
+
+                // Run event on error
+                OnErrorHandler(ex, ServerErrorReason.ErrorReadyToSendDataToAllClients);
+
+                return false;
+            }
         }
+
+        #endregion
+
+        /// <summary>
+        ///     Send command request to all clients by name
+        /// </summary>
+        /// <param name="commandName">Name of command</param>
+        /// <param name="commandData">Data for send</param>
+        /// <param name="checkCommandExists">
+        ///     If set true, check command exists
+        ///     If not exists throw exception
+        /// </param>
+        /// <param name="checkCommandSendType">
+        ///     If set true, check command send type
+        ///     If func send data type not equal with command send type throw exception
+        /// </param>
+        /// <returns>Return 'true' if send is success</returns>
+
+        #region SendCommandToAllByNameAsync
+
+        public async Task<bool> SendCommandToAllByNameAsync(string commandName, object commandData,
+            bool checkCommandExists = true, bool checkCommandSendType = true)
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    // Check exists command
+                    if (checkCommandExists && !_core.CommandHandler.CheckCommandExist(commandName))
+                        throw new Exception($"{LogMessage.Command}\n{LogMessage.CommandName}: {commandName}");
+
+                    // Check exists command
+                    if (checkCommandSendType &&
+                        _core.CommandHandler.GetCommandSendType(commandName) != commandData.GetType())
+                        throw new Exception(
+                            $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
+
+                    // Ready data for send
+                    var dataForSend = ReadyDataForSend(commandName, commandData);
+
+                    // Get total packets
+                    var packets = dataForSend.GetPacketsArray();
+
+                    // Send total packets
+                    for (var i = 0; i < dataForSend.TotalPackets; i++)
+                    {
+                        var i1 = i;
+                        _core.ScrollingAllAccountUtilities(socketConnection =>
+                            Send(socketConnection.SessionSocket, socketConnection.Account.Session.SessionId, packets[i1]));
+                    }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    // Set log
+                    if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                        _core.Logging.LogException(ex, LogMessage.FailSendComandByNameToAll,
+                            G9LogIdentity.SERVER_SEND_DATA_ALL_CLIENTS, LogMessage.FailedOperation);
+
+                    // Run event on error
+                    OnErrorHandler(ex, ServerErrorReason.ErrorReadyToSendDataToAllClients);
+
+                    return false;
+                }
+            });
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Send Command By Command
+
+        /// <summary>
+        ///     Send command request by command
+        /// </summary>
+        /// <param name="sessionId">Session id for send</param>
+        /// <param name="commandData">Data for send</param>
+        /// <param name="checkCommandExists">
+        ///     If set true, check command exists
+        ///     If not exists throw exception
+        /// </param>
+        /// <param name="checkCommandSendType">
+        ///     If set true, check command send type
+        ///     If func send data type not equal with command send type throw exception
+        /// </param>
+        /// <returns>Return => int number specify byte to send. if don't send return 0</returns>
+
+        #region SendCommand
+
+        public int SendCommand<TCommand, TTypeSend>(uint sessionId, TTypeSend commandData,
+            bool checkCommandExists = true,
+            bool checkCommandSendType = true)
+            where TCommand : IG9CommandWithSend
+        {
+            return SendCommandByName(sessionId, typeof(TCommand).Name, commandData, checkCommandExists,
+                checkCommandSendType);
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Send async command request by command
+        /// </summary>
+        /// <param name="sessionId">Session id for send</param>
+        /// <param name="commandData">Data for send</param>
+        /// <param name="checkCommandExists">
+        ///     If set true, check command exists
+        ///     If not exists throw exception
+        /// </param>
+        /// <param name="checkCommandSendType">
+        ///     If set true, check command send type
+        ///     If func send data type not equal with command send type throw exception
+        /// </param>
+        /// <returns>Return => Task int specify byte to send. if don't send return 0</returns>
+
+        #region SendCommandAsync
+
+        public async Task<int> SendCommandAsync<TCommand, TTypeSend>(uint sessionId, TTypeSend commandData,
+            bool checkCommandExists = true,
+            bool checkCommandSendType = true)
+        {
+            return await SendCommandByNameAsync(sessionId, typeof(TCommand).Name, commandData, checkCommandExists,
+                checkCommandSendType);
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Send command request to all clients by command
+        /// </summary>
+        /// <param name="commandData">Data for send</param>
+        /// <param name="checkCommandExists">
+        ///     If set true, check command exists
+        ///     If not exists throw exception
+        /// </param>
+        /// <param name="checkCommandSendType">
+        ///     If set true, check command send type
+        ///     If func send data type not equal with command send type throw exception
+        /// </param>
+        /// <returns>Return 'true' if send is success</returns>
+
+        #region SendCommandToAll
+
+        public bool SendCommandToAll<TCommand, TTypeSend>(uint sessionId, TTypeSend commandData,
+            bool checkCommandExists = true,
+            bool checkCommandSendType = true)
+        {
+            return SendCommandToAllByName(typeof(TCommand).Name, commandData, checkCommandExists, checkCommandSendType);
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Send command request to all clients by command
+        /// </summary>
+        /// <param name="commandData">Data for send</param>
+        /// <param name="checkCommandExists">
+        ///     If set true, check command exists
+        ///     If not exists throw exception
+        /// </param>
+        /// <param name="checkCommandSendType">
+        ///     If set true, check command send type
+        ///     If func send data type not equal with command send type throw exception
+        /// </param>
+        /// <returns>Return 'true' if send is success</returns>
+
+        #region SendCommandToAllAsync
+
+        public async Task<bool> SendCommandToAllAsync<TCommand, TTypeSend>(uint sessionId, TTypeSend commandData,
+            bool checkCommandExists = true,
+            bool checkCommandSendType = true)
+        {
+            return await SendCommandToAllByNameAsync(typeof(TCommand).Name, commandData, checkCommandExists,
+                checkCommandSendType);
+        }
+
+        #endregion
 
         #endregion
 
