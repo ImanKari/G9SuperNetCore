@@ -170,13 +170,19 @@ namespace G9Common.CommandHandler
             var derivedTypes = VType.GetDerivedTypes(typeof(AG9Command<,,>),
                 _commandAssembly).Where(s => s.IsAbstract == false).ToList();
 
+            // Instance action for add command data type
+            Action<string, CommandDataType<TAccount>> addCommandDataType = (commandName, commandDataType) =>
+            {
+                _accessToCommandDataTypeCollection.Add(commandName.GenerateStandardCommandName(_commandSize), commandDataType);
+            };
+
             derivedTypes.ForEach(oType =>
             {
                 var instance = Activator.CreateInstance(oType);
-                _instanceCommandCollection.Add(oType.Name.PadLeft(_commandSize, '9').Substring(0, _commandSize),
+                _instanceCommandCollection.Add(oType.Name.GenerateStandardCommandName(_commandSize),
                     instance);
                 var method = oType.GetMethod("InitializeRequirement");
-                method.Invoke(instance, new object[1] {_accessToCommandDataTypeCollection});
+                method.Invoke(instance, new object[1] { addCommandDataType });
             });
 
             #endregion
@@ -289,7 +295,7 @@ namespace G9Common.CommandHandler
             Action<Exception, TAccount> errorHandler)
         {
             _accessToCommandDataTypeCollection.Add(
-                commandName.PadLeft(_commandSize, '9').Substring(0, _commandSize),
+                commandName.GenerateStandardCommandName(_commandSize),
                 new CommandDataType<TAccount>(
                     // Access to method "ResponseService" in command
                     (data, account) =>
@@ -336,6 +342,9 @@ namespace G9Common.CommandHandler
         #endregion
 
         #endregion
+
+
+        
 
         #endregion
     }

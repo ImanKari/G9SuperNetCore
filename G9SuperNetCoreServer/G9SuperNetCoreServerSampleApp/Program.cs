@@ -3,6 +3,7 @@ using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using G9Common.Enums;
+using G9SuperNetCoreClientSampleApp.Commands;
 using G9SuperNetCoreServer;
 using G9SuperNetCoreServer.Config;
 using G9SuperNetCoreServer.Sample;
@@ -47,6 +48,10 @@ namespace G9SuperNetCoreServerSampleApp
                 else if (message == "STOP")
                 {
                     await server.Stop();
+                }
+                else if (message == "COUNTER")
+                {
+                    server.SendCommandToAllByName(nameof(CounterCommand), 0);
                 }
                 else
                     server.SendCommandToAllByName("G9EchoCommand", $"Server send a message {counter++}: {message}");

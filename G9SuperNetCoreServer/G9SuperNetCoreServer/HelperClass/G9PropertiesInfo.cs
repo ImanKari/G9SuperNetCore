@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace G9SuperNetCoreClient.Helper
+namespace G9SuperNetCoreServer.HelperClass
 {
     public struct G9PropertiesInfo
     {

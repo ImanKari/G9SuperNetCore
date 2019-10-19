@@ -24,9 +24,9 @@ namespace G9SuperNetCoreServer.AbstractServer
         {
             if (DateTime.TryParse(receiveData, out var receiveDateTime))
             {
-                var ping = (DateTime.Now - receiveDateTime).TotalMilliseconds;
+                var ping = (ushort)(DateTime.Now - receiveDateTime).TotalMilliseconds;
                 _core.GetAccountUtilitiesBySessionId(Account.Session.SessionId).SessionHandler
-                    .Core_SetPing((ushort) ping);
+                    .Core_SetPing(ping);
                 sendDataForThisCommand(ping.ToString(CultureInfo.InvariantCulture), SendTypeForCommand.Asynchronous,
                     null);
                 if (_core.Logging.LogIsActive(LogsType.INFO))

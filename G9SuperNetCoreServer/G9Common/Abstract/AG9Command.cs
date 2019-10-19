@@ -33,6 +33,11 @@ namespace G9Common.Abstract
         /// </summary>
         public string CommandName { get; }
 
+        /// <summary>
+        ///     Specified command initialized
+        /// </summary>
+        private bool _initializeCommand;
+
         #endregion
 
         #region Methods
@@ -57,31 +62,35 @@ namespace G9Common.Abstract
         #endregion
 
         /// <summary>
-        ///     Used automatic in core for initialize
+        ///     Used automatically in core for initialize
         /// </summary>
-        /// <param name="accessToCommandDataType">requirement list from core</param>
+        /// <param name="accessToCommandDataType">requirement for initialize command</param>
 
         #region InitializeRequirement
 
         public void InitializeRequirement(object accessToCommandDataType)
         {
-            ((SortedDictionary<string, CommandDataType<TAccount>>) accessToCommandDataType)
-                .Add(CommandName, new CommandDataType<TAccount>(
-                    // Access to method "ReceiveCommand" in command
-                    (data, account) =>
-                    {
-                        try
+            if (!_initializeCommand)
+            {
+                ((Action<string, CommandDataType<TAccount>>) accessToCommandDataType)?.Invoke(
+                    CommandName, new CommandDataType<TAccount>(
+                        // Access to method "ReceiveCommand" in command
+                        (data, account) =>
                         {
-                            ReceiveCommand(data.ToArray().FromJson<TReceiveData>(), account);
-                        }
-                        catch (Exception ex)
-                        {
-                            OnError(ex, account);
-                        }
-                    },
-                    // Access to method "OnError" in command
-                    OnError
-                ));
+                            try
+                            {
+                                ReceiveCommand(data.ToArray().FromJson<TReceiveData>(), account);
+                            }
+                            catch (Exception ex)
+                            {
+                                OnError(ex, account);
+                            }
+                        },
+                        // Access to method "OnError" in command
+                        OnError
+                    ));
+                _initializeCommand = true;
+            }
         }
 
         #endregion

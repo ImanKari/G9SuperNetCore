@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using G9Common.HelperClass;
 using G9Common.JsonHelper;
 using G9Common.LogIdentity;
 using G9Common.Packet;
@@ -146,9 +147,8 @@ namespace G9SuperNetCoreClient.AbstractClient
 
             // Initialize command - length = CommandSize
             ReadOnlySpan<byte> commandData =
-                Configuration.EncodingAndDecoding.EncodingType.GetBytes(commandName
-                    .PadLeft(_packetManagement.CalculateCommandSize, '9')
-                    .Substring(0, _packetManagement.CalculateCommandSize));
+                Configuration.EncodingAndDecoding.EncodingType.GetBytes(
+                    commandName.GenerateStandardCommandName(_packetManagement.CalculateCommandSize));
 
             return _packetManagement.PackingRequestByData(commandData, dataForSend);
         }
