@@ -104,6 +104,9 @@ namespace G9SuperNetCoreClient.AbstractClient
             // Set is connected
             IsConnected = true;
 
+            // Set connected date time
+            ClientConnectedDateTime = DateTime.Now;
+
             // Run event
             OnConnected?.Invoke(account);
         }

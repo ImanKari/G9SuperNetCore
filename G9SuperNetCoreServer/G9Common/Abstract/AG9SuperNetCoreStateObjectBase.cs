@@ -14,7 +14,7 @@ namespace G9Common.Abstract
 
         #region StateObjectServer
 
-        protected AG9SuperNetCoreStateObjectBase(int oBufferSize, long oSessionIdentity)
+        protected AG9SuperNetCoreStateObjectBase(int oBufferSize, uint oSessionIdentity)
         {
             BufferSize = oBufferSize;
             SessionIdentity = oSessionIdentity;
@@ -35,7 +35,7 @@ namespace G9Common.Abstract
         /// <summary>
         ///     Get Unique identity from session
         /// </summary>
-        public readonly long SessionIdentity;
+        public readonly uint SessionIdentity;
 
         /// <summary>
         ///     Get Client socket.

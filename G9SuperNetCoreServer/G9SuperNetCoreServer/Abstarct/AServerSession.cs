@@ -55,7 +55,7 @@ namespace G9SuperNetCoreServer.Abstarct
         #region InitializeAndHandlerAccountAndSessionAutomaticFirstTime
 
         public void InitializeAndHandlerAccountAndSessionAutomaticFirstTime(G9ServerSessionHandler handler,
-            long oSessionId,
+            uint oSessionId,
             IPAddress oIpAddress)
         {
             // Set session handler

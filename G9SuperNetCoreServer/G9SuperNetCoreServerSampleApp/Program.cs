@@ -11,7 +11,7 @@ namespace G9SuperNetCoreServerSampleApp
 {
     class Program
     {
-        static async Task Main(string[] args)
+        static async Task Main()
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(
@@ -39,7 +39,10 @@ namespace G9SuperNetCoreServerSampleApp
             {
                 if (message == "G9TEST")
                 {
-                    server.EnableCommandTestSendAndReceiveForAllClients();
+                    if (server.EnableCommandTestSendReceiveAllClients) 
+                        server.DisableCommandTestSendAndReceiveForAllClients();
+                    else
+                        server.EnableCommandTestSendAndReceiveForAllClients();
                 }
                 else if (message == "STOP")
                 {

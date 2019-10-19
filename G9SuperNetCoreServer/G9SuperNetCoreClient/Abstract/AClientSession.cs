@@ -50,7 +50,7 @@ namespace G9SuperNetCoreClient.Abstract
         #region InitializeAndHandlerAccountAndSessionAutomaticFirstTime
 
         public void InitializeAndHandlerAccountAndSessionAutomaticFirstTime(G9ClientSessionHandler handler,
-            long oSessionId,
+            uint oSessionId,
             IPAddress oIpAddress)
         {
             // Set session handler

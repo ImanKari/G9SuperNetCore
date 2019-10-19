@@ -11,7 +11,7 @@ namespace G9SuperNetCoreClientSampleApp
 {
     class Program
     {
-        static async Task Main(string[] args)
+        static async Task Main()
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine(

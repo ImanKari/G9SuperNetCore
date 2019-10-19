@@ -76,6 +76,10 @@ namespace G9SuperNetCoreServer.AbstractServer
         {
             // Set is started to true
             IsStarted = true;
+
+            // Set start date time
+            ServerStartDateTime = DateTime.Now;
+
             // Run event
             OnStart?.Invoke();
         }
@@ -152,6 +156,10 @@ namespace G9SuperNetCoreServer.AbstractServer
         {
             // Run event
             OnConnected?.Invoke(account);
+
+            // Set session counter
+            NumberOfSessionFromStartServer++;
+            NumberOfCurrentSession++;
         }
 
         #endregion
@@ -170,6 +178,9 @@ namespace G9SuperNetCoreServer.AbstractServer
 
             // Run event
             OnDisconnected?.Invoke(account, disconnectReason);
+
+            // Set session counter
+            NumberOfCurrentSession--;
         }
 
         #endregion

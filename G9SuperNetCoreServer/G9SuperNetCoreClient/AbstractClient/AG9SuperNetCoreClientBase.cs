@@ -2,16 +2,12 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using G9Common.Abstract;
 using G9Common.CommandHandler;
 using G9Common.Enums;
 using G9Common.HelperClass;
 using G9Common.Interface;
-using G9Common.JsonHelper;
 using G9Common.LogIdentity;
-using G9Common.Packet;
 using G9Common.PacketManagement;
 using G9Common.Resource;
 using G9LogManagement.Enums;
@@ -27,94 +23,6 @@ namespace G9SuperNetCoreClient.AbstractClient
         where TAccount : AClientAccount<TSession>, new()
         where TSession : AClientSession, new()
     {
-        #region Fields And Properties
-
-        /// <summary>
-        ///     Specified logging system
-        /// </summary>
-        private readonly IG9Logging _logging;
-
-        /// <summary>
-        ///     State object handle client task
-        /// </summary>
-        private G9SuperNetCoreStateObjectClient _stateObject;
-
-        /// <summary>
-        ///     Socket for client connection
-        /// </summary>
-        private Socket _clientSocket;
-
-        /// <summary>
-        ///     Access to client configuration
-        /// </summary>
-        public readonly G9ClientConfig Configuration;
-
-        /// <summary>
-        ///     Access to packet management
-        /// </summary>
-        private readonly G9PacketManagement _packetManagement;
-
-        /// <summary>
-        ///     ManualResetEvent instances signal completion.
-        /// </summary>
-        private readonly ManualResetEvent _connectDone = new ManualResetEvent(false);
-
-        /// <summary>
-        ///     ManualResetEvent instances signal completion.
-        /// </summary>
-        private readonly ManualResetEvent _receiveDone = new ManualResetEvent(false);
-
-        /// <summary>
-        ///     ManualResetEvent instances signal completion.
-        /// </summary>
-        private readonly ManualResetEvent _sendDone = new ManualResetEvent(false);
-
-        /// <summary>
-        ///     Access to command handler
-        /// </summary>
-        private readonly G9CommandHandler<TAccount> _commandHandler;
-
-        /// <summary>
-        ///     Field used for save and access to account utilities
-        /// </summary>
-        private readonly G9AccountUtilities<TAccount, G9ClientAccountHandler, G9ClientSessionHandler>
-            _mainAccountUtilities;
-
-        /// <summary>
-        ///     Access to main account
-        /// </summary>
-        public TAccount MainAccount => _mainAccountUtilities.Account;
-
-        #region Send And Receive Bytes
-
-        /// <summary>
-        ///     Save total send bytes
-        /// </summary>
-        private long _totalSendBytes;
-
-        /// <summary>
-        ///     Access to total send bytes
-        /// </summary>
-        // ReSharper disable once ConvertToAutoProperty
-        public long TotalSendBytes => _totalSendBytes;
-
-        /// <summary>
-        ///     Save total receive bytes
-        /// </summary>
-        private long _totalReceiveBytes;
-
-        /// <summary>
-        ///     Access to total receive bytes
-        /// </summary>
-        // ReSharper disable once ConvertToAutoProperty
-        public long TotalReceiveBytes => _totalReceiveBytes;
-
-        #endregion
-
-        #endregion
-
-        #region Methods
-
         #region Internal Client Method
 
         /// <summary>
@@ -135,17 +43,20 @@ namespace G9SuperNetCoreClient.AbstractClient
             _logging = customLogging ?? new G9LoggingClient();
 
             // Initialize main account utilities
-            _mainAccountUtilities = new G9AccountUtilities<TAccount, G9ClientAccountHandler, G9ClientSessionHandler>();
+            _mainAccountUtilities =
+                new G9AccountUtilities<TAccount, G9ClientAccountHandler, G9ClientSessionHandler>
+                {
+                    Account = new TAccount()
+                };
 
             // Initialize account and session
-            _mainAccountUtilities.Account = new TAccount();
             var session = new TSession();
             session.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(_mainAccountUtilities.SessionHandler =
                 new G9ClientSessionHandler
                 {
                     SendCommandByName = SendCommandByName,
                     SendCommandByNameAsync = SendCommandByNameAsync
-                }, -1, IPAddress.Any);
+                }, 0, IPAddress.Any);
             var account = new TAccount();
             _mainAccountUtilities.Account.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(
                 _mainAccountUtilities.AccountHandler = new G9ClientAccountHandler(), session);
@@ -297,7 +208,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                     ReadOnlySpan<byte> packet = _stateObject.Buffer;
 
                     // Plus receive bytes
-                    _totalReceiveBytes += packet.Length;
+                    _totalReceiveBytes += (ulong) packet.Length;
 
                     // unpacking request
                     var receivePacket = _packetManagement.UnpackingRequestByData(packet);
@@ -390,7 +301,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                 _sendDone.Set();
 
                 // Plus send bytes
-                _totalSendBytes += bytesSent;
+                _totalSendBytes += (ulong) bytesSent;
 
                 // Set log
                 if (_logging.LogIsActive(LogsType.INFO))
@@ -407,250 +318,6 @@ namespace G9SuperNetCoreClient.AbstractClient
                 OnErrorHandler(ex, ClientErrorReason.ErrorSendDataToServer);
             }
         }
-
-        #endregion
-
-        #endregion
-
-        #region Other methods
-
-        /// <summary>
-        ///     Start connection
-        ///     Initialize client and try to connect server
-        /// </summary>
-
-        #region StartConnection
-
-        public async Task<bool> StartConnection()
-        {
-            return await Task.Run(() =>
-            {
-                // Set log
-                if (_logging.LogIsActive(LogsType.EXCEPTION))
-                    _logging.LogEvent(LogMessage.StartClientConnection, G9LogIdentity.START_CLIENT_CONNECTION,
-                        LogMessage.SuccessfulOperation);
-
-                // Connect to a remote device.  
-                try
-                {
-                    // Establish the remote endpoint for the socket.  
-                    var remoteEndPoint = new IPEndPoint(Configuration.IpAddress, Configuration.PortNumber);
-
-                    // Create a TCP/IP socket.  
-                    var client = new Socket(Configuration.IpAddress.AddressFamily,
-                        SocketType.Stream, ProtocolType.Tcp);
-
-                    // Connect to the remote endpoint.  
-                    client.BeginConnect(remoteEndPoint,
-                        ConnectCallback, client);
-                    _connectDone.WaitOne();
-
-                    // Run event on connected handler
-                    OnConnectedHandler(_mainAccountUtilities.Account);
-
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    // Set log
-                    if (_logging.LogIsActive(LogsType.EXCEPTION))
-                        _logging.LogException(e, LogMessage.FailClinetConnection, G9LogIdentity.START_CLIENT_CONNECTION,
-                            LogMessage.FailedOperation);
-
-                    // Run Event on error
-                    OnErrorHandler(e, ClientErrorReason.ClientConnectedError);
-
-                    return false;
-                }
-            });
-        }
-
-        #endregion
-
-        /// <summary>
-        ///     Disconnect from server
-        ///     Initialize client and try to connect server
-        /// </summary>
-
-        #region Disconnect
-
-        public async Task<bool> Disconnect()
-        {
-            return await Task.Run(() =>
-            {
-                // Connect to a remote device.  
-                try
-                {
-                    if (_clientSocket is null)
-                    {
-                        // Set log
-                        if (_logging.LogIsActive(LogsType.ERROR))
-                            _logging.LogError(LogMessage.CantStopStoppedServer,
-                                G9LogIdentity.STOP_SERVER, LogMessage.FailedOperation);
-                        // Run event
-                        OnErrorHandler(new Exception(LogMessage.CantStopStoppedServer),
-                            ClientErrorReason.ClientDisconnectedAndReceiveRequestForDisconnect);
-                        return false;
-                    }
-
-                    // Close, Disconnect and dispose
-                    _clientSocket.Dispose();
-                    _clientSocket = null;
-
-                    // Set log
-                    if (_logging.LogIsActive(LogsType.EVENT))
-                        _logging.LogEvent(LogMessage.StopServer, G9LogIdentity.STOP_SERVER,
-                            LogMessage.SuccessfulOperation);
-
-                    // Run event on disconnect
-                    OnDisconnectedHandler(_mainAccountUtilities.Account, DisconnectReason.DisconnectedByProgram);
-
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    // Set log
-                    if (_logging.LogIsActive(LogsType.EXCEPTION))
-                        _logging.LogException(e, LogMessage.FailClinetConnection, G9LogIdentity.START_CLIENT_CONNECTION,
-                            LogMessage.FailedOperation);
-
-                    // Run Event on error
-                    OnErrorHandler(e, ClientErrorReason.ClientConnectedError);
-
-                    return false;
-                }
-            });
-        }
-
-        #endregion
-
-        /// <summary>
-        ///     Helper class for ready data for send
-        /// </summary>
-        /// <param name="commandName">Command name</param>
-        /// <param name="data">Data for send</param>
-        /// <returns>Ready packet split handler</returns>
-
-        #region ReadyDataForSend
-
-        private PacketSplitHandler ReadyDataForSend(string commandName, object data)
-        {
-            // Ready data for send
-            ReadOnlySpan<byte> dataForSend = data is byte[]
-                ? (byte[]) data
-                : Configuration.EncodingAndDecoding.EncodingType.GetBytes(data.ToJson());
-
-            // Initialize command - length = CommandSize
-            ReadOnlySpan<byte> commandData =
-                Configuration.EncodingAndDecoding.EncodingType.GetBytes(commandName
-                    .PadLeft(_packetManagement.CalculateCommandSize, '9')
-                    .Substring(0, _packetManagement.CalculateCommandSize));
-
-            return _packetManagement.PackingRequestByData(commandData, dataForSend);
-        }
-
-        #endregion
-
-        /// <summary>
-        ///     Send command request by name
-        /// </summary>
-        /// <param name="name">Name of command</param>
-        /// <param name="data">Data for send</param>
-        /// <returns>Return 'true' if send is success</returns>
-
-        #region SendCommandByName
-
-        public int SendCommandByName(string name, object data)
-        {
-            // Set send data
-            var sendBytes = 0;
-            try
-            {
-                // Ready data for send
-                var dataForSend = ReadyDataForSend(name, data);
-
-                // Get total packets
-                var packets = dataForSend.GetPacketsArray();
-
-                // Send total packets
-                for (var i = 0; i < dataForSend.TotalPackets; i++)
-                    // Try to send
-                    sendBytes = Send(_clientSocket, packets[i]);
-            }
-            catch (Exception ex)
-            {
-                // Set log
-                if (_logging.LogIsActive(LogsType.EXCEPTION))
-                    _logging.LogException(ex, LogMessage.FailSendComandByName,
-                        G9LogIdentity.CLIENT_SEND_DATA, LogMessage.FailedOperation);
-
-                // Run event on error
-                OnErrorHandler(ex, ClientErrorReason.ErrorReadyToSendDataToServer);
-            }
-
-            return sendBytes;
-        }
-
-        #endregion
-
-        /// <summary>
-        ///     Send async command request by name
-        /// </summary>
-        /// <param name="name">Name of command</param>
-        /// <param name="data">Data for send</param>
-        /// <returns>Return => Task int specify byte to send. if don't send return 0</returns>
-
-        #region SendCommandByNameAsync
-
-        public async Task<int> SendCommandByNameAsync(string name, object data)
-        {
-            return await Task.Run(() =>
-            {
-                // Set send data
-                var sendBytes = 0;
-                try
-                {
-                    // Ready data for send
-                    var dataForSend = ReadyDataForSend(name, data);
-
-                    // Get total packets
-                    var packets = dataForSend.GetPacketsArray();
-
-                    // Send total packets
-                    for (var i = 0; i < dataForSend.TotalPackets; i++)
-                        // Try to send
-                        sendBytes = Send(_clientSocket, packets[i]);
-                }
-                catch (Exception ex)
-                {
-                    // Set log
-                    if (_logging.LogIsActive(LogsType.EXCEPTION))
-                        _logging.LogException(ex, LogMessage.FailSendComandByNameAsync,
-                            G9LogIdentity.CLIENT_SEND_DATA, LogMessage.FailedOperation);
-
-                    // Run event on error
-                    OnErrorHandler(ex, ClientErrorReason.ErrorReadyToSendDataToServer);
-                }
-
-                return sendBytes;
-            });
-        }
-
-        #endregion
-
-        #region Helper Class For Send
-
-        private int SendCommandByName(long sessionId, string name, object data)
-        {
-            return SendCommandByName(name, data);
-        }
-
-        private async Task<int> SendCommandByNameAsync(long sessionId, string name, object data)
-        {
-            return await SendCommandByNameAsync(name, data);
-        }
-
-        #endregion
 
         #endregion
 

@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\G9Common\G9Common.csproj" />
+    <ProjectReference Include="..\G9SuperNetCoreClient\G9SuperNetCoreClient.csproj" />
   </ItemGroup>
 
 </Project>

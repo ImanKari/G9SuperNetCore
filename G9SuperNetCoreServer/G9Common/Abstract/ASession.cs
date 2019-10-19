@@ -66,7 +66,7 @@ namespace G9Common.Abstract
         /// <summary>
         ///     Get unique Identity from session
         /// </summary>
-        public long SessionId { protected set; get; }
+        public uint SessionId { protected set; get; }
 
         /// <summary>
         ///     Get ip address of session

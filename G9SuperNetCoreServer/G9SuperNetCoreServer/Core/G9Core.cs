@@ -40,12 +40,12 @@ namespace G9SuperNetCoreServer.Core
         /// <summary>
         ///     Save maximum connection number
         /// </summary>
-        private readonly int _maximumConnectionCounter = 0;
+        private readonly uint _maximumConnectionCounter = 0;
 
         /// <summary>
         ///     Static field for save session identity counter
         /// </summary>
-        private long _sessionIdentityCounter;
+        private uint _sessionIdentityCounter = 1;
 
         /// <summary>
         ///     Access to logging system
@@ -63,7 +63,7 @@ namespace G9SuperNetCoreServer.Core
         ///     string => command name
         ///     object => data for send
         /// </summary>
-        private readonly Func<long, string, object, int> _sendCommandByName;
+        private readonly Func<uint, string, object, int> _sendCommandByName;
 
         /// <summary>
         ///     Access to action send command by name async
@@ -71,7 +71,7 @@ namespace G9SuperNetCoreServer.Core
         ///     string => command name
         ///     object => data for send
         /// </summary>
-        private readonly Func<long, string, object, Task<int>> _sendCommandByNameAsync;
+        private readonly Func<uint, string, object, Task<int>> _sendCommandByNameAsync;
 
         #endregion
 
@@ -91,8 +91,8 @@ namespace G9SuperNetCoreServer.Core
         #region G9Core
 
         public G9Core(G9ServerConfig superNetCoreConfig, Assembly commandAssembly,
-            Func<long, string, object, int> sendCommandByName,
-            Func<long, string, object, Task<int>> sendCommandByNameAsync,
+            Func<uint, string, object, int> sendCommandByName,
+            Func<uint, string, object, Task<int>> sendCommandByNameAsync,
             Action<G9SendAndReceivePacket, TAccount> onUnhandledCommand, IG9Logging customLogging = null)
         {
             // TODO: change fixed array to change sizable array
@@ -315,9 +315,9 @@ namespace G9SuperNetCoreServer.Core
         #region GetSocketBySessionId
 
         public G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>
-            GetAccountUtilitiesBySessionId(long sessionId)
+            GetAccountUtilitiesBySessionId(uint sessionId)
         {
-            if (sessionId > -1 && sessionId < _accountCollection.Length)
+            if (sessionId != 0 && sessionId < _accountCollection.Length)
                 return _accountCollection[sessionId];
             return null;
         }
