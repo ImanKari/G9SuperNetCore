@@ -11,17 +11,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Resource\LogMessage.Designer.cs">
+    <Compile Update="Resource\LogMessage - Copy.Designer.cs">
       <DependentUpon>LogMessage.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Resource\LogMessage.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LogMessage.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Update="Resource\LogMessage.resx">
-      <LastGenOutput>LogMessage.Designer.cs</LastGenOutput>
       <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>LogMessage.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

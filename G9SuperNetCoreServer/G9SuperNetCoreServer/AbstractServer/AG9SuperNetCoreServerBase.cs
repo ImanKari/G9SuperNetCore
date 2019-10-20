@@ -147,14 +147,12 @@ namespace G9SuperNetCoreServer.AbstractServer
                 var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
 
                 // Read data from the client socket.   
-                var bytesRead = state.WorkSocket.EndReceive(asyncResult);
+                var bytesRead = (ushort)state.WorkSocket.EndReceive(asyncResult);
 
                 if (bytesRead > 0)
                 {
-                    var receiveBytes = (ushort) state.Buffer.Length;
-
                     // Plus total receive bytes and packet
-                    TotalReceiveBytes += receiveBytes;
+                    TotalReceiveBytes += bytesRead;
                     TotalReceivePacket++;
 
                     // unpacking request
@@ -164,7 +162,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                     accountUtilities.SessionHandler.Core_SetLastCommand(receivePacket.Command);
 
                     // Plus receive bytes for session
-                    accountUtilities.SessionHandler.Core_PlusSessionTotalReceiveBytes(receiveBytes);
+                    accountUtilities.SessionHandler.Core_PlusSessionTotalReceiveBytes(bytesRead);
 
                     // Set log
                     if (_core.Logging.LogIsActive(LogsType.INFO))
@@ -225,7 +223,7 @@ namespace G9SuperNetCoreServer.AbstractServer
         /// <param name="handler">Socket handler for send</param>
         /// <param name="sessionId">Specified session id</param>
         /// <param name="byteData">Specify byte data for send</param>
-
+        
         #region Send
 
         private WaitHandle Send(Socket handler, uint sessionId, byte[] byteData)

@@ -118,255 +118,255 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AccountAdded" xml:space="preserve">
-    <value>اضافه کردن اکانت</value>
+    <value>AccountAdded</value>
   </data>
   <data name="AccountAndSessionCreated" xml:space="preserve">
-    <value>اکانت و نشست با موفقیت ایجاد شد.</value>
+    <value>AccountAndSessionCreated</value>
   </data>
   <data name="ArgumentNotCorrect" xml:space="preserve">
-    <value>پارامتر درست نیست!</value>
+    <value>ArgumentNotCorrect</value>
   </data>
   <data name="Body" xml:space="preserve">
-    <value>بدنه</value>
+    <value>Body</value>
   </data>
   <data name="BufferSize" xml:space="preserve">
-    <value>سایز بافر</value>
+    <value>BufferSize</value>
   </data>
   <data name="ClientSessionIdentity" xml:space="preserve">
-    <value>کد منحصر به فرد کلاینت</value>
+    <value>ClientSessionIdentity</value>
   </data>
   <data name="CloseReason" xml:space="preserve">
-    <value>دلیل بسته شدن</value>
+    <value>CloseReason</value>
   </data>
   <data name="Command" xml:space="preserve">
-    <value>کامند</value>
+    <value>Command</value>
   </data>
   <data name="CommandLengthError" xml:space="preserve">
-    <value>طول (تعداد کاراکتر ها) کامند وارد شده از مقدار مجاز بیشتر است</value>
+    <value>CommandLengthError</value>
   </data>
   <data name="CreateAndInitializeClient" xml:space="preserve">
-    <value>ساخت و مقدار دهی اولیه کلاینت</value>
+    <value>CreateAndInitializeClient</value>
   </data>
   <data name="CreateAndInitializeServer" xml:space="preserve">
-    <value>ساخت و مقدار دهی اولیه سرور</value>
+    <value>CreateAndInitializeServer</value>
   </data>
   <data name="CreateNewAccount" xml:space="preserve">
-    <value>ساخت اکانت جدید</value>
+    <value>CreateNewAccount</value>
   </data>
   <data name="DataLength" xml:space="preserve">
-    <value>طول داده</value>
+    <value>DataLength</value>
   </data>
   <data name="FailBindAndListenSocket" xml:space="preserve">
-    <value>در روند آماده سازی انتظار سرور برای اتصال کلایت مشکلی پیش آمده است</value>
+    <value>FailBindAndListenSocket</value>
   </data>
   <data name="FailClientReceive" xml:space="preserve">
-    <value>خطا در روند دریافت داده های ارسالی توسط کلاینت</value>
+    <value>FailClientReceive</value>
   </data>
   <data name="FailClinetConnection" xml:space="preserve">
-    <value>اتصال کلایت به سرور با خطا رو به رو شده است</value>
+    <value>FailClinetConnection</value>
   </data>
   <data name="FailedOperation" xml:space="preserve">
-    <value>عملیات ناموفق</value>
+    <value>FailedOperation</value>
   </data>
   <data name="FailGeneratePacket" xml:space="preserve">
-    <value>در زمان ساخت بسته ارسالی خطا رخ داده است</value>
+    <value>FailGeneratePacket</value>
   </data>
   <data name="FailReceiveClientFromServer" xml:space="preserve">
-    <value>در روند دریافت داده های ارسالی توسط سرور خطا رخ داده است</value>
+    <value>FailReceiveClientFromServer</value>
   </data>
   <data name="FailRequestSendData" xml:space="preserve">
-    <value>در روند ارسال داده خطا رخ داده است</value>
+    <value>FailRequestSendData</value>
   </data>
   <data name="FailtOnWaitForConnection" xml:space="preserve">
-    <value>در حالت انتظار برای اتصال کانکشن مشکلی ایجاد شده است</value>
+    <value>FailtOnWaitForConnection</value>
   </data>
   <data name="IpAddress" xml:space="preserve">
-    <value>آی پی آدرس</value>
+    <value>IpAddress</value>
   </data>
   <data name="LengthEntered" xml:space="preserve">
-    <value>طول (تعداد کاراکتر) وارد شده</value>
+    <value>LengthEntered</value>
   </data>
   <data name="OnSessionClose" xml:space="preserve">
-    <value>قطع ارتباط یک کانکشن و بستن نشست</value>
+    <value>OnSessionClose</value>
   </data>
   <data name="PacketRequestId" xml:space="preserve">
-    <value>آی دی منحصر به فرد بسته</value>
+    <value>PacketRequestId</value>
   </data>
   <data name="PacketType" xml:space="preserve">
-    <value>نوع بسته</value>
+    <value>PacketType</value>
   </data>
   <data name="Port" xml:space="preserve">
-    <value>پورت</value>
+    <value>Port</value>
   </data>
   <data name="ProblemAddingAccount" xml:space="preserve">
-    <value>مشکل در روند اضافه کردن اکانت به مجموعه</value>
+    <value>ProblemAddingAccount</value>
   </data>
   <data name="ProblemCreateNewAccountAndSession" xml:space="preserve">
-    <value>مشکل در روند ساخت اکانت و نشست</value>
+    <value>ProblemCreateNewAccountAndSession</value>
   </data>
   <data name="ProblemCreateServerSocket" xml:space="preserve">
-    <value>مشکل در روند ساخت سوکت</value>
+    <value>ProblemCreateServerSocket</value>
   </data>
   <data name="ReceiveClientFromServer" xml:space="preserve">
-    <value>شروع روند دریافت داده های ارسالی توسط سرور</value>
+    <value>ReceiveClientFromServer</value>
   </data>
   <data name="RequestSendData" xml:space="preserve">
-    <value>درخواست ارسال دیتا</value>
+    <value>RequestSendData</value>
   </data>
   <data name="StandardLength" xml:space="preserve">
-    <value>طول (تعداد کاراکتر) مجاز</value>
+    <value>StandardLength</value>
   </data>
   <data name="StartClientConnection" xml:space="preserve">
-    <value>شروع اتصال کلاینت به سرور</value>
+    <value>StartClientConnection</value>
   </data>
   <data name="StartServer" xml:space="preserve">
-    <value>شروع کار سرور</value>
+    <value>StartServer</value>
   </data>
   <data name="SuccessAccountAdded" xml:space="preserve">
-    <value>اکانت با موفقیت به مجموعه اضافه شد</value>
+    <value>SuccessAccountAdded</value>
   </data>
   <data name="SuccessBindAndListenSocket" xml:space="preserve">
-    <value>روند آماده سازی سرور برای انتظار ارتباط کلایت با موفقیت انجام شد</value>
+    <value>SuccessBindAndListenSocket</value>
   </data>
   <data name="SuccessClientConnection" xml:space="preserve">
-    <value>اتصال کلاینت به سرور با موقیت برقرار شد</value>
+    <value>SuccessClientConnection</value>
   </data>
   <data name="SuccessClientReceive" xml:space="preserve">
-    <value>داده های ارسالی توسط کلاینت با موفقیت دریافت شد</value>
+    <value>SuccessClientReceive</value>
   </data>
   <data name="SuccessCreateServerSocket" xml:space="preserve">
-    <value>ساخت موفقیت آمیز سوکت</value>
+    <value>SuccessCreateServerSocket</value>
   </data>
   <data name="SuccessfulOperation" xml:space="preserve">
-    <value>عملیات موفق</value>
+    <value>SuccessfulOperation</value>
   </data>
   <data name="SuccessRequestSendData" xml:space="preserve">
-    <value>ارسال داده با موفقیت انجام شد</value>
+    <value>SuccessRequestSendData</value>
   </data>
   <data name="SuccessUnpackingReceiveData" xml:space="preserve">
-    <value>داده های دریافتی با آنالیز و به بسته مورد نیاز تبدیل شد</value>
+    <value>SuccessUnpackingReceiveData</value>
   </data>
   <data name="WaitForConnection" xml:space="preserve">
-    <value>در حالت انتظار برای اتصال یک کانکشن(کلاینت)</value>
+    <value>WaitForConnection</value>
   </data>
   <data name="Waiting" xml:space="preserve">
-    <value>در حال انتظار</value>
+    <value>Waiting</value>
   </data>
   <data name="ArgumentXNotCorrect" xml:space="preserve">
-    <value>پارامتر '{0}' به درستی وارد نشده است!</value>
+    <value>ArgumentXNotCorrect</value>
   </data>
   <data name="ErrorInRunningCommand" xml:space="preserve">
-    <value>در روند اجرای کامند خطایی رخ داده است.</value>
+    <value>ErrorInRunningCommand</value>
   </data>
   <data name="RunningCommand" xml:space="preserve">
-    <value>کامند در حال اجرا</value>
+    <value>RunningCommand</value>
   </data>
   <data name="CantStopStoppedServer" xml:space="preserve">
-    <value>سرور متوقف است، نمی توانید آن را مجددا متوقف کنید.</value>
+    <value>CantStopStoppedServer</value>
   </data>
   <data name="ClientPing" xml:space="preserve">
-    <value>پینگ کلاینت</value>
+    <value>ClientPing</value>
   </data>
   <data name="ClientPingDateTime" xml:space="preserve">
-    <value>تاریخ و زمان آخرین پینگ</value>
+    <value>ClientPingDateTime</value>
   </data>
   <data name="CommandEcho" xml:space="preserve">
-    <value>دریافت کامند اکو</value>
+    <value>CommandEcho</value>
   </data>
   <data name="CommandName" xml:space="preserve">
-    <value>نام کامند</value>
+    <value>CommandName</value>
   </data>
   <data name="CommandNotFound" xml:space="preserve">
-    <value>کامندی با نام مورد نظر وجود ندارد</value>
+    <value>CommandNotFound</value>
   </data>
   <data name="CommandSendType" xml:space="preserve">
-    <value>نوع داده ارسالی کامند</value>
+    <value>CommandSendType</value>
   </data>
   <data name="CommandSendTypeNotCorrect" xml:space="preserve">
-    <value>مقدار ارسالی برای این کامند درست نیست.</value>
+    <value>CommandSendTypeNotCorrect</value>
   </data>
   <data name="CommanTestSendReceive" xml:space="preserve">
-    <value>دریافت از کامند تست ارسال و دریافت بین سرور و کلاینت</value>
+    <value>CommanTestSendReceive</value>
   </data>
   <data name="CurrentSessionCount" xml:space="preserve">
-    <value>تعداد کل نشست های متصل (کلاینت ها)</value>
+    <value>CurrentSessionCount</value>
   </data>
   <data name="DisableCommandTestModeForAllClients" xml:space="preserve">
-    <value>توقف کامند تست ارسال و دریافت بین سرور و کلاینت برای تمامی کلاینت ها</value>
+    <value>DisableCommandTestModeForAllClients</value>
   </data>
   <data name="DisableCommandTestModeForSingleSession" xml:space="preserve">
-    <value>توقف کامند تست ارسال و دریافت بین سرور و کلاینت برای یک کلاینت</value>
+    <value>DisableCommandTestModeForSingleSession</value>
   </data>
   <data name="EnableCommandTestModeForAllClients" xml:space="preserve">
-    <value>فعال سازی کامند تست ارسال و دریافت بین سرور و کلاینت برای تمامی کلاینت ها</value>
+    <value>EnableCommandTestModeForAllClients</value>
   </data>
   <data name="EnableCommandTestModeForSingleSession" xml:space="preserve">
-    <value>فعال سازی کامند تست ارسال و دریافت بین سرور و کلاینت برای یک کلاینت</value>
+    <value>EnableCommandTestModeForSingleSession</value>
   </data>
   <data name="FailSendComandByName" xml:space="preserve">
-    <value>روند ارسال کامند همگام Sync با استفاده از نام با مشکل مواجه شده است</value>
+    <value>FailSendComandByName</value>
   </data>
   <data name="FailSendComandByNameAsync" xml:space="preserve">
-    <value>روند ارسال کامند ناهمگام Async با استفاده از نام با مشکل مواجه شده است</value>
+    <value>FailSendComandByNameAsync</value>
   </data>
   <data name="FailSendComandByNameToAll" xml:space="preserve">
-    <value>در روند ارسال کامند به تمامی کلاینت ها خطایی رخ داده است</value>
+    <value>FailSendComandByNameToAll</value>
   </data>
   <data name="FailSendComandByNameToAllAsync" xml:space="preserve">
-    <value>در روند ارسال کامند به صورت ناهمگام  به تمامی کلاینت ها خطایی رخ داده است</value>
+    <value>FailSendComandByNameToAllAsync</value>
   </data>
   <data name="FailStopServer" xml:space="preserve">
-    <value>در روند توقف سرور مشکلی ایجاد شده است</value>
+    <value>FailStopServer</value>
   </data>
   <data name="LastCommandUsed" xml:space="preserve">
-    <value>آخرین کامند استفاده شده</value>
+    <value>LastCommandUsed</value>
   </data>
   <data name="LastCommandUsedDateTime" xml:space="preserve">
-    <value>تاریخ و زمان آخرین کامند استفاده شده</value>
+    <value>LastCommandUsedDateTime</value>
   </data>
   <data name="ReceiveData" xml:space="preserve">
-    <value>داده دریافتی</value>
+    <value>ReceiveData</value>
   </data>
   <data name="ReceivedUnhandledCommand" xml:space="preserve">
-    <value>یک کامند مدیریت نشده دریافت شده است</value>
+    <value>ReceivedUnhandledCommand</value>
   </data>
   <data name="ReceiveRequestOverTheLimit" xml:space="preserve">
-    <value>دریافت بسته (پاکت) بیش از حد مجاز تعیین شده در کانفیگ سرور</value>
+    <value>ReceiveRequestOverTheLimit</value>
   </data>
   <data name="SendTypeWithFunction" xml:space="preserve">
-    <value>نوع داده ارسالی توسط تابع</value>
+    <value>SendTypeWithFunction</value>
   </data>
   <data name="ServerStartDateTime" xml:space="preserve">
-    <value>زمان و تاریخ شروع کار سرور</value>
+    <value>ServerStartDateTime</value>
   </data>
   <data name="ServerTotalReceiveBytes" xml:space="preserve">
-    <value>کل دیتای دریافتی توسط سرور به بایت</value>
+    <value>ServerTotalReceiveBytes</value>
   </data>
   <data name="ServerTotalReceivePacket" xml:space="preserve">
-    <value>تعداد کل پکت دریافتی توسط سرور</value>
+    <value>ServerTotalReceivePacket</value>
   </data>
   <data name="ServerTotalSendBytes" xml:space="preserve">
-    <value>کل دیتای ارسالی توسط سرور به بایت</value>
+    <value>ServerTotalSendBytes</value>
   </data>
   <data name="ServerTotalSendPacket" xml:space="preserve">
-    <value>تعداد کل پکت ارسالی توسط سرور</value>
+    <value>ServerTotalSendPacket</value>
   </data>
   <data name="ServerUpTime" xml:space="preserve">
-    <value>مدت زمان کارکرد</value>
+    <value>ServerUpTime</value>
   </data>
   <data name="StopServer" xml:space="preserve">
-    <value>توقف سرور</value>
+    <value>StopServer</value>
   </data>
   <data name="TestNumber" xml:space="preserve">
-    <value>تعداد تست</value>
+    <value>TestNumber</value>
   </data>
   <data name="TotalSessionFromStartServerCount" xml:space="preserve">
-    <value>تعداد کل نشست های که از زمان شروع سرور تا به الان به سرور متصل شده اند</value>
+    <value>TotalSessionFromStartServerCount</value>
   </data>
   <data name="UnhandledCommand" xml:space="preserve">
-    <value>کامند مدیریت نشده</value>
+    <value>UnhandledCommand</value>
   </data>
   <data name="Warning" xml:space="preserve">
-    <value>اخطار</value>
+    <value>Warning</value>
   </data>
 </root>

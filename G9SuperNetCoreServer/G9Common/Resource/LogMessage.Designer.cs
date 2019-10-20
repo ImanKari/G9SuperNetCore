@@ -61,7 +61,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to اضافه کردن اکانت.
+        ///   Looks up a localized string similar to AccountAdded.
         /// </summary>
         public static string AccountAdded {
             get {
@@ -70,7 +70,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to اکانت و نشست با موفقیت ایجاد شد..
+        ///   Looks up a localized string similar to AccountAndSessionCreated.
         /// </summary>
         public static string AccountAndSessionCreated {
             get {
@@ -79,7 +79,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to پارامتر درست نیست!.
+        ///   Looks up a localized string similar to ArgumentNotCorrect.
         /// </summary>
         public static string ArgumentNotCorrect {
             get {
@@ -88,7 +88,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to پارامتر &apos;{0}&apos; به درستی وارد نشده است!.
+        ///   Looks up a localized string similar to ArgumentXNotCorrect.
         /// </summary>
         public static string ArgumentXNotCorrect {
             get {
@@ -97,7 +97,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to بدنه.
+        ///   Looks up a localized string similar to Body.
         /// </summary>
         public static string Body {
             get {
@@ -106,7 +106,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to سایز بافر.
+        ///   Looks up a localized string similar to BufferSize.
         /// </summary>
         public static string BufferSize {
             get {
@@ -115,7 +115,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to سرور متوقف است، نمی توانید آن را مجددا متوقف کنید..
+        ///   Looks up a localized string similar to CantStopStoppedServer.
         /// </summary>
         public static string CantStopStoppedServer {
             get {
@@ -124,7 +124,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to پینگ کلاینت.
+        ///   Looks up a localized string similar to ClientPing.
         /// </summary>
         public static string ClientPing {
             get {
@@ -133,7 +133,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تاریخ و زمان آخرین پینگ.
+        ///   Looks up a localized string similar to ClientPingDateTime.
         /// </summary>
         public static string ClientPingDateTime {
             get {
@@ -142,7 +142,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to کد منحصر به فرد کلاینت.
+        ///   Looks up a localized string similar to ClientSessionIdentity.
         /// </summary>
         public static string ClientSessionIdentity {
             get {
@@ -151,7 +151,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to دلیل بسته شدن.
+        ///   Looks up a localized string similar to CloseReason.
         /// </summary>
         public static string CloseReason {
             get {
@@ -160,7 +160,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to کامند.
+        ///   Looks up a localized string similar to Command.
         /// </summary>
         public static string Command {
             get {
@@ -169,7 +169,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to دریافت کامند اکو.
+        ///   Looks up a localized string similar to CommandEcho.
         /// </summary>
         public static string CommandEcho {
             get {
@@ -178,7 +178,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to طول (تعداد کاراکتر ها) کامند وارد شده از مقدار مجاز بیشتر است.
+        ///   Looks up a localized string similar to CommandLengthError.
         /// </summary>
         public static string CommandLengthError {
             get {
@@ -187,7 +187,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to نام کامند.
+        ///   Looks up a localized string similar to CommandName.
         /// </summary>
         public static string CommandName {
             get {
@@ -196,7 +196,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to کامندی با نام مورد نظر وجود ندارد.
+        ///   Looks up a localized string similar to CommandNotFound.
         /// </summary>
         public static string CommandNotFound {
             get {
@@ -205,7 +205,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to نوع داده ارسالی کامند.
+        ///   Looks up a localized string similar to CommandSendType.
         /// </summary>
         public static string CommandSendType {
             get {
@@ -214,7 +214,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to مقدار ارسالی برای این کامند درست نیست..
+        ///   Looks up a localized string similar to CommandSendTypeNotCorrect.
         /// </summary>
         public static string CommandSendTypeNotCorrect {
             get {
@@ -223,7 +223,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to دریافت از کامند تست ارسال و دریافت بین سرور و کلاینت.
+        ///   Looks up a localized string similar to CommanTestSendReceive.
         /// </summary>
         public static string CommanTestSendReceive {
             get {
@@ -232,7 +232,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ساخت و مقدار دهی اولیه کلاینت.
+        ///   Looks up a localized string similar to CreateAndInitializeClient.
         /// </summary>
         public static string CreateAndInitializeClient {
             get {
@@ -241,7 +241,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ساخت و مقدار دهی اولیه سرور.
+        ///   Looks up a localized string similar to CreateAndInitializeServer.
         /// </summary>
         public static string CreateAndInitializeServer {
             get {
@@ -250,7 +250,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ساخت اکانت جدید.
+        ///   Looks up a localized string similar to CreateNewAccount.
         /// </summary>
         public static string CreateNewAccount {
             get {
@@ -259,7 +259,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تعداد کل نشست های متصل (کلاینت ها).
+        ///   Looks up a localized string similar to CurrentSessionCount.
         /// </summary>
         public static string CurrentSessionCount {
             get {
@@ -268,7 +268,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to طول داده.
+        ///   Looks up a localized string similar to DataLength.
         /// </summary>
         public static string DataLength {
             get {
@@ -277,7 +277,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to توقف کامند تست ارسال و دریافت بین سرور و کلاینت برای تمامی کلاینت ها.
+        ///   Looks up a localized string similar to DisableCommandTestModeForAllClients.
         /// </summary>
         public static string DisableCommandTestModeForAllClients {
             get {
@@ -286,7 +286,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to توقف کامند تست ارسال و دریافت بین سرور و کلاینت برای یک کلاینت.
+        ///   Looks up a localized string similar to DisableCommandTestModeForSingleSession.
         /// </summary>
         public static string DisableCommandTestModeForSingleSession {
             get {
@@ -295,7 +295,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to فعال سازی کامند تست ارسال و دریافت بین سرور و کلاینت برای تمامی کلاینت ها.
+        ///   Looks up a localized string similar to EnableCommandTestModeForAllClients.
         /// </summary>
         public static string EnableCommandTestModeForAllClients {
             get {
@@ -304,7 +304,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to فعال سازی کامند تست ارسال و دریافت بین سرور و کلاینت برای یک کلاینت.
+        ///   Looks up a localized string similar to EnableCommandTestModeForSingleSession.
         /// </summary>
         public static string EnableCommandTestModeForSingleSession {
             get {
@@ -313,7 +313,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to در روند اجرای کامند خطایی رخ داده است..
+        ///   Looks up a localized string similar to ErrorInRunningCommand.
         /// </summary>
         public static string ErrorInRunningCommand {
             get {
@@ -322,7 +322,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to در روند آماده سازی انتظار سرور برای اتصال کلایت مشکلی پیش آمده است.
+        ///   Looks up a localized string similar to FailBindAndListenSocket.
         /// </summary>
         public static string FailBindAndListenSocket {
             get {
@@ -331,7 +331,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to خطا در روند دریافت داده های ارسالی توسط کلاینت.
+        ///   Looks up a localized string similar to FailClientReceive.
         /// </summary>
         public static string FailClientReceive {
             get {
@@ -340,7 +340,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to اتصال کلایت به سرور با خطا رو به رو شده است.
+        ///   Looks up a localized string similar to FailClinetConnection.
         /// </summary>
         public static string FailClinetConnection {
             get {
@@ -349,7 +349,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to عملیات ناموفق.
+        ///   Looks up a localized string similar to FailedOperation.
         /// </summary>
         public static string FailedOperation {
             get {
@@ -358,7 +358,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to در زمان ساخت بسته ارسالی خطا رخ داده است.
+        ///   Looks up a localized string similar to FailGeneratePacket.
         /// </summary>
         public static string FailGeneratePacket {
             get {
@@ -367,7 +367,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to در روند دریافت داده های ارسالی توسط سرور خطا رخ داده است.
+        ///   Looks up a localized string similar to FailReceiveClientFromServer.
         /// </summary>
         public static string FailReceiveClientFromServer {
             get {
@@ -376,7 +376,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to در روند ارسال داده خطا رخ داده است.
+        ///   Looks up a localized string similar to FailRequestSendData.
         /// </summary>
         public static string FailRequestSendData {
             get {
@@ -385,7 +385,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to روند ارسال کامند همگام Sync با استفاده از نام با مشکل مواجه شده است.
+        ///   Looks up a localized string similar to FailSendComandByName.
         /// </summary>
         public static string FailSendComandByName {
             get {
@@ -394,7 +394,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to روند ارسال کامند ناهمگام Async با استفاده از نام با مشکل مواجه شده است.
+        ///   Looks up a localized string similar to FailSendComandByNameAsync.
         /// </summary>
         public static string FailSendComandByNameAsync {
             get {
@@ -403,7 +403,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to در روند ارسال کامند به تمامی کلاینت ها خطایی رخ داده است.
+        ///   Looks up a localized string similar to FailSendComandByNameToAll.
         /// </summary>
         public static string FailSendComandByNameToAll {
             get {
@@ -412,7 +412,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to در روند ارسال کامند به صورت ناهمگام  به تمامی کلاینت ها خطایی رخ داده است.
+        ///   Looks up a localized string similar to FailSendComandByNameToAllAsync.
         /// </summary>
         public static string FailSendComandByNameToAllAsync {
             get {
@@ -421,7 +421,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to در روند توقف سرور مشکلی ایجاد شده است.
+        ///   Looks up a localized string similar to FailStopServer.
         /// </summary>
         public static string FailStopServer {
             get {
@@ -430,7 +430,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to در حالت انتظار برای اتصال کانکشن مشکلی ایجاد شده است.
+        ///   Looks up a localized string similar to FailtOnWaitForConnection.
         /// </summary>
         public static string FailtOnWaitForConnection {
             get {
@@ -439,7 +439,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to آی پی آدرس.
+        ///   Looks up a localized string similar to IpAddress.
         /// </summary>
         public static string IpAddress {
             get {
@@ -448,7 +448,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to آخرین کامند استفاده شده.
+        ///   Looks up a localized string similar to LastCommandUsed.
         /// </summary>
         public static string LastCommandUsed {
             get {
@@ -457,7 +457,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تاریخ و زمان آخرین کامند استفاده شده.
+        ///   Looks up a localized string similar to LastCommandUsedDateTime.
         /// </summary>
         public static string LastCommandUsedDateTime {
             get {
@@ -466,7 +466,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to طول (تعداد کاراکتر) وارد شده.
+        ///   Looks up a localized string similar to LengthEntered.
         /// </summary>
         public static string LengthEntered {
             get {
@@ -475,7 +475,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to قطع ارتباط یک کانکشن و بستن نشست.
+        ///   Looks up a localized string similar to OnSessionClose.
         /// </summary>
         public static string OnSessionClose {
             get {
@@ -484,7 +484,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to آی دی منحصر به فرد بسته.
+        ///   Looks up a localized string similar to PacketRequestId.
         /// </summary>
         public static string PacketRequestId {
             get {
@@ -493,7 +493,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to نوع بسته.
+        ///   Looks up a localized string similar to PacketType.
         /// </summary>
         public static string PacketType {
             get {
@@ -502,7 +502,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to پورت.
+        ///   Looks up a localized string similar to Port.
         /// </summary>
         public static string Port {
             get {
@@ -511,7 +511,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to مشکل در روند اضافه کردن اکانت به مجموعه.
+        ///   Looks up a localized string similar to ProblemAddingAccount.
         /// </summary>
         public static string ProblemAddingAccount {
             get {
@@ -520,7 +520,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to مشکل در روند ساخت اکانت و نشست.
+        ///   Looks up a localized string similar to ProblemCreateNewAccountAndSession.
         /// </summary>
         public static string ProblemCreateNewAccountAndSession {
             get {
@@ -529,7 +529,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to مشکل در روند ساخت سوکت.
+        ///   Looks up a localized string similar to ProblemCreateServerSocket.
         /// </summary>
         public static string ProblemCreateServerSocket {
             get {
@@ -538,7 +538,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to شروع روند دریافت داده های ارسالی توسط سرور.
+        ///   Looks up a localized string similar to ReceiveClientFromServer.
         /// </summary>
         public static string ReceiveClientFromServer {
             get {
@@ -547,7 +547,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to داده دریافتی.
+        ///   Looks up a localized string similar to ReceiveData.
         /// </summary>
         public static string ReceiveData {
             get {
@@ -556,7 +556,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to یک کامند مدیریت نشده دریافت شده است.
+        ///   Looks up a localized string similar to ReceivedUnhandledCommand.
         /// </summary>
         public static string ReceivedUnhandledCommand {
             get {
@@ -565,7 +565,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to دریافت بسته (پاکت) بیش از حد مجاز تعیین شده در کانفیگ سرور.
+        ///   Looks up a localized string similar to ReceiveRequestOverTheLimit.
         /// </summary>
         public static string ReceiveRequestOverTheLimit {
             get {
@@ -574,7 +574,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to درخواست ارسال دیتا.
+        ///   Looks up a localized string similar to RequestSendData.
         /// </summary>
         public static string RequestSendData {
             get {
@@ -583,7 +583,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to کامند در حال اجرا.
+        ///   Looks up a localized string similar to RunningCommand.
         /// </summary>
         public static string RunningCommand {
             get {
@@ -592,7 +592,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to نوع داده ارسالی توسط تابع.
+        ///   Looks up a localized string similar to SendTypeWithFunction.
         /// </summary>
         public static string SendTypeWithFunction {
             get {
@@ -601,7 +601,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to زمان و تاریخ شروع کار سرور.
+        ///   Looks up a localized string similar to ServerStartDateTime.
         /// </summary>
         public static string ServerStartDateTime {
             get {
@@ -610,7 +610,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to کل دیتای دریافتی توسط سرور به بایت.
+        ///   Looks up a localized string similar to ServerTotalReceiveBytes.
         /// </summary>
         public static string ServerTotalReceiveBytes {
             get {
@@ -619,7 +619,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تعداد کل پکت دریافتی توسط سرور.
+        ///   Looks up a localized string similar to ServerTotalReceivePacket.
         /// </summary>
         public static string ServerTotalReceivePacket {
             get {
@@ -628,7 +628,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to کل دیتای ارسالی توسط سرور به بایت.
+        ///   Looks up a localized string similar to ServerTotalSendBytes.
         /// </summary>
         public static string ServerTotalSendBytes {
             get {
@@ -637,7 +637,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تعداد کل پکت ارسالی توسط سرور.
+        ///   Looks up a localized string similar to ServerTotalSendPacket.
         /// </summary>
         public static string ServerTotalSendPacket {
             get {
@@ -646,7 +646,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to مدت زمان کارکرد.
+        ///   Looks up a localized string similar to ServerUpTime.
         /// </summary>
         public static string ServerUpTime {
             get {
@@ -655,7 +655,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to طول (تعداد کاراکتر) مجاز.
+        ///   Looks up a localized string similar to StandardLength.
         /// </summary>
         public static string StandardLength {
             get {
@@ -664,7 +664,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to شروع اتصال کلاینت به سرور.
+        ///   Looks up a localized string similar to StartClientConnection.
         /// </summary>
         public static string StartClientConnection {
             get {
@@ -673,7 +673,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to شروع کار سرور.
+        ///   Looks up a localized string similar to StartServer.
         /// </summary>
         public static string StartServer {
             get {
@@ -682,7 +682,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to توقف سرور.
+        ///   Looks up a localized string similar to StopServer.
         /// </summary>
         public static string StopServer {
             get {
@@ -691,7 +691,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to اکانت با موفقیت به مجموعه اضافه شد.
+        ///   Looks up a localized string similar to SuccessAccountAdded.
         /// </summary>
         public static string SuccessAccountAdded {
             get {
@@ -700,7 +700,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to روند آماده سازی سرور برای انتظار ارتباط کلایت با موفقیت انجام شد.
+        ///   Looks up a localized string similar to SuccessBindAndListenSocket.
         /// </summary>
         public static string SuccessBindAndListenSocket {
             get {
@@ -709,7 +709,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to اتصال کلاینت به سرور با موقیت برقرار شد.
+        ///   Looks up a localized string similar to SuccessClientConnection.
         /// </summary>
         public static string SuccessClientConnection {
             get {
@@ -718,7 +718,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to داده های ارسالی توسط کلاینت با موفقیت دریافت شد.
+        ///   Looks up a localized string similar to SuccessClientReceive.
         /// </summary>
         public static string SuccessClientReceive {
             get {
@@ -727,7 +727,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ساخت موفقیت آمیز سوکت.
+        ///   Looks up a localized string similar to SuccessCreateServerSocket.
         /// </summary>
         public static string SuccessCreateServerSocket {
             get {
@@ -736,7 +736,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to عملیات موفق.
+        ///   Looks up a localized string similar to SuccessfulOperation.
         /// </summary>
         public static string SuccessfulOperation {
             get {
@@ -745,7 +745,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ارسال داده با موفقیت انجام شد.
+        ///   Looks up a localized string similar to SuccessRequestSendData.
         /// </summary>
         public static string SuccessRequestSendData {
             get {
@@ -754,7 +754,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to داده های دریافتی با آنالیز و به بسته مورد نیاز تبدیل شد.
+        ///   Looks up a localized string similar to SuccessUnpackingReceiveData.
         /// </summary>
         public static string SuccessUnpackingReceiveData {
             get {
@@ -763,7 +763,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تعداد تست.
+        ///   Looks up a localized string similar to TestNumber.
         /// </summary>
         public static string TestNumber {
             get {
@@ -772,7 +772,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تعداد کل نشست های که از زمان شروع سرور تا به الان به سرور متصل شده اند.
+        ///   Looks up a localized string similar to TotalSessionFromStartServerCount.
         /// </summary>
         public static string TotalSessionFromStartServerCount {
             get {
@@ -781,7 +781,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to کامند مدیریت نشده.
+        ///   Looks up a localized string similar to UnhandledCommand.
         /// </summary>
         public static string UnhandledCommand {
             get {
@@ -790,7 +790,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to در حالت انتظار برای اتصال یک کانکشن(کلاینت).
+        ///   Looks up a localized string similar to WaitForConnection.
         /// </summary>
         public static string WaitForConnection {
             get {
@@ -799,7 +799,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to در حال انتظار.
+        ///   Looks up a localized string similar to Waiting.
         /// </summary>
         public static string Waiting {
             get {
@@ -808,7 +808,7 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to اخطار.
+        ///   Looks up a localized string similar to Warning.
         /// </summary>
         public static string Warning {
             get {
