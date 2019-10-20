@@ -38,7 +38,8 @@ namespace G9SuperNetCoreServer.AbstractServer
         {
             // Initialize core
             _core = new G9Core<TAccount, TSession>(superNetCoreConfig, commandAssembly, SendCommandByName,
-                SendCommandByNameAsync, OnSessionReceiveRequestOverTheLimitInSecondHandler, OnUnhandledCommandHandler, customLogging);
+                SendCommandByNameAsync, OnSessionReceiveRequestOverTheLimitInSecondHandler, OnUnhandledCommandHandler,
+                customLogging);
 
             // ######################## Add default command ########################
             // G9 Echo Command
@@ -139,7 +140,7 @@ namespace G9SuperNetCoreServer.AbstractServer
             uint sessionId = 0;
             // Retrieve the state object and the handler socket  
             // from the asynchronous state object.  
-            var state = (G9SuperNetCoreStateObjectServer)asyncResult.AsyncState;
+            var state = (G9SuperNetCoreStateObjectServer) asyncResult.AsyncState;
             try
             {
                 sessionId = state.SessionIdentity;
@@ -147,7 +148,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
 
                 // Read data from the client socket.   
-                var bytesRead = (ushort)state.WorkSocket.EndReceive(asyncResult);
+                var bytesRead = (ushort) state.WorkSocket.EndReceive(asyncResult);
 
                 if (bytesRead > 0)
                 {
@@ -223,7 +224,7 @@ namespace G9SuperNetCoreServer.AbstractServer
         /// <param name="handler">Socket handler for send</param>
         /// <param name="sessionId">Specified session id</param>
         /// <param name="byteData">Specify byte data for send</param>
-        
+
         #region Send
 
         private WaitHandle Send(Socket handler, uint sessionId, byte[] byteData)
@@ -242,7 +243,7 @@ namespace G9SuperNetCoreServer.AbstractServer
 
             // Begin sending the data to the remote device.  
             return handler.BeginSend(stateSend.Buffer, 0, byteData.Length, 0,
-                SendCallback, stateSend)
+                    SendCallback, stateSend)
                 ?.AsyncWaitHandle;
         }
 
@@ -259,7 +260,7 @@ namespace G9SuperNetCoreServer.AbstractServer
         private void SendCallback(IAsyncResult asyncResult)
         {
             // Retrieve the socket from the state object.  
-            var state = (G9SuperNetCoreStateObjectServer)asyncResult.AsyncState;
+            var state = (G9SuperNetCoreStateObjectServer) asyncResult.AsyncState;
 
             try
             {
