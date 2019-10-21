@@ -170,15 +170,12 @@ namespace G9SuperNetCoreClient.AbstractClient
         ///     If set true, check command send type
         ///     If func send data type not equal with command send type throw exception
         /// </param>
-        /// <returns>Return 'true' if send is success</returns>
 
         #region SendCommandByName
 
-        public int SendCommandByName(string commandName, object commandData, bool checkCommandExists = true,
+        public void SendCommandByName(string commandName, object commandData, bool checkCommandExists = true,
             bool checkCommandSendType = true)
         {
-            // Set send data
-            var sendBytes = 0;
             try
             {
                 // Check exists command
@@ -200,7 +197,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
                     // Try to send
-                    sendBytes = Send(_clientSocket, packets[i]);
+                    Send(_clientSocket, packets[i]).WaitOne();
             }
             catch (Exception ex)
             {
@@ -212,8 +209,6 @@ namespace G9SuperNetCoreClient.AbstractClient
                 // Run event on error
                 OnErrorHandler(ex, ClientErrorReason.ErrorReadyToSendDataToServer);
             }
-
-            return sendBytes;
         }
 
         #endregion
@@ -231,53 +226,45 @@ namespace G9SuperNetCoreClient.AbstractClient
         ///     If set true, check command send type
         ///     If func send data type not equal with command send type throw exception
         /// </param>
-        /// <returns>Return => Task int specify byte to send. if don't send return 0</returns>
 
         #region SendCommandByNameAsync
 
-        public async Task<int> SendCommandByNameAsync(string commandName, object commandData,
+        public void SendCommandByNameAsync(string commandName, object commandData,
             bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            return await Task.Run(() =>
+            try
             {
-                // Set send data
-                var sendBytes = 0;
-                try
-                {
-                    // Check exists command
-                    if (checkCommandExists && !_commandHandler.CheckCommandExist(commandName))
-                        throw new Exception($"{LogMessage.Command}\n{LogMessage.CommandName}: {commandName}");
+                // Check exists command
+                if (checkCommandExists && !_commandHandler.CheckCommandExist(commandName))
+                    throw new Exception($"{LogMessage.Command}\n{LogMessage.CommandName}: {commandName}");
 
-                    // Check exists command
-                    if (checkCommandSendType &&
-                        _commandHandler.GetCommandSendType(commandName) != commandData.GetType())
-                        throw new Exception(
-                            $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_commandHandler.GetCommandSendType(commandName)}");
+                // Check exists command
+                if (checkCommandSendType &&
+                    _commandHandler.GetCommandSendType(commandName) != commandData.GetType())
+                    throw new Exception(
+                        $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_commandHandler.GetCommandSendType(commandName)}");
 
-                    // Ready data for send
-                    var dataForSend = ReadyDataForSend(commandName, commandData);
+                // Ready data for send
+                var dataForSend = ReadyDataForSend(commandName, commandData);
 
-                    // Get total packets
-                    var packets = dataForSend.GetPacketsArray();
+                // Get total packets
+                var packets = dataForSend.GetPacketsArray();
 
-                    // Send total packets
-                    for (var i = 0; i < dataForSend.TotalPackets; i++)
-                        // Try to send
-                        sendBytes = Send(_clientSocket, packets[i]);
-                }
-                catch (Exception ex)
-                {
-                    // Set log
-                    if (_logging.LogIsActive(LogsType.EXCEPTION))
-                        _logging.LogException(ex, LogMessage.FailSendComandByNameAsync,
-                            G9LogIdentity.CLIENT_SEND_DATA, LogMessage.FailedOperation);
+                // Send total packets
+                for (var i = 0; i < dataForSend.TotalPackets; i++)
+                    // Try to send
+                    Send(_clientSocket, packets[i]);
+            }
+            catch (Exception ex)
+            {
+                // Set log
+                if (_logging.LogIsActive(LogsType.EXCEPTION))
+                    _logging.LogException(ex, LogMessage.FailSendComandByNameAsync,
+                        G9LogIdentity.CLIENT_SEND_DATA, LogMessage.FailedOperation);
 
-                    // Run event on error
-                    OnErrorHandler(ex, ClientErrorReason.ErrorReadyToSendDataToServer);
-                }
-
-                return sendBytes;
-            });
+                // Run event on error
+                OnErrorHandler(ex, ClientErrorReason.ErrorReadyToSendDataToServer);
+            }
         }
 
         #endregion
@@ -298,14 +285,13 @@ namespace G9SuperNetCoreClient.AbstractClient
         ///     If set true, check command send type
         ///     If func send data type not equal with command send type throw exception
         /// </param>
-        /// <returns>Return 'true' if send is success</returns>
 
         #region SendCommand
 
-        public int SendCommand<TCommand, TTypeSend>(TTypeSend commandData, bool checkCommandExists = true,
+        public void SendCommand<TCommand, TTypeSend>(TTypeSend commandData, bool checkCommandExists = true,
             bool checkCommandSendType = true)
         {
-            return SendCommandByName(typeof(TCommand).Name, commandData, checkCommandExists, checkCommandSendType);
+            SendCommandByName(typeof(TCommand).Name, commandData, checkCommandExists, checkCommandSendType);
         }
 
         #endregion
@@ -326,11 +312,11 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         #region SendCommandByNameAsync
 
-        public async Task<int> SendCommandAsync<TCommand, TTypeSend>(TTypeSend commandData,
+        public void SendCommandAsync<TCommand, TTypeSend>(TTypeSend commandData,
             bool checkCommandExists = true,
             bool checkCommandSendType = true)
         {
-            return await SendCommandByNameAsync(typeof(TCommand).Name, commandData, checkCommandExists,
+            SendCommandByNameAsync(typeof(TCommand).Name, commandData, checkCommandExists,
                 checkCommandSendType);
         }
 
@@ -340,16 +326,16 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         #region Helper Class For Send
 
-        private int SendCommandByName(uint sessionId, string commandName, object commandData,
+        private void SendCommandByName(uint sessionId, string commandName, object commandData,
             bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            return SendCommandByName(commandName, commandData, checkCommandExists, checkCommandSendType);
+            SendCommandByName(commandName, commandData, checkCommandExists, checkCommandSendType);
         }
 
-        private async Task<int> SendCommandByNameAsync(uint sessionId, string commandName, object commandData,
+        private void SendCommandByNameAsync(uint sessionId, string commandName, object commandData,
             bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            return await SendCommandByNameAsync(commandName, commandData, checkCommandExists, checkCommandSendType);
+            SendCommandByNameAsync(commandName, commandData, checkCommandExists, checkCommandSendType);
         }
 
         #endregion

@@ -19,11 +19,11 @@ namespace G9SuperNetCoreClient.AbstractClient
         ///     Ping Command Handler
         /// </summary>
         private void PingCommandReceiveHandler(string receiveData, TAccount Account,
-            Action<string, SendTypeForCommand, Action<int>> sendDataForThisCommand)
+            Action<string, SendTypeForCommand> sendDataForThisCommand)
         {
             if (DateTime.TryParse(receiveData, out _))
             {
-                sendDataForThisCommand(receiveData, SendTypeForCommand.Asynchronous, null);
+                sendDataForThisCommand(receiveData, SendTypeForCommand.Asynchronous);
             }
             else if (ushort.TryParse(receiveData, out var receivePingResult))
             {
@@ -42,7 +42,7 @@ namespace G9SuperNetCoreClient.AbstractClient
         ///     Echo Command Handler
         /// </summary>
         private void G9EchoCommandPingCommandReceiveHandler(string receiveData, TAccount Account,
-            Action<string, SendTypeForCommand, Action<int>> sendDataForThisCommand)
+            Action<string, SendTypeForCommand> sendDataForThisCommand)
         {
             if (_logging.LogIsActive(LogsType.INFO))
                 _logging.LogInformation($"{LogMessage.CommandEcho}\n{LogMessage.ReceiveData}: {receiveData}",
@@ -63,10 +63,10 @@ namespace G9SuperNetCoreClient.AbstractClient
         ///     Test Send Receive Command Handler
         /// </summary>
         private void G9TestSendReceiveCommandReceiveHandler(string receiveData, TAccount Account,
-            Action<string, SendTypeForCommand, Action<int>> sendDataForThisCommand)
+            Action<string, SendTypeForCommand> sendDataForThisCommand)
         {
             // Send receive data again
-            sendDataForThisCommand(receiveData, SendTypeForCommand.Asynchronous, null);
+            sendDataForThisCommand(receiveData, SendTypeForCommand.Asynchronous);
 
             // Set log
             if (_logging.LogIsActive(LogsType.INFO))

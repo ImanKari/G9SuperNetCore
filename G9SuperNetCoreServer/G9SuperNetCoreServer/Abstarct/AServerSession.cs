@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net;
-using System.Threading.Tasks;
 using G9Common.Abstract;
 using G9Common.Enums;
 using G9SuperNetCoreServer.HelperClass;
@@ -46,18 +45,21 @@ namespace G9SuperNetCoreServer.Abstarct
         #region Max Request Utilities
 
         /// <summary>
-        /// Specified check max request is enable
+        ///     Specified check max request is enable
         /// </summary>
         private bool _enableCheckMaxRequest;
+
         /// <summary>
         ///     Save date time for check max request
         ///     one second previous
         /// </summary>
         private DateTime _checkMaxRequestDateTime;
+
         /// <summary>
-        /// Specify counter for max request
+        ///     Specify counter for max request
         /// </summary>
         private ushort _counterForMaxRequest;
+
         /// <summary>
         ///     Specify maximum request from client per second
         ///     Set 0 => infinity
@@ -106,7 +108,6 @@ namespace G9SuperNetCoreServer.Abstarct
                 if (maximumRequestPerSecond == 0)
                 {
                     _enableCheckMaxRequest = false;
-                    return;
                 }
                 else
                 {
@@ -190,9 +191,11 @@ namespace G9SuperNetCoreServer.Abstarct
 
         #region SendCommandByNameAsync
 
-        public override Task<int> SendCommandByNameAsync(string commandName, object commandData, bool checkCommandExists = true, bool checkCommandSendType = true)
+        public override void SendCommandByNameAsync(string commandName, object commandData,
+            bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            return _sessionHandler.Session_SendCommandByNameAsync(SessionId, commandName, commandData, checkCommandExists, checkCommandSendType);
+            _sessionHandler.Session_SendCommandByNameAsync(SessionId, commandName, commandData, checkCommandExists,
+                checkCommandSendType);
         }
 
         #endregion
@@ -201,9 +204,11 @@ namespace G9SuperNetCoreServer.Abstarct
 
         #region SendCommandByName
 
-        public override int SendCommandByName(string commandName, object commandData, bool checkCommandExists = true, bool checkCommandSendType = true)
+        public override void SendCommandByName(string commandName, object commandData, bool checkCommandExists = true,
+            bool checkCommandSendType = true)
         {
-            return _sessionHandler.Session_SendCommandByName(SessionId, commandName, commandData, checkCommandExists, checkCommandSendType);
+            _sessionHandler.Session_SendCommandByName(SessionId, commandName, commandData, checkCommandExists,
+                checkCommandSendType);
         }
 
         #endregion
@@ -212,9 +217,11 @@ namespace G9SuperNetCoreServer.Abstarct
 
         #region SendCommandAsync
 
-        public override Task<int> SendCommandAsync<TCommand, TTypeSend>(TTypeSend commandData, bool checkCommandExists = true, bool checkCommandSendType = true)
+        public override void SendCommandAsync<TCommand, TTypeSend>(TTypeSend commandData,
+            bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            return _sessionHandler.Session_SendCommandByNameAsync(SessionId, typeof(TCommand).Name, commandData, checkCommandExists, checkCommandSendType);
+            _sessionHandler.Session_SendCommandByNameAsync(SessionId, typeof(TCommand).Name, commandData,
+                checkCommandExists, checkCommandSendType);
         }
 
         #endregion
@@ -223,15 +230,17 @@ namespace G9SuperNetCoreServer.Abstarct
 
         #region SendCommand
 
-        public override int SendCommand<TCommand, TTypeSend>(TTypeSend commandData, bool checkCommandExists = true, bool checkCommandSendType = true)
+        public override void SendCommand<TCommand, TTypeSend>(TTypeSend commandData, bool checkCommandExists = true,
+            bool checkCommandSendType = true)
         {
-            return _sessionHandler.Session_SendCommandByName(SessionId, typeof(TCommand).Name, commandData, checkCommandExists, checkCommandSendType);
+            _sessionHandler.Session_SendCommandByName(SessionId, typeof(TCommand).Name, commandData, checkCommandExists,
+                checkCommandSendType);
         }
 
         #endregion
 
         /// <summary>
-        /// Check max request over the limit in second
+        ///     Check max request over the limit in second
         /// </summary>
 
         #region CheckMaxRequestOverTheLimitInSecond
@@ -260,10 +269,8 @@ namespace G9SuperNetCoreServer.Abstarct
 
                     // Check counter with max request limit
                     if (_counterForMaxRequest > _maxRequestPerSecond)
-                    {
                         // If Receive Request Over The Limit In Second
                         _sessionHandler?.Session_OnSessionReceiveRequestOverTheLimitInSecond?.Invoke(SessionId);
-                    }
 
                     _counterForMaxRequest = 0;
                 }

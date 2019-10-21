@@ -329,7 +329,7 @@ namespace G9SuperNetCoreServer.AbstractServer
         {
             var serverUpTime = DateTime.Now - ServerStartDateTime;
             return
-                $"{LogMessage.ServerStartDateTime}: {ServerStartDateTime:yyyy/MM/dd HH:mm:ss}\n{LogMessage.ServerUpTime}: {serverUpTime:G}\n{LogMessage.ServerTotalSendBytes}: {TotalSendBytes}\t{LogMessage.ServerTotalReceiveBytes}: {TotalReceiveBytes}\n{LogMessage.ServerTotalSendPacket}: {TotalSendPacket}\t{LogMessage.ServerTotalReceivePacket}: {TotalReceivePacket}\n{LogMessage.TotalSessionFromStartServerCount}: {NumberOfSessionFromStartServer}\t{LogMessage.CurrentSessionCount}: {NumberOfCurrentSession}";
+                $"{LogMessage.ServerStartDateTime}: {ServerStartDateTime:yyyy/MM/dd HH:mm:ss}\n{LogMessage.ServerUpTime}: {serverUpTime:G}\n{LogMessage.ServerTotalSendBytes}: {TotalSendBytes:#,##0}\t{LogMessage.ServerTotalReceiveBytes}: {TotalReceiveBytes:#,##0}\n{LogMessage.ServerTotalSendPacket}: {TotalSendPacket:#,##0}\t{LogMessage.ServerTotalReceivePacket}: {TotalReceivePacket:#,##0}\n{LogMessage.TotalSessionFromStartServerCount}: {NumberOfSessionFromStartServer:#,##0}\t{LogMessage.CurrentSessionCount}: {NumberOfCurrentSession:#,##0}";
         }
         #endregion
 

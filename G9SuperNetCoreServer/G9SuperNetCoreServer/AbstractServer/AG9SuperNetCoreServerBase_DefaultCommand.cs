@@ -20,15 +20,14 @@ namespace G9SuperNetCoreServer.AbstractServer
         ///     Ping Command Handler
         /// </summary>
         private void PingCommandReceiveHandler(string receiveData, TAccount Account,
-            Action<string, SendTypeForCommand, Action<int>> sendDataForThisCommand)
+            Action<string, SendTypeForCommand> sendDataForThisCommand)
         {
             if (DateTime.TryParse(receiveData, out var receiveDateTime))
             {
                 var ping = (ushort)(DateTime.Now - receiveDateTime).TotalMilliseconds;
                 _core.GetAccountUtilitiesBySessionId(Account.Session.SessionId).SessionHandler
                     .Core_SetPing(ping);
-                sendDataForThisCommand(ping.ToString(CultureInfo.InvariantCulture), SendTypeForCommand.Asynchronous,
-                    null);
+                sendDataForThisCommand(ping.ToString(CultureInfo.InvariantCulture), SendTypeForCommand.Asynchronous);
                 if (_core.Logging.LogIsActive(LogsType.INFO))
                     _core.Logging.LogInformation(Account.Session.GetSessionInfo(), G9LogIdentity.CLIENT_PING,
                         LogMessage.ClientPing);
@@ -43,13 +42,13 @@ namespace G9SuperNetCoreServer.AbstractServer
         ///     Echo Command Handler
         /// </summary>
         private void G9EchoCommandPingCommandReceiveHandler(string receiveData, TAccount Account,
-            Action<string, SendTypeForCommand, Action<int>> sendDataForThisCommand)
+            Action<string, SendTypeForCommand> sendDataForThisCommand)
         {
             if (_core.Logging.LogIsActive(LogsType.INFO))
                 _core.Logging.LogInformation($"{LogMessage.CommandEcho}\n{LogMessage.ReceiveData}: {receiveData}",
                     G9LogIdentity.ECHO_COMMAND,
                     LogMessage.SuccessfulOperation);
-            sendDataForThisCommand(receiveData, SendTypeForCommand.Asynchronous, null);
+            sendDataForThisCommand(receiveData, SendTypeForCommand.Asynchronous);
         }
 
         #endregion
@@ -65,13 +64,13 @@ namespace G9SuperNetCoreServer.AbstractServer
         ///     Test Send Receive Command Handler
         /// </summary>
         private void G9TestSendReceiveCommandReceiveHandler(string receiveData, TAccount Account,
-            Action<string, SendTypeForCommand, Action<int>> sendDataForThisCommand)
+            Action<string, SendTypeForCommand> sendDataForThisCommand)
         {
             // Check if disable test mode return
             if (!Account.Session.EnableTestSendReceiveMode) return;
 
             // if enable => send receive data
-            sendDataForThisCommand(receiveData, SendTypeForCommand.Asynchronous, null);
+            sendDataForThisCommand(receiveData, SendTypeForCommand.Asynchronous);
 
             // Set log
             if (_core.Logging.LogIsActive(LogsType.INFO))

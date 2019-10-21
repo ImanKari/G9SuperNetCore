@@ -31,16 +31,19 @@ namespace G9SuperNetCoreClientSampleApp
             var client1 =
                 new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>(
                     new G9ClientConfig(IPAddress.Parse("127.0.0.1"), 9639, SocketMode.Tcp), Assembly.GetExecutingAssembly());
-            G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>[] clients = new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>[999];
+            G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>[] clients = new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>[9999];
 
             await client1.StartConnection();
 
-            for (var i = 0; i < clients.Length; i++)
+            for (var i = 0; i < clients.Length - 1; i++)
             {
                 clients[i] = new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>(
                     new G9ClientConfig(IPAddress.Parse("127.0.0.1"), 9639, SocketMode.Tcp), Assembly.GetExecutingAssembly());
-                await clients[i].StartConnection();
+                clients[i].StartConnection();
             }
+            clients[^1] = new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>(
+                    new G9ClientConfig(IPAddress.Parse("127.0.0.1"), 9639, SocketMode.Tcp), Assembly.GetExecutingAssembly());
+            await clients[^1].StartConnection();
 
             Console.WriteLine("Connected all clients...");
 

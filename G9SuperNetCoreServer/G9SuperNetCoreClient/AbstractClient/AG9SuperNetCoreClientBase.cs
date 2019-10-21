@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Threading;
 using G9Common.Abstract;
 using G9Common.CommandHandler;
 using G9Common.Enums;
@@ -263,21 +264,21 @@ namespace G9SuperNetCoreClient.AbstractClient
         /// </summary>
         /// <param name="clientSocket">Specify client socket</param>
         /// <param name="data">Specify data for send</param>
+        /// <returns>return WaitHandle for begin send</returns>
 
         #region Send
 
-        private int Send(Socket clientSocket, ReadOnlySpan<byte> data)
+        private WaitHandle Send(Socket clientSocket, ReadOnlySpan<byte> data)
         {
-            // Begin sending the data to the remote device.  
-            clientSocket.BeginSend(data.ToArray(), 0, data.Length, 0,
-                SendCallback, clientSocket);
 
             // Set log
             if (_logging.LogIsActive(LogsType.EVENT))
                 _logging.LogEvent($"{LogMessage.RequestSendData}\n{LogMessage.DataLength}: {data.Length}",
                     $"{G9LogIdentity.CLIENT_SEND_DATA}", LogMessage.SuccessfulOperation);
 
-            return data.Length;
+            // Begin sending the data to the remote device.  
+            return clientSocket.BeginSend(data.ToArray(), 0, data.Length, 0,
+                SendCallback, clientSocket)?.AsyncWaitHandle;
         }
 
         #endregion

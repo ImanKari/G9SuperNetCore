@@ -224,6 +224,7 @@ namespace G9SuperNetCoreServer.AbstractServer
         /// <param name="handler">Socket handler for send</param>
         /// <param name="sessionId">Specified session id</param>
         /// <param name="byteData">Specify byte data for send</param>
+        /// <returns>return WaitHandle for begin send</returns>
 
         #region Send
 

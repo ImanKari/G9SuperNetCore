@@ -308,15 +308,12 @@ namespace G9SuperNetCoreServer.AbstractServer
         ///     If set true, check command send type
         ///     If func send data type not equal with command send type throw exception
         /// </param>
-        /// <returns>Return => int number specify byte to send. if don't send return 0</returns>
 
         #region SendCommandByName
 
-        public int SendCommandByName(uint sessionId, string commandName, object commandData,
+        public void SendCommandByName(uint sessionId, string commandName, object commandData,
             bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            // Set send data
-            var sendBytes = 0;
             try
             {
                 // Check exists command
@@ -349,8 +346,6 @@ namespace G9SuperNetCoreServer.AbstractServer
                         G9LogIdentity.SERVER_SEND_DATA, LogMessage.FailedOperation);
                 OnErrorHandler(ex, ServerErrorReason.ErrorReadyToSendDataToClient);
             }
-
-            return sendBytes;
         }
 
         #endregion
@@ -369,16 +364,12 @@ namespace G9SuperNetCoreServer.AbstractServer
         ///     If set true, check command send type
         ///     If func send data type not equal with command send type throw exception
         /// </param>
-        /// <returns>Return => Task int specify byte to send. if don't send return 0</returns>
 
         #region SendCommandByNameAsync
 
-        public async Task<int> SendCommandByNameAsync(uint sessionId, string commandName, object commandData,
+        public void SendCommandByNameAsync(uint sessionId, string commandName, object commandData,
             bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            // Set send data
-            var sendBytes = 0;
-
             try
             {
                 // Check exists command
@@ -404,6 +395,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
                     // Try to send
                     Send(socket, sessionId, packets[i]);
+
             }
             catch (Exception ex)
             {
@@ -411,9 +403,8 @@ namespace G9SuperNetCoreServer.AbstractServer
                     _core.Logging.LogException(ex, LogMessage.FailSendComandByNameAsync,
                         G9LogIdentity.SERVER_SEND_DATA, LogMessage.FailedOperation);
                 OnErrorHandler(ex, ServerErrorReason.ErrorReadyToSendDataToClient);
-            }
 
-            return sendBytes;
+            }
         }
 
         #endregion
@@ -431,11 +422,10 @@ namespace G9SuperNetCoreServer.AbstractServer
         ///     If set true, check command send type
         ///     If func send data type not equal with command send type throw exception
         /// </param>
-        /// <returns>Return 'true' if send is success</returns>
 
         #region SendCommandToAllByName
 
-        public bool SendCommandToAllByName(string commandName, object commandData, bool checkCommandExists = true,
+        public void SendCommandToAllByName(string commandName, object commandData, bool checkCommandExists = true,
             bool checkCommandSendType = true)
         {
             try
@@ -461,10 +451,9 @@ namespace G9SuperNetCoreServer.AbstractServer
                 {
                     var i1 = i;
                     _core.ScrollingAllAccountUtilities(socketConnection =>
-                        Send(socketConnection.SessionSocket, socketConnection.Account.Session.SessionId, packets[i1])?.WaitOne());
+                        Send(socketConnection.SessionSocket, socketConnection.Account.Session.SessionId, packets[i1])
+                            ?.WaitOne());
                 }
-
-                return true;
             }
             catch (Exception ex)
             {
@@ -475,8 +464,6 @@ namespace G9SuperNetCoreServer.AbstractServer
 
                 // Run event on error
                 OnErrorHandler(ex, ServerErrorReason.ErrorReadyToSendDataToAllClients);
-
-                return false;
             }
         }
 
@@ -495,56 +482,49 @@ namespace G9SuperNetCoreServer.AbstractServer
         ///     If set true, check command send type
         ///     If func send data type not equal with command send type throw exception
         /// </param>
-        /// <returns>Return 'true' if send is success</returns>
 
         #region SendCommandToAllByNameAsync
 
-        public async Task<bool> SendCommandToAllByNameAsync(string commandName, object commandData,
+        public void SendCommandToAllByNameAsync(string commandName, object commandData,
             bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            return await Task.Run(() =>
+            try
             {
-                try
+                // Check exists command
+                if (checkCommandExists && !_core.CommandHandler.CheckCommandExist(commandName))
+                    throw new Exception($"{LogMessage.Command}\n{LogMessage.CommandName}: {commandName}");
+
+                // Check exists command
+                if (checkCommandSendType &&
+                    _core.CommandHandler.GetCommandSendType(commandName) != commandData.GetType())
+                    throw new Exception(
+                        $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
+
+                // Ready data for send
+                var dataForSend = ReadyDataForSend(commandName, commandData);
+
+                // Get total packets
+                var packets = dataForSend.GetPacketsArray();
+
+                // Send total packets
+                for (var i = 0; i < dataForSend.TotalPackets; i++)
                 {
-                    // Check exists command
-                    if (checkCommandExists && !_core.CommandHandler.CheckCommandExist(commandName))
-                        throw new Exception($"{LogMessage.Command}\n{LogMessage.CommandName}: {commandName}");
-
-                    // Check exists command
-                    if (checkCommandSendType &&
-                        _core.CommandHandler.GetCommandSendType(commandName) != commandData.GetType())
-                        throw new Exception(
-                            $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
-
-                    // Ready data for send
-                    var dataForSend = ReadyDataForSend(commandName, commandData);
-
-                    // Get total packets
-                    var packets = dataForSend.GetPacketsArray();
-
-                    // Send total packets
-                    for (var i = 0; i < dataForSend.TotalPackets; i++)
-                    {
-                        var i1 = i;
-                        _core.ScrollingAllAccountUtilities(socketConnection =>
-                            Send(socketConnection.SessionSocket, socketConnection.Account.Session.SessionId, packets[i1]));
-                    }
-
-                    return true;
+                    var i1 = i;
+                    _core.ScrollingAllAccountUtilities(socketConnection =>
+                        Send(socketConnection.SessionSocket, socketConnection.Account.Session.SessionId,
+                            packets[i1]));
                 }
-                catch (Exception ex)
-                {
-                    // Set log
-                    if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
-                        _core.Logging.LogException(ex, LogMessage.FailSendComandByNameToAll,
-                            G9LogIdentity.SERVER_SEND_DATA_ALL_CLIENTS, LogMessage.FailedOperation);
+            }
+            catch (Exception ex)
+            {
+                // Set log
+                if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                    _core.Logging.LogException(ex, LogMessage.FailSendComandByNameToAll,
+                        G9LogIdentity.SERVER_SEND_DATA_ALL_CLIENTS, LogMessage.FailedOperation);
 
-                    // Run event on error
-                    OnErrorHandler(ex, ServerErrorReason.ErrorReadyToSendDataToAllClients);
-
-                    return false;
-                }
-            });
+                // Run event on error
+                OnErrorHandler(ex, ServerErrorReason.ErrorReadyToSendDataToAllClients);
+            }
         }
 
         #endregion
@@ -566,16 +546,15 @@ namespace G9SuperNetCoreServer.AbstractServer
         ///     If set true, check command send type
         ///     If func send data type not equal with command send type throw exception
         /// </param>
-        /// <returns>Return => int number specify byte to send. if don't send return 0</returns>
 
         #region SendCommand
 
-        public int SendCommand<TCommand, TTypeSend>(uint sessionId, TTypeSend commandData,
+        public void SendCommand<TCommand, TTypeSend>(uint sessionId, TTypeSend commandData,
             bool checkCommandExists = true,
             bool checkCommandSendType = true)
             where TCommand : IG9CommandWithSend
         {
-            return SendCommandByName(sessionId, typeof(TCommand).Name, commandData, checkCommandExists,
+            SendCommandByName(sessionId, typeof(TCommand).Name, commandData, checkCommandExists,
                 checkCommandSendType);
         }
 
@@ -594,15 +573,14 @@ namespace G9SuperNetCoreServer.AbstractServer
         ///     If set true, check command send type
         ///     If func send data type not equal with command send type throw exception
         /// </param>
-        /// <returns>Return => Task int specify byte to send. if don't send return 0</returns>
 
         #region SendCommandAsync
 
-        public async Task<int> SendCommandAsync<TCommand, TTypeSend>(uint sessionId, TTypeSend commandData,
+        public void SendCommandAsync<TCommand, TTypeSend>(uint sessionId, TTypeSend commandData,
             bool checkCommandExists = true,
             bool checkCommandSendType = true)
         {
-            return await SendCommandByNameAsync(sessionId, typeof(TCommand).Name, commandData, checkCommandExists,
+            SendCommandByNameAsync(sessionId, typeof(TCommand).Name, commandData, checkCommandExists,
                 checkCommandSendType);
         }
 
@@ -620,15 +598,14 @@ namespace G9SuperNetCoreServer.AbstractServer
         ///     If set true, check command send type
         ///     If func send data type not equal with command send type throw exception
         /// </param>
-        /// <returns>Return 'true' if send is success</returns>
 
         #region SendCommandToAll
 
-        public bool SendCommandToAll<TCommand, TTypeSend>(uint sessionId, TTypeSend commandData,
+        public void SendCommandToAll<TCommand, TTypeSend>(uint sessionId, TTypeSend commandData,
             bool checkCommandExists = true,
             bool checkCommandSendType = true)
         {
-            return SendCommandToAllByName(typeof(TCommand).Name, commandData, checkCommandExists, checkCommandSendType);
+            SendCommandToAllByName(typeof(TCommand).Name, commandData, checkCommandExists, checkCommandSendType);
         }
 
         #endregion
@@ -645,15 +622,14 @@ namespace G9SuperNetCoreServer.AbstractServer
         ///     If set true, check command send type
         ///     If func send data type not equal with command send type throw exception
         /// </param>
-        /// <returns>Return 'true' if send is success</returns>
 
         #region SendCommandToAllAsync
 
-        public async Task<bool> SendCommandToAllAsync<TCommand, TTypeSend>(uint sessionId, TTypeSend commandData,
+        public void SendCommandToAllAsync<TCommand, TTypeSend>(uint sessionId, TTypeSend commandData,
             bool checkCommandExists = true,
             bool checkCommandSendType = true)
         {
-            return await SendCommandToAllByNameAsync(typeof(TCommand).Name, commandData, checkCommandExists,
+            SendCommandToAllByNameAsync(typeof(TCommand).Name, commandData, checkCommandExists,
                 checkCommandSendType);
         }
 

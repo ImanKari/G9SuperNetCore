@@ -215,11 +215,6 @@ namespace G9Common.CommandHandler
         ///         <paramref name="receiveHandler.Action&lt;TSendType, SendTypeForCommand, Action&lt;bool&gt;&gt;&gt;" />:Access
         ///         to action for send data for sender
         ///     </para>
-        ///     <para>
-        ///         <paramref
-        ///             name="receiveHandler.Action&lt;TSendType, SendTypeForCommand, Action&lt;bool&gt;&gt;&gt;.Action&lt;bool&gt;" />
-        ///         : Action run when send success
-        ///     </para>
         /// </param>
         /// <param name="errorHandler">
         ///     Create handler for runtime error
@@ -238,7 +233,7 @@ namespace G9Common.CommandHandler
 
         public void AddCustomCommand<TSendAndReceive>(
             string commandName,
-            Action<TSendAndReceive, TAccount, Action<TSendAndReceive, SendTypeForCommand, Action<int>>>
+            Action<TSendAndReceive, TAccount, Action<TSendAndReceive, SendTypeForCommand>>
                 receiveHandler,
             Action<Exception, TAccount> errorHandler)
         {
@@ -268,11 +263,6 @@ namespace G9Common.CommandHandler
         ///         <paramref name="receiveHandler.Action&lt;TSendType, SendTypeForCommand, Action&lt;int&gt;&gt;&gt;" />:Access
         ///         to action for send data for sender
         ///     </para>
-        ///     <para>
-        ///         <paramref
-        ///             name="receiveHandler.Action&lt;TSendType, SendTypeForCommand, Action&lt;int&gt;&gt;&gt;.Action&lt;int&gt;" />
-        ///         : Action run when send success | int number specify bytes to send. if don't send receive 0
-        ///     </para>
         /// </param>
         /// <param name="errorHandler">
         ///     Create handler for runtime error
@@ -291,7 +281,7 @@ namespace G9Common.CommandHandler
 
         public void AddCustomCommand<TReceiveType, TSendType>(
             string commandName,
-            Action<TReceiveType, TAccount, Action<TSendType, SendTypeForCommand, Action<int>>>
+            Action<TReceiveType, TAccount, Action<TSendType, SendTypeForCommand>>
                 receiveHandler,
             Action<Exception, TAccount> errorHandler)
         {
@@ -304,27 +294,17 @@ namespace G9Common.CommandHandler
                         try
                         {
                             receiveHandler(data.ToArray().FromJson<TReceiveType>(), account,
-                                async (type, command, onSendFinish) =>
+                                async (type, command) =>
                                 {
                                     try
                                     {
                                         if (command == SendTypeForCommand.Asynchronous)
-                                        {
-                                            var bytesSend = await account.SessionSendCommand.SendCommandByNameAsync(
-                                                commandName,
-                                                type);
-                                            onSendFinish?.Invoke(bytesSend);
-                                        }
+                                            account.SessionSendCommand.SendCommandByNameAsync(commandName, type);
                                         else
-                                        {
-                                            var bytesSend =
-                                                account.SessionSendCommand.SendCommandByName(commandName, type);
-                                            onSendFinish?.Invoke(bytesSend);
-                                        }
+                                            account.SessionSendCommand.SendCommandByName(commandName, type);
                                     }
                                     catch (Exception ex)
                                     {
-                                        onSendFinish?.Invoke(0);
                                         errorHandler?.Invoke(ex, account);
                                     }
                                 });

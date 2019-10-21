@@ -65,7 +65,7 @@ namespace G9SuperNetCoreServer.Core
         ///     bool => If set true, check command exists
         ///     object => data for send
         /// </summary>
-        private readonly Func<uint, string, object, bool, bool, int> _sendCommandByName;
+        private readonly Action<uint, string, object, bool, bool> _sendCommandByName;
 
         /// <summary>
         ///     Access to func send command by name async
@@ -74,7 +74,7 @@ namespace G9SuperNetCoreServer.Core
         ///     bool => If set true, check command exists
         ///     object => data for send
         /// </summary>
-        private readonly Func<uint, string, object, bool, bool, Task<int>> _sendCommandByNameAsync;
+        private readonly Action<uint, string, object, bool, bool> _sendCommandByNameAsync;
 
         /// <summary>
         ///     Access to event OnSessionReceiveRequestOverTheLimitInSecond 
@@ -100,15 +100,15 @@ namespace G9SuperNetCoreServer.Core
         #region G9Core
 
         public G9Core(G9ServerConfig superNetCoreConfig, Assembly commandAssembly,
-            Func<uint, string, object, bool, bool, int> sendCommandByName,
-            Func<uint, string, object, bool, bool, Task<int>> sendCommandByNameAsync,
+            Action<uint, string, object, bool, bool> sendCommandByName,
+            Action<uint, string, object, bool, bool> sendCommandByNameAsync,
             Action<TAccount> onSessionReceiveRequestOverTheLimitInSecond,
             Action<G9SendAndReceivePacket, TAccount> onUnhandledCommand, IG9Logging customLogging = null)
         {
             // TODO: change fixed array to change sizable array
             // Set array
             _accountCollection =
-                new G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>[10000];
+                new G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>[100000];
 
             // Set logging system
             Logging = customLogging ?? new G9LoggingServer();

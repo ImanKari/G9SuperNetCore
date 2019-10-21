@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net;
-using System.Threading.Tasks;
 using G9Common.Abstract;
 using G9SuperNetCoreClient.Helper;
 
@@ -19,12 +18,12 @@ namespace G9SuperNetCoreClient.Abstract
         #region LastCommand Utilities
 
         /// <summary>
-        /// Field save last command
+        ///     Field save last command
         /// </summary>
         private string _lastCommand;
 
         /// <summary>
-        /// Specified last command use
+        ///     Specified last command use
         /// </summary>
         public override string LastCommand
         {
@@ -85,9 +84,11 @@ namespace G9SuperNetCoreClient.Abstract
 
         #region SendCommandByNameAsync
 
-        public override Task<int> SendCommandByNameAsync(string commandName, object commandData, bool checkCommandExists = true, bool checkCommandSendType = true)
+        public override void SendCommandByNameAsync(string commandName, object commandData,
+            bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            return _sessionHandler.Session_SendCommandByNameAsync(SessionId, commandName, commandData, checkCommandExists, checkCommandSendType);
+            _sessionHandler.Session_SendCommandByNameAsync(SessionId, commandName, commandData, checkCommandExists,
+                checkCommandSendType);
         }
 
         #endregion
@@ -96,9 +97,11 @@ namespace G9SuperNetCoreClient.Abstract
 
         #region SendCommandByName
 
-        public override int SendCommandByName(string commandName, object commandData, bool checkCommandExists = true, bool checkCommandSendType = true)
+        public override void SendCommandByName(string commandName, object commandData, bool checkCommandExists = true,
+            bool checkCommandSendType = true)
         {
-            return _sessionHandler.Session_SendCommandByName(SessionId, commandName, commandData, checkCommandExists, checkCommandSendType);
+            _sessionHandler.Session_SendCommandByName(SessionId, commandName, commandData, checkCommandExists,
+                checkCommandSendType);
         }
 
         #endregion
@@ -107,9 +110,11 @@ namespace G9SuperNetCoreClient.Abstract
 
         #region SendCommandAsync
 
-        public override Task<int> SendCommandAsync<TCommand, TTypeSend>(TTypeSend commandData, bool checkCommandExists = true, bool checkCommandSendType = true)
+        public override void SendCommandAsync<TCommand, TTypeSend>(TTypeSend commandData,
+            bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            return _sessionHandler.Session_SendCommandByNameAsync(SessionId, typeof(TCommand).Name, commandData, checkCommandExists, checkCommandSendType);
+            _sessionHandler.Session_SendCommandByNameAsync(SessionId, typeof(TCommand).Name, commandData,
+                checkCommandExists, checkCommandSendType);
         }
 
         #endregion
@@ -118,9 +123,11 @@ namespace G9SuperNetCoreClient.Abstract
 
         #region SendCommand
 
-        public override int SendCommand<TCommand, TTypeSend>(TTypeSend commandData, bool checkCommandExists = true, bool checkCommandSendType = true)
+        public override void SendCommand<TCommand, TTypeSend>(TTypeSend commandData, bool checkCommandExists = true,
+            bool checkCommandSendType = true)
         {
-            return _sessionHandler.Session_SendCommandByName(SessionId, typeof(TCommand).Name, commandData, checkCommandExists, checkCommandSendType);
+            _sessionHandler.Session_SendCommandByName(SessionId, typeof(TCommand).Name, commandData, checkCommandExists,
+                checkCommandSendType);
         }
 
         #endregion
