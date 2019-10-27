@@ -122,7 +122,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 }
                 catch (Exception ex)
                 {
-                    if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                    if (_core.Logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                         _core.Logging.LogException(ex);
 
                     return null;
@@ -158,7 +158,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 }
                 catch (Exception ex)
                 {
-                    if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                    if (_core.Logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                         _core.Logging.LogException(ex);
 
                     return null;
@@ -192,92 +192,85 @@ namespace G9SuperNetCoreServer.AbstractServer
 
                     var PropertyType = oTGameAccount.GetType().GetProperty(propertyName).PropertyType;
 
-                    switch (typeOfCompare)
+                    return typeOfCompare switch
                     {
-                        case TypeOfCompare.Contain:
-                            return _core
-                                .SelectAccountUtilities(s => s.Where(g =>
-                                    g.Account.GetType()
-                                        .GetProperty(propertyName)
-                                        ?.GetValue(g.Account, null)
-                                        ?.ToString()
-                                        .Contains(value.ToString()) ?? false))
-                                .Select(s => new G9SessionReport
-                                {
-                                    SessionId = s.Account.Session.SessionId,
-                                    TotalReceive = s.Account.Session.SessionTotalReceiveBytes,
-                                    TotalSend = s.Account.Session.SessionTotalReceiveBytes,
-                                    StartTime = s.Account.Session.SessionStartDateTime
-                                })
-                                .ToArray();
-                        case TypeOfCompare.Equal:
-                            return _core
-                                .SelectAccountUtilities(s => s.Where(g =>
-                                    g.Account.GetType().GetProperty(propertyName)?.GetValue(g.Account, null) == value))
-                                .Select(s => new G9SessionReport
-                                {
-                                    SessionId = s.Account.Session.SessionId,
-                                    TotalReceive = s.Account.Session.SessionTotalReceiveBytes,
-                                    TotalSend = s.Account.Session.SessionTotalReceiveBytes,
-                                    StartTime = s.Account.Session.SessionStartDateTime
-                                })
-                                .ToArray();
-                        case TypeOfCompare.NotEqual:
-                            return _core
-                                .SelectAccountUtilities(s => s.Where(g =>
-                                    g.Account.GetType().GetProperty(propertyName)?.GetValue(g.Account, null) != value))
-                                .Select(s => new G9SessionReport
-                                {
-                                    SessionId = s.Account.Session.SessionId,
-                                    TotalReceive = s.Account.Session.SessionTotalReceiveBytes,
-                                    TotalSend = s.Account.Session.SessionTotalReceiveBytes,
-                                    StartTime = s.Account.Session.SessionStartDateTime
-                                })
-                                .ToArray();
-                        case TypeOfCompare.Greater:
-                            return _core
-                                .SelectAccountUtilities(s => s.Where(g =>
-                                    decimal.TryParse(
-                                        g.Account.GetType().GetProperty(propertyName)?.GetValue(g.Account, null)
-                                            .ToString(),
-                                        out var data) &&
-                                    decimal.TryParse(value.ToString(), out var valueResult) &&
-                                    data > valueResult
-                                ))
-                                .Select(s => new G9SessionReport
-                                {
-                                    SessionId = s.Account.Session.SessionId,
-                                    TotalReceive = s.Account.Session.SessionTotalReceiveBytes,
-                                    TotalSend = s.Account.Session.SessionTotalReceiveBytes,
-                                    StartTime = s.Account.Session.SessionStartDateTime
-                                })
-                                .ToArray();
-                        case TypeOfCompare.Less:
-                            return _core
-                                .SelectAccountUtilities(s => s.Where(g =>
-                                    decimal.TryParse(
-                                        g.Account.GetType().GetProperty(propertyName)?.GetValue(g.Account, null)
-                                            .ToString(),
-                                        out var data) &&
-                                    decimal.TryParse(value.ToString(), out var valueResult) &&
-                                    data < valueResult
-                                ))
-                                .Select(s => new G9SessionReport
-                                {
-                                    SessionId = s.Account.Session.SessionId,
-                                    TotalReceive = s.Account.Session.SessionTotalReceiveBytes,
-                                    TotalSend = s.Account.Session.SessionTotalReceiveBytes,
-                                    StartTime = s.Account.Session.SessionStartDateTime
-                                })
-                                .ToArray();
-                        default:
-                            throw new InvalidEnumArgumentException(nameof(typeOfCompare), (int) typeOfCompare,
-                                typeof(TypeOfCompare));
-                    }
+                        TypeOfCompare.Contain => _core
+                            .SelectAccountUtilities(s => s.Where(g =>
+                                g.Account.GetType()
+                                    .GetProperty(propertyName)
+                                    ?.GetValue(g.Account, null)
+                                    ?.ToString()
+                                    .Contains(value.ToString()) ?? false))
+                            .Take(takeCount)
+                            .Select(s => new G9SessionReport
+                            {
+                                SessionId = s.Account.Session.SessionId,
+                                TotalReceive = s.Account.Session.SessionTotalReceiveBytes,
+                                TotalSend = s.Account.Session.SessionTotalReceiveBytes,
+                                StartTime = s.Account.Session.SessionStartDateTime
+                            })
+                            .ToArray(),
+                        TypeOfCompare.Equal => _core
+                            .SelectAccountUtilities(s => s.Where(g =>
+                                g.Account.GetType().GetProperty(propertyName)?.GetValue(g.Account, null) == value))
+                            .Take(takeCount)
+                            .Select(s => new G9SessionReport
+                            {
+                                SessionId = s.Account.Session.SessionId,
+                                TotalReceive = s.Account.Session.SessionTotalReceiveBytes,
+                                TotalSend = s.Account.Session.SessionTotalReceiveBytes,
+                                StartTime = s.Account.Session.SessionStartDateTime
+                            })
+                            .ToArray(),
+                        TypeOfCompare.NotEqual => _core
+                            .SelectAccountUtilities(s => s.Where(g =>
+                                g.Account.GetType().GetProperty(propertyName)?.GetValue(g.Account, null) != value))
+                            .Take(takeCount)
+                            .Select(s => new G9SessionReport
+                            {
+                                SessionId = s.Account.Session.SessionId,
+                                TotalReceive = s.Account.Session.SessionTotalReceiveBytes,
+                                TotalSend = s.Account.Session.SessionTotalReceiveBytes,
+                                StartTime = s.Account.Session.SessionStartDateTime
+                            })
+                            .ToArray(),
+                        TypeOfCompare.Greater => _core
+                            .SelectAccountUtilities(s => s.Where(g =>
+                                decimal.TryParse(
+                                    g.Account.GetType().GetProperty(propertyName)?.GetValue(g.Account, null).ToString(),
+                                    out var data) && decimal.TryParse(value.ToString(), out var valueResult) &&
+                                data > valueResult))
+                            .Take(takeCount)
+                            .Select(s => new G9SessionReport
+                            {
+                                SessionId = s.Account.Session.SessionId,
+                                TotalReceive = s.Account.Session.SessionTotalReceiveBytes,
+                                TotalSend = s.Account.Session.SessionTotalReceiveBytes,
+                                StartTime = s.Account.Session.SessionStartDateTime
+                            })
+                            .ToArray(),
+                        TypeOfCompare.Less => _core
+                            .SelectAccountUtilities(s => s.Where(g =>
+                                decimal.TryParse(
+                                    g.Account.GetType().GetProperty(propertyName)?.GetValue(g.Account, null).ToString(),
+                                    out var data) && decimal.TryParse(value.ToString(), out var valueResult) &&
+                                data < valueResult))
+                            .Take(takeCount)
+                            .Select(s => new G9SessionReport
+                            {
+                                SessionId = s.Account.Session.SessionId,
+                                TotalReceive = s.Account.Session.SessionTotalReceiveBytes,
+                                TotalSend = s.Account.Session.SessionTotalReceiveBytes,
+                                StartTime = s.Account.Session.SessionStartDateTime
+                            })
+                            .ToArray(),
+                        _ => throw new InvalidEnumArgumentException(nameof(typeOfCompare), (int) typeOfCompare,
+                            typeof(TypeOfCompare))
+                    };
                 }
                 catch (Exception ex)
                 {
-                    if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                    if (_core.Logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                         _core.Logging.LogException(ex);
 
                     return null;
@@ -291,12 +284,11 @@ namespace G9SuperNetCoreServer.AbstractServer
         ///     Get session info with session id
         /// </summary>
         /// <param name="sessionId">Specified session id</param>
-        /// <param name="takeCount">Take count for sessions info</param>
         /// <returns>Return report SessionReportInfo</returns>
 
         #region GetSessionInformationBySessionId
 
-        public G9SessionReport? GetSessionInformationBySessionId(uint sessionId, int takeCount)
+        public G9SessionReport? GetSessionInformationBySessionId(uint sessionId)
         {
             try
             {
@@ -311,7 +303,7 @@ namespace G9SuperNetCoreServer.AbstractServer
             }
             catch (Exception ex)
             {
-                if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                if (_core.Logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                     _core.Logging.LogException(ex);
 
                 return null;

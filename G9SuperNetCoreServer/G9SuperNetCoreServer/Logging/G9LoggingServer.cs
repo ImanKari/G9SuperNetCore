@@ -42,17 +42,21 @@ namespace G9SuperNetCoreServer.Logging
         }
 
         /// <inheritdoc />
-        public bool LogIsActive(LogsType type)
+        public bool CheckLoggingIsActive(LogsType type)
         {
-            return type switch
-            {
-                LogsType.EVENT => _logging.IsEnableEventLog,
-                LogsType.INFO => _logging.IsEnableInformationLog,
-                LogsType.WARN => _logging.IsEnableWarningLog,
-                LogsType.ERROR => _logging.IsEnableErrorLog,
-                LogsType.EXCEPTION => _logging.IsEnableExceptionLog,
-                _ => throw new InvalidEnumArgumentException(nameof(type), (int) type, typeof(LogsType))
-            };
+            return _logging.CheckEnableConsoleLoggingOrFileLoggingByType(type);
+        }
+
+        /// <inheritdoc />
+        public bool CheckConsoleLoggingIsActive(LogsType type)
+        {
+            return _logging.CheckEnableConsoleLoggingByType(type);
+        }
+
+        /// <inheritdoc />
+        public bool CheckFileLoggingIsActive(LogsType type)
+        {
+            return _logging.CheckEnableFileLoggingByType(type);
         }
     }
 }

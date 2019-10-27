@@ -142,7 +142,7 @@ namespace G9SuperNetCoreServer.Core
         {
             if (_maximumConnectionCounter >= Configuration.MaxConnectionNumber)
             {
-                if (Logging.LogIsActive(LogsType.WARN))
+                if (Logging.CheckLoggingIsActive(LogsType.WARN))
                     Logging.LogWarning(
                         "On step accept connection, reject connection.\nReason: limit max connection number",
                         G9LogIdentity.ACCEPT_CONNECTION, "Reject connection");
@@ -161,13 +161,13 @@ namespace G9SuperNetCoreServer.Core
 
             if (newAccountUtilities != null)
             {
-                if (Logging.LogIsActive(LogsType.INFO))
+                if (Logging.CheckLoggingIsActive(LogsType.INFO))
                     Logging.LogInformation(LogMessage.AccountAndSessionCreated, G9LogIdentity.CREATE_NEW_ACCOUNT,
                         LogMessage.CreateNewAccount);
 
                 _accountCollection[_sessionIdentityCounter++] = newAccountUtilities;
 
-                if (Logging.LogIsActive(LogsType.INFO))
+                if (Logging.CheckLoggingIsActive(LogsType.INFO))
                     Logging.LogInformation(LogMessage.SuccessAccountAdded, G9LogIdentity.CREATE_NEW_ACCOUNT,
                         LogMessage.CreateNewAccount);
                 return (true, newAccountUtilities.Account);
@@ -309,7 +309,9 @@ namespace G9SuperNetCoreServer.Core
                             // Set ping duration
                             PingDurationInMilliseconds = (ushort) Configuration.GetPingTimeOut.TotalMilliseconds,
                             // Set event
-                            Session_OnSessionReceiveRequestOverTheLimitInSecond = sessionId => GetAccountUtilitiesBySessionId(sessionId)
+                            Session_OnSessionReceiveRequestOverTheLimitInSecond = sessionId =>
+                                _onSessionReceiveRequestOverTheLimitInSecond(GetAccountUtilitiesBySessionId(sessionId)
+                                    .Account)
 
                         }, _sessionIdentityCounter,
                     ((IPEndPoint) acceptedScoket.RemoteEndPoint).Address);
@@ -332,7 +334,7 @@ namespace G9SuperNetCoreServer.Core
             catch (Exception ex)
             {
                 // set ex log
-                if (Logging.LogIsActive(LogsType.EXCEPTION))
+                if (Logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                     Logging.LogException(ex, LogMessage.ProblemCreateNewAccountAndSession,
                         G9LogIdentity.CREATE_NEW_ACCOUNT, LogMessage.CreateNewAccount);
 

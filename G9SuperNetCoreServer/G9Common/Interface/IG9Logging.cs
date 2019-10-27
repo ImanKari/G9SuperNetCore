@@ -73,13 +73,38 @@ namespace G9Common.Interface
 
         /// <summary>
         ///     Check active logging by log type
+        ///     Check console logging or file logging
         /// </summary>
         /// <param name="type">Specify type of log</param>
-        /// <returns>If active logging for specified type return true</returns>
+        /// <returns>If active console logging or file logging for specified type return true</returns>
 
-        #region LogIsActive
+        #region CheckLoggingIsActive
 
-        bool LogIsActive(LogsType type);
+        bool CheckLoggingIsActive(LogsType type);
+
+        #endregion
+
+        /// <summary>
+        ///     Check active console logging by log type
+        /// </summary>
+        /// <param name="type">Specify type of log</param>
+        /// <returns>If active console logging for specified type return true</returns>
+
+        #region CheckConsoleLoggingIsActive
+
+        bool CheckConsoleLoggingIsActive(LogsType type);
+
+        #endregion
+
+        /// <summary>
+        ///     Check active file logging by log type
+        /// </summary>
+        /// <param name="type">Specify type of log</param>
+        /// <returns>If active file logging for specified type return true</returns>
+
+        #region CheckFileLoggingIsActive
+
+        bool CheckFileLoggingIsActive(LogsType type);
 
         #endregion
     }

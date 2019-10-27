@@ -57,7 +57,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 _core.Configuration.EncodingAndDecoding, _core.Logging);
 
             // Set log
-            if (_core.Logging.LogIsActive(LogsType.EVENT))
+            if (_core.Logging.CheckLoggingIsActive(LogsType.EVENT))
                 _core.Logging.LogEvent(LogMessage.CreateAndInitializeServer, G9LogIdentity.CREATE_SERVER,
                     LogMessage.SuccessfulOperation);
         }
@@ -106,14 +106,14 @@ namespace G9SuperNetCoreServer.AbstractServer
                     ReadCallback, stateReceive);
 
                 // Set log
-                if (_core.Logging.LogIsActive(LogsType.EVENT))
+                if (_core.Logging.CheckLoggingIsActive(LogsType.EVENT))
                     _core.Logging.LogEvent(
                         $"{LogMessage.SuccessClientConnection}\n{LogMessage.BufferSize}: {_packetManagement.MaximumPacketSize}\n{LogMessage.ClientSessionIdentity}: {sessionId}",
                         G9LogIdentity.SERVER_ACCEPT_CALLBACK, LogMessage.SuccessfulOperation);
             }
             catch (Exception ex)
             {
-                if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                if (_core.Logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                     _core.Logging.LogException(ex,
                         $"{LogMessage.FailClinetConnection}\n{LogMessage.ClientSessionIdentity}: {(sessionId == 0 ? "NONE" : sessionId.ToString())}",
                         G9LogIdentity.SERVER_ACCEPT_CALLBACK, LogMessage.FailedOperation);
@@ -166,7 +166,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                     accountUtilities.SessionHandler.Core_PlusSessionTotalReceiveBytes(bytesRead);
 
                     // Set log
-                    if (_core.Logging.LogIsActive(LogsType.INFO))
+                    if (_core.Logging.CheckLoggingIsActive(LogsType.INFO))
                         _core.Logging.LogInformation(
                             $"{LogMessage.SuccessUnpackingReceiveData}\n{LogMessage.PacketType}: {receivePacket.TypeOfPacketType.ToString()}\n{LogMessage.Command}: {receivePacket.Command}\n{LogMessage.Body}: '{_core.Configuration.EncodingAndDecoding.EncodingType.GetString(receivePacket.Body.ToArray())}'\n{LogMessage.PacketRequestId}: {receivePacket.RequestId}",
                             G9LogIdentity.SERVER_RECEIVE_DATA, LogMessage.SuccessfulOperation);
@@ -180,7 +180,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 }
 
                 // Set log
-                if (_core.Logging.LogIsActive(LogsType.EVENT))
+                if (_core.Logging.CheckLoggingIsActive(LogsType.EVENT))
                     _core.Logging.LogEvent(
                         $"{LogMessage.SuccessClientReceive}\n{LogMessage.DataLength}: {bytesRead}\n{LogMessage.ClientSessionIdentity}: {sessionId}",
                         G9LogIdentity.SERVER_RECEIVE_DATA, LogMessage.SuccessfulOperation);
@@ -199,7 +199,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 }
                 else
                 {
-                    if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                    if (_core.Logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                         _core.Logging.LogException(ex,
                             $"{LogMessage.FailClinetConnection}\n{LogMessage.ClientSessionIdentity}: {(sessionId == 0 ? "NONE" : sessionId.ToString())}",
                             G9LogIdentity.SERVER_RECEIVE_DATA, LogMessage.FailedOperation);
@@ -238,7 +238,7 @@ namespace G9SuperNetCoreServer.AbstractServer
             };
 
             // Set log
-            if (_core.Logging.LogIsActive(LogsType.EVENT))
+            if (_core.Logging.CheckLoggingIsActive(LogsType.EVENT))
                 _core.Logging.LogEvent($"{LogMessage.RequestSendData}\n{LogMessage.DataLength}: {byteData.Length}",
                     G9LogIdentity.SERVER_SEND_DATA, LogMessage.SuccessfulOperation);
 
@@ -277,14 +277,14 @@ namespace G9SuperNetCoreServer.AbstractServer
                 TotalSendPacket++;
 
                 // Set log
-                if (_core.Logging.LogIsActive(LogsType.INFO))
+                if (_core.Logging.CheckLoggingIsActive(LogsType.INFO))
                     _core.Logging.LogInformation(
                         $"{LogMessage.SuccessRequestSendData}\n{LogMessage.DataLength}: {bytesSent}",
                         G9LogIdentity.SERVER_SEND_DATA, LogMessage.SuccessfulOperation);
             }
             catch (Exception ex)
             {
-                if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                if (_core.Logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                     _core.Logging.LogException(ex, LogMessage.FailRequestSendData, G9LogIdentity.SERVER_SEND_DATA,
                         LogMessage.FailedOperation);
 

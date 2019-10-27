@@ -132,7 +132,7 @@ namespace G9Common.CommandHandler
                     command = _accessToCommandDataTypeCollection[request.Command];
 
                     // Set log
-                    if (_logging.LogIsActive(LogsType.EVENT))
+                    if (_logging.CheckLoggingIsActive(LogsType.EVENT))
                         _logging.LogEvent(
                             $"{LogMessage.RunningCommand}: {request.Command}", G9LogIdentity.RUNNING_COMMAND,
                             LogMessage.SuccessfulOperation);
@@ -143,7 +143,7 @@ namespace G9Common.CommandHandler
                 catch (Exception ex)
                 {
                     // Add to log exception
-                    if (_logging.LogIsActive(LogsType.EXCEPTION))
+                    if (_logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                         _logging.LogException(ex, LogMessage.ErrorInRunningCommand,
                             G9LogIdentity.RUNNING_COMMAND, LogMessage.FailedOperation);
 
@@ -294,7 +294,7 @@ namespace G9Common.CommandHandler
                         try
                         {
                             receiveHandler(data.ToArray().FromJson<TReceiveType>(), account,
-                                async (type, command) =>
+                                (type, command) =>
                                 {
                                     try
                                     {

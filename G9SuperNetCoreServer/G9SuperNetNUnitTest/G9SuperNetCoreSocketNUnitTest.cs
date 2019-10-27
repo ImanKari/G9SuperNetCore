@@ -43,9 +43,9 @@ namespace G9SuperNetNUnitTest
         }
 
         [Test, Order(3)]
-        public void StartServer()
+        public async Task StartServer()
         {
-            Server.Start();
+            await Server.Start();
         }
 
         [Test, Order(4)]

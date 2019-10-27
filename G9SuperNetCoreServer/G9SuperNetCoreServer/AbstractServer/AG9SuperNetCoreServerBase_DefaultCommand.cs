@@ -28,7 +28,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 _core.GetAccountUtilitiesBySessionId(Account.Session.SessionId).SessionHandler
                     .Core_SetPing(ping);
                 sendDataForThisCommand(ping.ToString(CultureInfo.InvariantCulture), SendTypeForCommand.Asynchronous);
-                if (_core.Logging.LogIsActive(LogsType.INFO))
+                if (_core.Logging.CheckLoggingIsActive(LogsType.INFO))
                     _core.Logging.LogInformation(Account.Session.GetSessionInfo(), G9LogIdentity.CLIENT_PING,
                         LogMessage.ClientPing);
             }
@@ -44,7 +44,7 @@ namespace G9SuperNetCoreServer.AbstractServer
         private void G9EchoCommandPingCommandReceiveHandler(string receiveData, TAccount Account,
             Action<string, SendTypeForCommand> sendDataForThisCommand)
         {
-            if (_core.Logging.LogIsActive(LogsType.INFO))
+            if (_core.Logging.CheckLoggingIsActive(LogsType.INFO))
                 _core.Logging.LogInformation($"{LogMessage.CommandEcho}\n{LogMessage.ReceiveData}: {receiveData}",
                     G9LogIdentity.ECHO_COMMAND,
                     LogMessage.SuccessfulOperation);
@@ -73,7 +73,7 @@ namespace G9SuperNetCoreServer.AbstractServer
             sendDataForThisCommand(receiveData, SendTypeForCommand.Asynchronous);
 
             // Set log
-            if (_core.Logging.LogIsActive(LogsType.INFO))
+            if (_core.Logging.CheckLoggingIsActive(LogsType.INFO))
                 _core.Logging.LogInformation(
                     $"{LogMessage.CommanTestSendReceive}\n{LogMessage.ReceiveData}: {receiveData}\n{LogMessage.TestNumber}: {_testCounter++}",
                     G9LogIdentity.TEST_SEND_RECEIVE, LogMessage.SuccessfulOperation);

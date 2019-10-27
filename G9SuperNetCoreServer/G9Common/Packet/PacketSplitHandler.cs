@@ -30,7 +30,7 @@ namespace G9Common.Packet
         /// <summary>
         /// save packet total length
         /// </summary>
-        private int _packetTotalLength;
+        private readonly int _packetTotalLength;
 
         /// <summary>
         /// Constructor
@@ -50,9 +50,8 @@ namespace G9Common.Packet
         /// <summary>
         /// Add new packet
         /// </summary>
-        /// <param name="packetNumber">Packet number</param>
         /// <param name="packetData">Packet data</param>
-        public void AddPacket(int packetNumber, byte[] packetData)
+        public void AddPacket(byte[] packetData)
         {
             Packets.Write(packetData, 0, packetData.Length);
         }

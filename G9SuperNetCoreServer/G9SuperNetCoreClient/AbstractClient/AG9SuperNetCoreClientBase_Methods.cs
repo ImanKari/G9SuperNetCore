@@ -31,7 +31,7 @@ namespace G9SuperNetCoreClient.AbstractClient
             return await Task.Run(() =>
             {
                 // Set log
-                if (_logging.LogIsActive(LogsType.EXCEPTION))
+                if (_logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                     _logging.LogEvent(LogMessage.StartClientConnection, G9LogIdentity.START_CLIENT_CONNECTION,
                         LogMessage.SuccessfulOperation);
 
@@ -58,7 +58,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                 catch (Exception e)
                 {
                     // Set log
-                    if (_logging.LogIsActive(LogsType.EXCEPTION))
+                    if (_logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                         _logging.LogException(e, LogMessage.FailClinetConnection, G9LogIdentity.START_CLIENT_CONNECTION,
                             LogMessage.FailedOperation);
 
@@ -89,7 +89,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                     if (_clientSocket is null)
                     {
                         // Set log
-                        if (_logging.LogIsActive(LogsType.ERROR))
+                        if (_logging.CheckLoggingIsActive(LogsType.ERROR))
                             _logging.LogError(LogMessage.CantStopStoppedServer,
                                 G9LogIdentity.STOP_SERVER, LogMessage.FailedOperation);
                         // Run event
@@ -103,7 +103,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                     _clientSocket = null;
 
                     // Set log
-                    if (_logging.LogIsActive(LogsType.EVENT))
+                    if (_logging.CheckLoggingIsActive(LogsType.EVENT))
                         _logging.LogEvent(LogMessage.StopServer, G9LogIdentity.STOP_SERVER,
                             LogMessage.SuccessfulOperation);
 
@@ -115,7 +115,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                 catch (Exception e)
                 {
                     // Set log
-                    if (_logging.LogIsActive(LogsType.EXCEPTION))
+                    if (_logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                         _logging.LogException(e, LogMessage.FailClinetConnection, G9LogIdentity.START_CLIENT_CONNECTION,
                             LogMessage.FailedOperation);
 
@@ -202,7 +202,7 @@ namespace G9SuperNetCoreClient.AbstractClient
             catch (Exception ex)
             {
                 // Set log
-                if (_logging.LogIsActive(LogsType.EXCEPTION))
+                if (_logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                     _logging.LogException(ex, LogMessage.FailSendComandByName,
                         G9LogIdentity.CLIENT_SEND_DATA, LogMessage.FailedOperation);
 
@@ -258,7 +258,7 @@ namespace G9SuperNetCoreClient.AbstractClient
             catch (Exception ex)
             {
                 // Set log
-                if (_logging.LogIsActive(LogsType.EXCEPTION))
+                if (_logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                     _logging.LogException(ex, LogMessage.FailSendComandByNameAsync,
                         G9LogIdentity.CLIENT_SEND_DATA, LogMessage.FailedOperation);
 

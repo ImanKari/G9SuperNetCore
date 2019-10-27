@@ -161,8 +161,7 @@ namespace G9Common.PacketManagement
                         oMemoryStream.Write(requestId.ToByteArray());
 
                         // Add packet
-                        packet.AddPacket(0,
-                            oMemoryStream.ToArray());
+                        packet.AddPacket(oMemoryStream.ToArray());
                     }
                     else
                     {
@@ -191,7 +190,7 @@ namespace G9Common.PacketManagement
                             oMemoryStream.Write(requestId.ToByteArray());
 
                             // Set first packet => packet count information
-                            packet.AddPacket(0, oMemoryStream.ToArray());
+                            packet.AddPacket(oMemoryStream.ToArray());
                         }
 
                         for (var i = 1; i < counter; i++)
@@ -219,14 +218,14 @@ namespace G9Common.PacketManagement
                             oMemoryStream.Write(requestId.ToByteArray());
 
                             // Add total packet
-                            packet.AddPacket(i, oMemoryStream.ToArray());
+                            packet.AddPacket(oMemoryStream.ToArray());
                         }
                     }
 
                     return packet;
                 }
 
-                if (_logging.LogIsActive(LogsType.EXCEPTION))
+                if (_logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                     _logging.LogException(new ArgumentException(
                             $"{LogMessage.CommandLengthError}\n{LogMessage.StandardLength}: {CalculateCommandSize}\n{LogMessage.LengthEntered}: {command.Length}"),
                         null, G9LogIdentity.GENERATE_PACKET, LogMessage.FailedOperation);
@@ -235,7 +234,7 @@ namespace G9Common.PacketManagement
             }
             catch (Exception ex)
             {
-                if (_logging.LogIsActive(LogsType.EXCEPTION))
+                if (_logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                     _logging.LogException(ex, LogMessage.FailGeneratePacket, G9LogIdentity.GENERATE_PACKET,
                         LogMessage.FailedOperation);
                 return null;

@@ -75,7 +75,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                     _mainAccountUtilities.Account.Session.SessionId);
 
             // Set log
-            if (_logging.LogIsActive(LogsType.EVENT))
+            if (_logging.CheckLoggingIsActive(LogsType.EVENT))
                 _logging.LogEvent(LogMessage.CreateAndInitializeClient, G9LogIdentity.CREATE_CLIENT,
                     LogMessage.SuccessfulOperation);
 
@@ -119,7 +119,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                 _connectDone.Set();
 
                 // Set log
-                if (_logging.LogIsActive(LogsType.EVENT))
+                if (_logging.CheckLoggingIsActive(LogsType.EVENT))
                 {
                     var ipEndPoint = _clientSocket.RemoteEndPoint as IPEndPoint;
                     _logging.LogEvent(
@@ -135,7 +135,7 @@ namespace G9SuperNetCoreClient.AbstractClient
             }
             catch (Exception ex)
             {
-                if (_logging.LogIsActive(LogsType.EXCEPTION))
+                if (_logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                     _logging.LogException(ex, LogMessage.FailClinetConnection, G9LogIdentity.CLIENT_CONNECTED,
                         LogMessage.FailedOperation);
                 // Run event on connected error
@@ -164,13 +164,13 @@ namespace G9SuperNetCoreClient.AbstractClient
                     ReceiveCallback, _stateObject);
 
                 // Set log
-                if (_logging.LogIsActive(LogsType.EVENT))
+                if (_logging.CheckLoggingIsActive(LogsType.EVENT))
                     _logging.LogEvent($"{LogMessage.ReceiveClientFromServer}", G9LogIdentity.CLIENT_RECEIVE,
                         LogMessage.SuccessfulOperation);
             }
             catch (Exception e)
             {
-                if (_logging.LogIsActive(LogsType.EXCEPTION))
+                if (_logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                     _logging.LogException(e, LogMessage.FailClientReceive, G9LogIdentity.CLIENT_RECEIVE,
                         LogMessage.FailedOperation);
 
@@ -218,7 +218,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                     var receivePacket = _packetManagement.UnpackingRequestByData(packet);
 
                     // Set log
-                    if (_logging.LogIsActive(LogsType.INFO))
+                    if (_logging.CheckLoggingIsActive(LogsType.INFO))
                         _logging.LogInformation(
                             $"{LogMessage.SuccessUnpackingReceiveData}\n{LogMessage.PacketType}: {receivePacket.TypeOfPacketType.ToString()}\n{LogMessage.Command}: {receivePacket.Command}\n{LogMessage.Body}: '{Configuration.EncodingAndDecoding.EncodingType.GetString(receivePacket.Body.ToArray())}'\n{LogMessage.PacketRequestId}: {receivePacket.RequestId}",
                             $"{G9LogIdentity.CLIENT_RECEIVE}", LogMessage.SuccessfulOperation);
@@ -247,7 +247,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                 }
                 else
                 {
-                    if (_logging.LogIsActive(LogsType.EXCEPTION))
+                    if (_logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                         _logging.LogException(ex, LogMessage.FailClientReceive, G9LogIdentity.CLIENT_RECEIVE,
                             LogMessage.FailedOperation);
 
@@ -272,7 +272,7 @@ namespace G9SuperNetCoreClient.AbstractClient
         {
 
             // Set log
-            if (_logging.LogIsActive(LogsType.EVENT))
+            if (_logging.CheckLoggingIsActive(LogsType.EVENT))
                 _logging.LogEvent($"{LogMessage.RequestSendData}\n{LogMessage.DataLength}: {data.Length}",
                     $"{G9LogIdentity.CLIENT_SEND_DATA}", LogMessage.SuccessfulOperation);
 
@@ -312,14 +312,14 @@ namespace G9SuperNetCoreClient.AbstractClient
                 _mainAccountUtilities.SessionHandler.Core_PlusSessionTotalSendBytes(bytesSent);
 
                 // Set log
-                if (_logging.LogIsActive(LogsType.INFO))
+                if (_logging.CheckLoggingIsActive(LogsType.INFO))
                     _logging.LogInformation(
                         $"{LogMessage.SuccessRequestSendData}\n{LogMessage.DataLength}: {bytesSent}",
                         G9LogIdentity.CLIENT_SEND_DATA, LogMessage.SuccessfulOperation);
             }
             catch (Exception ex)
             {
-                if (_logging.LogIsActive(LogsType.EXCEPTION))
+                if (_logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                     _logging.LogException(ex, LogMessage.FailRequestSendData, G9LogIdentity.CLIENT_SEND_DATA,
                         LogMessage.FailedOperation);
 

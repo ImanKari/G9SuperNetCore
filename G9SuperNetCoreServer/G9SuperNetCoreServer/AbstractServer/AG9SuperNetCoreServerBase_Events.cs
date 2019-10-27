@@ -142,7 +142,7 @@ namespace G9SuperNetCoreServer.AbstractServer
         private void OnUnhandledCommandHandler(G9SendAndReceivePacket packet, TAccount account)
         {
             // Set log
-            if (_core.Logging.LogIsActive(LogsType.WARN))
+            if (_core.Logging.CheckLoggingIsActive(LogsType.WARN))
                 _core.Logging.LogWarning(
                     $"{LogMessage.ReceivedUnhandledCommand}\n{LogMessage.CommandName}: {packet.Command}\n{LogMessage.Body}: {_core.Configuration.EncodingAndDecoding.EncodingType.GetString(packet.Body.Span)}\n{LogMessage.PacketType}: {packet.TypeOfPacketType}",
                     G9LogIdentity.RECEIVE_UNHANDLED_COMMAND, LogMessage.UnhandledCommand);
@@ -212,7 +212,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 _core.DisconnectAndCloseSession(account, DisconnectReason.ReceiveRequestOverTheLimit);
 
             // Set log
-            if (_core.Logging.LogIsActive(LogsType.WARN))
+            if (_core.Logging.CheckLoggingIsActive(LogsType.WARN))
                 _core.Logging.LogWarning(
                     $"{LogMessage.ReceiveRequestOverTheLimit}\n{account.Session.GetSessionInfo()}",
                     G9LogIdentity.RECEIVE_REQUEST_OVER_THE_LIMIT, LogMessage.Warning);

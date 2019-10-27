@@ -81,7 +81,7 @@ namespace G9SuperNetCoreClient.AbstractClient
         private void OnUnhandledCommandHandler(G9SendAndReceivePacket packet, TAccount account)
         {
             // Set log
-            if (_logging.LogIsActive(LogsType.WARN))
+            if (_logging.CheckLoggingIsActive(LogsType.WARN))
                 _logging.LogWarning(
                     $"{LogMessage.ReceivedUnhandledCommand}\n{LogMessage.CommandName}: {packet.Command}\n{LogMessage.Body}: {Configuration.EncodingAndDecoding.EncodingType.GetString(packet.Body.Span)}\n{LogMessage.PacketType}: {packet.TypeOfPacketType}",
                     G9LogIdentity.RECEIVE_UNHANDLED_COMMAND, LogMessage.UnhandledCommand);

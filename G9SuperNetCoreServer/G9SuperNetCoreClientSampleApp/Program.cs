@@ -38,8 +38,11 @@ namespace G9SuperNetCoreClientSampleApp
             for (var i = 0; i < clients.Length - 1; i++)
             {
                 clients[i] = new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>(
-                    new G9ClientConfig(IPAddress.Parse("127.0.0.1"), 9639, SocketMode.Tcp), Assembly.GetExecutingAssembly());
+                    new G9ClientConfig(IPAddress.Parse("127.0.0.1"), 9639, SocketMode.Tcp),
+                    Assembly.GetExecutingAssembly());
+#pragma warning disable 4014
                 clients[i].StartConnection();
+#pragma warning restore 4014
             }
             clients[^1] = new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>(
                     new G9ClientConfig(IPAddress.Parse("127.0.0.1"), 9639, SocketMode.Tcp), Assembly.GetExecutingAssembly());

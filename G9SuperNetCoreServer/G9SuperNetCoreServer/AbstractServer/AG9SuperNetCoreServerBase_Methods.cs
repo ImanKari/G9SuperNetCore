@@ -30,7 +30,7 @@ namespace G9SuperNetCoreServer.AbstractServer
         public async Task Start()
         {
             // Set log
-            if (_core.Logging.LogIsActive(LogsType.EVENT))
+            if (_core.Logging.CheckLoggingIsActive(LogsType.EVENT))
                 _core.Logging.LogEvent(LogMessage.StartServer, G9LogIdentity.START_SERVER,
                     LogMessage.SuccessfulOperation);
 
@@ -46,14 +46,14 @@ namespace G9SuperNetCoreServer.AbstractServer
                     _mainSocketListener = new Socket(_core.Configuration.IpAddress.AddressFamily,
                         SocketType.Stream, ProtocolType.Tcp);
                     // Set Log
-                    if (_core.Logging.LogIsActive(LogsType.EVENT))
+                    if (_core.Logging.CheckLoggingIsActive(LogsType.EVENT))
                         _core.Logging.LogEvent(
                             $"{LogMessage.SuccessCreateServerSocket}\n{LogMessage.IpAddress}: {_core.Configuration.IpAddress}\n{LogMessage.Port}: {_core.Configuration.PortNumber}",
                             G9LogIdentity.CREATE_LISTENER, LogMessage.SuccessfulOperation);
                 }
                 catch (Exception ex)
                 {
-                    if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                    if (_core.Logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                         _core.Logging.LogException(ex, LogMessage.ProblemCreateServerSocket,
                             G9LogIdentity.CREATE_LISTENER, LogMessage.FailedOperation);
                     OnErrorHandler(ex, ServerErrorReason.ErrorInStartServer);
@@ -67,13 +67,13 @@ namespace G9SuperNetCoreServer.AbstractServer
                     _mainSocketListener.Listen(_core.Configuration.MaxConnectionNumber);
 
                     //Set Log
-                    if (_core.Logging.LogIsActive(LogsType.INFO))
+                    if (_core.Logging.CheckLoggingIsActive(LogsType.INFO))
                         _core.Logging.LogInformation(LogMessage.SuccessBindAndListenSocket, G9LogIdentity.BIND_LISTENER,
                             LogMessage.SuccessfulOperation);
                 }
                 catch (Exception ex)
                 {
-                    if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                    if (_core.Logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                         _core.Logging.LogException(ex, LogMessage.FailBindAndListenSocket, G9LogIdentity.BIND_LISTENER,
                             LogMessage.FailedOperation);
                     OnErrorHandler(ex, ServerErrorReason.ErrorInStartServer);
@@ -92,7 +92,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                         _listenerAcceptManualResetEvent.Reset();
 
                         // Set log
-                        if (_core.Logging.LogIsActive(LogsType.INFO))
+                        if (_core.Logging.CheckLoggingIsActive(LogsType.INFO))
                             _core.Logging.LogInformation(LogMessage.WaitForConnection, G9LogIdentity.WAIT_LISTENER,
                                 LogMessage.Waiting);
 
@@ -106,7 +106,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                     }
                     catch (Exception ex)
                     {
-                        if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                        if (_core.Logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                             _core.Logging.LogException(ex, LogMessage.FailtOnWaitForConnection,
                                 G9LogIdentity.WAIT_LISTENER, LogMessage.FailedOperation);
                         OnErrorHandler(ex, ServerErrorReason.ClientConnectedError);
@@ -132,7 +132,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                     if (_mainSocketListener is null)
                     {
                         // Set log
-                        if (_core.Logging.LogIsActive(LogsType.ERROR))
+                        if (_core.Logging.CheckLoggingIsActive(LogsType.ERROR))
                             _core.Logging.LogError(LogMessage.CantStopStoppedServer,
                                 G9LogIdentity.STOP_SERVER, LogMessage.FailedOperation);
                         // Run event
@@ -151,7 +151,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                     _mainSocketListener = null;
 
                     // Set log
-                    if (_core.Logging.LogIsActive(LogsType.EVENT))
+                    if (_core.Logging.CheckLoggingIsActive(LogsType.EVENT))
                         _core.Logging.LogEvent(LogMessage.StopServer, G9LogIdentity.STOP_SERVER,
                             LogMessage.SuccessfulOperation);
 
@@ -163,7 +163,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 catch (Exception ex)
                 {
                     // Set log
-                    if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                    if (_core.Logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                         _core.Logging.LogException(ex, LogMessage.FailStopServer,
                             G9LogIdentity.STOP_SERVER, LogMessage.FailedOperation);
                     // Run event
@@ -195,7 +195,7 @@ namespace G9SuperNetCoreServer.AbstractServer
             _core.ScrollingAllAccountUtilities(s => s.SessionHandler.Core_EnableTestMode(testMessage));
 
             // Set log
-            if (_core.Logging.LogIsActive(LogsType.EVENT))
+            if (_core.Logging.CheckLoggingIsActive(LogsType.EVENT))
                 _core.Logging.LogEvent(LogMessage.EnableCommandTestModeForAllClients,
                     G9LogIdentity.ENABLE_TEST_MODE_ALL_CLIENT, LogMessage.SuccessfulOperation);
         }
@@ -215,7 +215,7 @@ namespace G9SuperNetCoreServer.AbstractServer
             EnableCommandTestSendReceiveAllClients = false;
 
             // Set log
-            if (_core.Logging.LogIsActive(LogsType.EVENT))
+            if (_core.Logging.CheckLoggingIsActive(LogsType.EVENT))
                 _core.Logging.LogEvent(LogMessage.DisableCommandTestModeForAllClients,
                     G9LogIdentity.DISABLE_TEST_MODE_ALL_CLIENT, LogMessage.SuccessfulOperation);
         }
@@ -238,7 +238,7 @@ namespace G9SuperNetCoreServer.AbstractServer
             _core.GetAccountUtilitiesBySessionId(sessionId).SessionHandler.Core_EnableTestMode(testMessage);
 
             // Set log
-            if (_core.Logging.LogIsActive(LogsType.EVENT))
+            if (_core.Logging.CheckLoggingIsActive(LogsType.EVENT))
                 _core.Logging.LogEvent(LogMessage.EnableCommandTestModeForSingleSession,
                     G9LogIdentity.ENABLE_TEST_MODE_SINGLE_CLIENT, LogMessage.SuccessfulOperation);
         }
@@ -257,7 +257,7 @@ namespace G9SuperNetCoreServer.AbstractServer
             _core.GetAccountUtilitiesBySessionId(sessionId).SessionHandler.Core_DisableTestMode();
 
             // Set log
-            if (_core.Logging.LogIsActive(LogsType.EVENT))
+            if (_core.Logging.CheckLoggingIsActive(LogsType.EVENT))
                 _core.Logging.LogEvent(LogMessage.DisableCommandTestModeForSingleSession,
                     G9LogIdentity.DISABLE_TEST_MODE_SINGLE_CLIENT, LogMessage.SuccessfulOperation);
         }
@@ -341,7 +341,7 @@ namespace G9SuperNetCoreServer.AbstractServer
             }
             catch (Exception ex)
             {
-                if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                if (_core.Logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                     _core.Logging.LogException(ex, LogMessage.FailSendComandByName,
                         G9LogIdentity.SERVER_SEND_DATA, LogMessage.FailedOperation);
                 OnErrorHandler(ex, ServerErrorReason.ErrorReadyToSendDataToClient);
@@ -399,7 +399,7 @@ namespace G9SuperNetCoreServer.AbstractServer
             }
             catch (Exception ex)
             {
-                if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                if (_core.Logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                     _core.Logging.LogException(ex, LogMessage.FailSendComandByNameAsync,
                         G9LogIdentity.SERVER_SEND_DATA, LogMessage.FailedOperation);
                 OnErrorHandler(ex, ServerErrorReason.ErrorReadyToSendDataToClient);
@@ -458,7 +458,7 @@ namespace G9SuperNetCoreServer.AbstractServer
             catch (Exception ex)
             {
                 // Set log
-                if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                if (_core.Logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                     _core.Logging.LogException(ex, LogMessage.FailSendComandByNameToAll,
                         G9LogIdentity.SERVER_SEND_DATA_ALL_CLIENTS, LogMessage.FailedOperation);
 
@@ -518,7 +518,7 @@ namespace G9SuperNetCoreServer.AbstractServer
             catch (Exception ex)
             {
                 // Set log
-                if (_core.Logging.LogIsActive(LogsType.EXCEPTION))
+                if (_core.Logging.CheckLoggingIsActive(LogsType.EXCEPTION))
                     _core.Logging.LogException(ex, LogMessage.FailSendComandByNameToAll,
                         G9LogIdentity.SERVER_SEND_DATA_ALL_CLIENTS, LogMessage.FailedOperation);
 
@@ -601,7 +601,7 @@ namespace G9SuperNetCoreServer.AbstractServer
 
         #region SendCommandToAll
 
-        public void SendCommandToAll<TCommand, TTypeSend>(uint sessionId, TTypeSend commandData,
+        public void SendCommandToAll<TCommand, TTypeSend>(TTypeSend commandData,
             bool checkCommandExists = true,
             bool checkCommandSendType = true)
         {
@@ -625,7 +625,7 @@ namespace G9SuperNetCoreServer.AbstractServer
 
         #region SendCommandToAllAsync
 
-        public void SendCommandToAllAsync<TCommand, TTypeSend>(uint sessionId, TTypeSend commandData,
+        public void SendCommandToAllAsync<TCommand, TTypeSend>(TTypeSend commandData,
             bool checkCommandExists = true,
             bool checkCommandSendType = true)
         {
