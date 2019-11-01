@@ -387,6 +387,7 @@ namespace G9SuperNetCoreClient.AbstractClient
             {
                 try
                 {
+                    // TODO: Process high change line
                     // Get the rest of the data.  
                     client?.BeginReceive(_stateObject.Buffer, 0, AG9SuperNetCoreStateObjectBase.BufferSize, 0,
                         ReceiveCallback, _stateObject);

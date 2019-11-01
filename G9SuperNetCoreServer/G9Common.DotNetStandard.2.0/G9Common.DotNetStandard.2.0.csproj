@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>G9Common</RootNamespace>
+    <Authors>Iman KAri</Authors>
+    <Company>G9Studio</Company>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="G9LogManagement.DotNetStandard.2.0" Version="2.0.0.3" />
+    <PackageReference Include="G9ScheduleManagement.DotNetStandard.2.0" Version="1.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="System.Security.Cryptography.Cng" Version="4.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resource\LogMessage - Copy.Designer.cs">
+      <DependentUpon>LogMessage.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Resource\LogMessage.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LogMessage.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resource\LogMessage.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>LogMessage.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

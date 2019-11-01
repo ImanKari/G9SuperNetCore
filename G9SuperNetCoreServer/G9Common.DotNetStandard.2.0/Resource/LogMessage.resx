@@ -1,0 +1,405 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AccountAdded" xml:space="preserve">
+    <value>AccountAdded</value>
+  </data>
+  <data name="AccountAndSessionCreated" xml:space="preserve">
+    <value>AccountAndSessionCreated</value>
+  </data>
+  <data name="ArgumentNotCorrect" xml:space="preserve">
+    <value>ArgumentNotCorrect</value>
+  </data>
+  <data name="Body" xml:space="preserve">
+    <value>Body</value>
+  </data>
+  <data name="BufferSize" xml:space="preserve">
+    <value>BufferSize</value>
+  </data>
+  <data name="ClientSessionIdentity" xml:space="preserve">
+    <value>ClientSessionIdentity</value>
+  </data>
+  <data name="CloseReason" xml:space="preserve">
+    <value>CloseReason</value>
+  </data>
+  <data name="Command" xml:space="preserve">
+    <value>Command</value>
+  </data>
+  <data name="CommandLengthError" xml:space="preserve">
+    <value>CommandLengthError</value>
+  </data>
+  <data name="CreateAndInitializeClient" xml:space="preserve">
+    <value>CreateAndInitializeClient</value>
+  </data>
+  <data name="CreateAndInitializeServer" xml:space="preserve">
+    <value>CreateAndInitializeServer</value>
+  </data>
+  <data name="CreateNewAccount" xml:space="preserve">
+    <value>CreateNewAccount</value>
+  </data>
+  <data name="DataLength" xml:space="preserve">
+    <value>DataLength</value>
+  </data>
+  <data name="FailBindAndListenSocket" xml:space="preserve">
+    <value>FailBindAndListenSocket</value>
+  </data>
+  <data name="FailClientReceive" xml:space="preserve">
+    <value>FailClientReceive</value>
+  </data>
+  <data name="FailClinetConnection" xml:space="preserve">
+    <value>FailClinetConnection</value>
+  </data>
+  <data name="FailedOperation" xml:space="preserve">
+    <value>FailedOperation</value>
+  </data>
+  <data name="FailGeneratePacket" xml:space="preserve">
+    <value>FailGeneratePacket</value>
+  </data>
+  <data name="FailReceiveClientFromServer" xml:space="preserve">
+    <value>FailReceiveClientFromServer</value>
+  </data>
+  <data name="FailRequestSendData" xml:space="preserve">
+    <value>FailRequestSendData</value>
+  </data>
+  <data name="FailtOnWaitForConnection" xml:space="preserve">
+    <value>FailtOnWaitForConnection</value>
+  </data>
+  <data name="IpAddress" xml:space="preserve">
+    <value>IpAddress</value>
+  </data>
+  <data name="LengthEntered" xml:space="preserve">
+    <value>LengthEntered</value>
+  </data>
+  <data name="OnSessionClose" xml:space="preserve">
+    <value>OnSessionClose</value>
+  </data>
+  <data name="PacketRequestId" xml:space="preserve">
+    <value>PacketRequestId</value>
+  </data>
+  <data name="PacketType" xml:space="preserve">
+    <value>PacketType</value>
+  </data>
+  <data name="Port" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="ProblemAddingAccount" xml:space="preserve">
+    <value>ProblemAddingAccount</value>
+  </data>
+  <data name="ProblemCreateNewAccountAndSession" xml:space="preserve">
+    <value>ProblemCreateNewAccountAndSession</value>
+  </data>
+  <data name="ProblemCreateServerSocket" xml:space="preserve">
+    <value>ProblemCreateServerSocket</value>
+  </data>
+  <data name="ReceiveClientFromServer" xml:space="preserve">
+    <value>ReceiveClientFromServer</value>
+  </data>
+  <data name="RequestSendData" xml:space="preserve">
+    <value>RequestSendData</value>
+  </data>
+  <data name="StandardLength" xml:space="preserve">
+    <value>StandardLength</value>
+  </data>
+  <data name="StartClientConnection" xml:space="preserve">
+    <value>StartClientConnection</value>
+  </data>
+  <data name="StartServer" xml:space="preserve">
+    <value>StartServer</value>
+  </data>
+  <data name="SuccessAccountAdded" xml:space="preserve">
+    <value>SuccessAccountAdded</value>
+  </data>
+  <data name="SuccessBindAndListenSocket" xml:space="preserve">
+    <value>SuccessBindAndListenSocket</value>
+  </data>
+  <data name="SuccessClientConnection" xml:space="preserve">
+    <value>SuccessClientConnection</value>
+  </data>
+  <data name="SuccessClientReceive" xml:space="preserve">
+    <value>SuccessClientReceive</value>
+  </data>
+  <data name="SuccessCreateServerSocket" xml:space="preserve">
+    <value>SuccessCreateServerSocket</value>
+  </data>
+  <data name="SuccessfulOperation" xml:space="preserve">
+    <value>SuccessfulOperation</value>
+  </data>
+  <data name="SuccessRequestSendData" xml:space="preserve">
+    <value>SuccessRequestSendData</value>
+  </data>
+  <data name="SuccessUnpackingReceiveData" xml:space="preserve">
+    <value>SuccessUnpackingReceiveData</value>
+  </data>
+  <data name="WaitForConnection" xml:space="preserve">
+    <value>WaitForConnection</value>
+  </data>
+  <data name="Waiting" xml:space="preserve">
+    <value>Waiting</value>
+  </data>
+  <data name="ArgumentXNotCorrect" xml:space="preserve">
+    <value>ArgumentXNotCorrect</value>
+  </data>
+  <data name="ErrorInRunningCommand" xml:space="preserve">
+    <value>ErrorInRunningCommand</value>
+  </data>
+  <data name="RunningCommand" xml:space="preserve">
+    <value>RunningCommand</value>
+  </data>
+  <data name="CantStopStoppedServer" xml:space="preserve">
+    <value>CantStopStoppedServer</value>
+  </data>
+  <data name="ClientPing" xml:space="preserve">
+    <value>ClientPing</value>
+  </data>
+  <data name="ClientPingDateTime" xml:space="preserve">
+    <value>ClientPingDateTime</value>
+  </data>
+  <data name="CommandEcho" xml:space="preserve">
+    <value>CommandEcho</value>
+  </data>
+  <data name="CommandName" xml:space="preserve">
+    <value>CommandName</value>
+  </data>
+  <data name="CommandNotFound" xml:space="preserve">
+    <value>CommandNotFound</value>
+  </data>
+  <data name="CommandSendType" xml:space="preserve">
+    <value>CommandSendType</value>
+  </data>
+  <data name="CommandSendTypeNotCorrect" xml:space="preserve">
+    <value>CommandSendTypeNotCorrect</value>
+  </data>
+  <data name="CommanTestSendReceive" xml:space="preserve">
+    <value>CommanTestSendReceive</value>
+  </data>
+  <data name="CurrentSessionCount" xml:space="preserve">
+    <value>CurrentSessionCount</value>
+  </data>
+  <data name="DisableCommandTestModeForAllClients" xml:space="preserve">
+    <value>DisableCommandTestModeForAllClients</value>
+  </data>
+  <data name="DisableCommandTestModeForSingleSession" xml:space="preserve">
+    <value>DisableCommandTestModeForSingleSession</value>
+  </data>
+  <data name="EnableCommandTestModeForAllClients" xml:space="preserve">
+    <value>EnableCommandTestModeForAllClients</value>
+  </data>
+  <data name="EnableCommandTestModeForSingleSession" xml:space="preserve">
+    <value>EnableCommandTestModeForSingleSession</value>
+  </data>
+  <data name="FailSendComandByName" xml:space="preserve">
+    <value>FailSendComandByName</value>
+  </data>
+  <data name="FailSendComandByNameAsync" xml:space="preserve">
+    <value>FailSendComandByNameAsync</value>
+  </data>
+  <data name="FailSendComandByNameToAll" xml:space="preserve">
+    <value>FailSendComandByNameToAll</value>
+  </data>
+  <data name="FailSendComandByNameToAllAsync" xml:space="preserve">
+    <value>FailSendComandByNameToAllAsync</value>
+  </data>
+  <data name="FailStopServer" xml:space="preserve">
+    <value>FailStopServer</value>
+  </data>
+  <data name="LastCommandUsed" xml:space="preserve">
+    <value>LastCommandUsed</value>
+  </data>
+  <data name="LastCommandUsedDateTime" xml:space="preserve">
+    <value>LastCommandUsedDateTime</value>
+  </data>
+  <data name="ReceiveData" xml:space="preserve">
+    <value>ReceiveData</value>
+  </data>
+  <data name="ReceivedUnhandledCommand" xml:space="preserve">
+    <value>ReceivedUnhandledCommand</value>
+  </data>
+  <data name="ReceiveRequestOverTheLimit" xml:space="preserve">
+    <value>ReceiveRequestOverTheLimit</value>
+  </data>
+  <data name="SendTypeWithFunction" xml:space="preserve">
+    <value>SendTypeWithFunction</value>
+  </data>
+  <data name="ServerStartDateTime" xml:space="preserve">
+    <value>ServerStartDateTime</value>
+  </data>
+  <data name="ServerTotalReceiveBytes" xml:space="preserve">
+    <value>ServerTotalReceiveBytes</value>
+  </data>
+  <data name="ServerTotalReceivePacket" xml:space="preserve">
+    <value>ServerTotalReceivePacket</value>
+  </data>
+  <data name="ServerTotalSendBytes" xml:space="preserve">
+    <value>ServerTotalSendBytes</value>
+  </data>
+  <data name="ServerTotalSendPacket" xml:space="preserve">
+    <value>ServerTotalSendPacket</value>
+  </data>
+  <data name="ServerUpTime" xml:space="preserve">
+    <value>ServerUpTime</value>
+  </data>
+  <data name="StopServer" xml:space="preserve">
+    <value>StopServer</value>
+  </data>
+  <data name="TestNumber" xml:space="preserve">
+    <value>TestNumber</value>
+  </data>
+  <data name="TotalSessionFromStartServerCount" xml:space="preserve">
+    <value>TotalSessionFromStartServerCount</value>
+  </data>
+  <data name="UnhandledCommand" xml:space="preserve">
+    <value>UnhandledCommand</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="CertificateDoseNotHavePrivateKey" xml:space="preserve">
+    <value>The certificate does not have a private key</value>
+  </data>
+  <data name="CertificateIsNotExportable" xml:space="preserve">
+    <value>The certificate is not exportable. Use 'X509KeyStorageFlags.Exportable' when creating 'X509Certificate2'.</value>
+  </data>
+  <data name="ChangeBodyMultiPacketNotFill" xml:space="preserve">
+    <value>Envelopes are not a complete request for body modification</value>
+  </data>
+  <data name="CountryCodeIsTwoChar" xml:space="preserve">
+    <value>Country code like "US" should be 2 characters</value>
+  </data>
+  <data name="PacketNumberIsGreater" xml:space="preserve">
+    <value>Packet number is greater than total packets!</value>
+  </data>
+  <data name="AuthorizationFail" xml:space="preserve">
+    <value>The problem in the authorization process</value>
+  </data>
+  <data name="AuthorizationSuccess" xml:space="preserve">
+    <value>Authorization approved correctly</value>
+  </data>
+  <data name="ClientWithOutCertificate" xml:space="preserve">
+    <value>The server is implemented as SSL. But the client is connected to it without a certificate.</value>
+  </data>
+  <data name="ExtraPassIsNot32Char" xml:space="preserve">
+    <value>The hashed password must be 32 characters</value>
+  </data>
+  <data name="Reason" xml:space="preserve">
+    <value>Reason</value>
+  </data>
+  <data name="ServerWithOutCertificate" xml:space="preserve">
+    <value>The client is implemented as SSL. But the server without a certificate.</value>
+  </data>
+</root>

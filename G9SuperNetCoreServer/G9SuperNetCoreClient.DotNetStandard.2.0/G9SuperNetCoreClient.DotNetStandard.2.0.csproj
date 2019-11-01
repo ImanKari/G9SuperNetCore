@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>G9SuperNetCoreClient</RootNamespace>
+    <Authors>Iman Kari</Authors>
+    <Company>G9Studio</Company>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Core\" />
+    <Folder Include="Interface\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\G9Common.DotNetStandard.2.0\G9Common.DotNetStandard.2.0.csproj" />
+  </ItemGroup>
+
+</Project>

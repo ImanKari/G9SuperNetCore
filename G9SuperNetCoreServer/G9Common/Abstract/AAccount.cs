@@ -1,7 +1,4 @@
-﻿using System;
-using G9Common.Enums;
-
-namespace G9Common.Abstract
+﻿namespace G9Common.Abstract
 {
     public abstract class AAccount
     {
@@ -9,7 +6,5 @@ namespace G9Common.Abstract
         ///     Access to send command of session
         /// </summary>
         public abstract ASession SessionSendCommand { get; }
-
-        
     }
 }
