@@ -129,6 +129,12 @@
   <data name="ArgumentXNotCorrect" xml:space="preserve">
     <value>پارامتر '{0}' به درستی وارد نشده است!</value>
   </data>
+  <data name="AuthorizationFail" xml:space="preserve">
+    <value>مشکل در روند تایید گواهینامه</value>
+  </data>
+  <data name="AuthorizationSuccess" xml:space="preserve">
+    <value>گواهینامه با موفقیت تایید شد</value>
+  </data>
   <data name="Body" xml:space="preserve">
     <value>بدنه</value>
   </data>
@@ -138,6 +144,15 @@
   <data name="CantStopStoppedServer" xml:space="preserve">
     <value>سرور متوقف است، نمی توانید آن را مجددا متوقف کنید.</value>
   </data>
+  <data name="CertificateDoseNotHavePrivateKey" xml:space="preserve">
+    <value>گواهینامه دارای کلید خصوصی نیست</value>
+  </data>
+  <data name="CertificateIsNotExportable" xml:space="preserve">
+    <value>گواهینامه قابل استخراج نیست. از 'X509KeyStorageFlags.Exportable' استفاده کنید زمانی که میخواهید یک 'X509Certificate2' ایجاد کنید.</value>
+  </data>
+  <data name="ChangeBodyMultiPacketNotFill" xml:space="preserve">
+    <value>پاکت ها برای تغییر بدنه درخواست کامل نیستند</value>
+  </data>
   <data name="ClientPing" xml:space="preserve">
     <value>پینگ کلاینت</value>
   </data>
@@ -146,6 +161,9 @@
   </data>
   <data name="ClientSessionIdentity" xml:space="preserve">
     <value>کد منحصر به فرد کلاینت</value>
+  </data>
+  <data name="ClientWithOutCertificate" xml:space="preserve">
+    <value>سرور به صورت SSL پیاده سازی شده است. اما کلاینت بدون گواهینامه به آن متصل شده است.</value>
   </data>
   <data name="CloseReason" xml:space="preserve">
     <value>دلیل بسته شدن</value>
@@ -173,6 +191,9 @@
   </data>
   <data name="CommanTestSendReceive" xml:space="preserve">
     <value>دریافت از کامند تست ارسال و دریافت بین سرور و کلاینت</value>
+  </data>
+  <data name="CountryCodeIsTwoChar" xml:space="preserve">
+    <value>کد کشور مانند "IR" باید 2 کاراکتری باشد</value>
   </data>
   <data name="CreateAndInitializeClient" xml:space="preserve">
     <value>ساخت و مقدار دهی اولیه کلاینت</value>
@@ -203,6 +224,9 @@
   </data>
   <data name="ErrorInRunningCommand" xml:space="preserve">
     <value>در روند اجرای کامند خطایی رخ داده است.</value>
+  </data>
+  <data name="ExtraPassIsNot32Char" xml:space="preserve">
+    <value>پسورد هش شده باید 32 کاراکتر باشد</value>
   </data>
   <data name="FailBindAndListenSocket" xml:space="preserve">
     <value>در روند آماده سازی انتظار سرور برای اتصال کلایت مشکلی پیش آمده است</value>
@@ -258,6 +282,9 @@
   <data name="OnSessionClose" xml:space="preserve">
     <value>قطع ارتباط یک کانکشن و بستن نشست</value>
   </data>
+  <data name="PacketNumberIsGreater" xml:space="preserve">
+    <value>شماره پاکت از تعداد کل پاکت ها بزرگتر است</value>
+  </data>
   <data name="PacketRequestId" xml:space="preserve">
     <value>آی دی منحصر به فرد بسته</value>
   </data>
@@ -275,6 +302,9 @@
   </data>
   <data name="ProblemCreateServerSocket" xml:space="preserve">
     <value>مشکل در روند ساخت سوکت</value>
+  </data>
+  <data name="Reason" xml:space="preserve">
+    <value>دلیل</value>
   </data>
   <data name="ReceiveClientFromServer" xml:space="preserve">
     <value>شروع روند دریافت داده های ارسالی توسط سرور</value>
@@ -314,6 +344,9 @@
   </data>
   <data name="ServerUpTime" xml:space="preserve">
     <value>مدت زمان کارکرد</value>
+  </data>
+  <data name="ServerWithOutCertificate" xml:space="preserve">
+    <value>کلاینت به صورت SSL پیاده سازی شده است. اما سرور فاقد اتصال امن است.</value>
   </data>
   <data name="StandardLength" xml:space="preserve">
     <value>طول (تعداد کاراکتر) مجاز</value>

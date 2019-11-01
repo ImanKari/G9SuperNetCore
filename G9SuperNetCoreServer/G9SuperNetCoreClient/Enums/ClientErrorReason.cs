@@ -13,7 +13,7 @@
         ClientConnectedError,
 
         /// <summary>
-        /// Error when client receive data
+        ///     Error when client receive data
         /// </summary>
         ErrorInReceiveData,
 
@@ -21,6 +21,7 @@
         ///     Error when send data to server
         /// </summary>
         ErrorSendDataToServer,
+
         /// <summary>
         ///     Error when data preparation for send to server
         /// </summary>
@@ -30,5 +31,10 @@
         ///     Error when cline is disconnect and receive request again for disconnect
         /// </summary>
         ClientDisconnectedAndReceiveRequestForDisconnect,
+
+        /// <summary>
+        ///     Error when client has problem in auth
+        /// </summary>
+        ErrorInAuthorization
     }
 }

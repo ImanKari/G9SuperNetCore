@@ -26,7 +26,7 @@ namespace G9Common.CommandHandler
         #region CommandDataType
 
         public CommandDataType(
-            Action<ReadOnlyMemory<byte>, TAccount> accessToMethodReceiveCommand,
+            Action<ReadOnlyMemory<byte>, TAccount, Guid> accessToMethodReceiveCommand,
             Action<Exception, TAccount> accessToMethodOnErrorInCommand,
             Type commandReceiveType,
             Type commandSendType)
@@ -46,7 +46,7 @@ namespace G9Common.CommandHandler
         /// <summary>
         ///     Access to method "ResponseService" in command
         /// </summary>
-        public readonly Action<ReadOnlyMemory<byte>, TAccount> AccessToMethodReceiveCommand;
+        public readonly Action<ReadOnlyMemory<byte>, TAccount, Guid> AccessToMethodReceiveCommand;
 
         /// <summary>
         ///     Access to method "OnError" in command

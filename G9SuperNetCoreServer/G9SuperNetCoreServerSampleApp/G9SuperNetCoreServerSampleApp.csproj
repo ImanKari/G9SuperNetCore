@@ -10,4 +10,13 @@
     <ProjectReference Include="..\G9SuperNetCoreServer\G9SuperNetCoreServer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Cert\G9TM.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Cert\G9TM1.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

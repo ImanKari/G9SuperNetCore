@@ -11,7 +11,12 @@ namespace G9Common.Interface
         /// <summary>
         ///     Type of packet (one packet, multi packet)
         /// </summary>
-        PacketType TypeOfPacketType { get; }
+        G9PacketType PacketType { get; }
+
+        /// <summary>
+        ///     Specified packet data
+        /// </summary>
+        G9PacketDataType PacketDataType { get; }
 
         /// <summary>
         ///     Command name

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net;
-using System.Threading.Tasks;
 using G9Common.Interface;
 using G9Common.Resource;
 
@@ -18,6 +17,7 @@ namespace G9Common.Abstract
         /// </summary>
         /// <param name="commandName">Name of command</param>
         /// <param name="commandData">Data for send</param>
+        /// <param name="customRequestId">send data by custom request id</param>
         /// <param name="checkCommandExists">
         ///     If set true, check command exists
         ///     If not exists throw exception
@@ -27,13 +27,14 @@ namespace G9Common.Abstract
         ///     If func send data type not equal with command send type throw exception
         /// </param>
         public abstract void SendCommandByNameAsync(string commandName, object commandData,
-            bool checkCommandExists = true, bool checkCommandSendType = true);
+            Guid? customRequestId = null, bool checkCommandExists = true, bool checkCommandSendType = true);
 
         /// <summary>
         ///     Send command request by name
         /// </summary>
         /// <param name="commandName">Name of command</param>
         /// <param name="commandData">Data for send</param>
+        /// <param name="customRequestId">send data by custom request id</param>
         /// <param name="checkCommandExists">
         ///     If set true, check command exists
         ///     If not exists throw exception
@@ -42,14 +43,15 @@ namespace G9Common.Abstract
         ///     If set true, check command send type
         ///     If func send data type not equal with command send type throw exception
         /// </param>
-        public abstract void SendCommandByName(string commandName, object commandData, bool checkCommandExists = true,
-            bool checkCommandSendType = true);
+        public abstract void SendCommandByName(string commandName, object commandData, Guid? customRequestId = null,
+            bool checkCommandExists = true, bool checkCommandSendType = true);
 
         /// <summary>
         ///     Send async request by command async
         /// </summary>
         /// <typeparam name="TCommand">Command for send</typeparam>
         /// <typeparam name="TTypeSend">Type of data for send</typeparam>
+        /// <param name="customRequestId">send data by custom request id</param>
         /// <param name="commandData">Data for send</param>
         /// <param name="checkCommandExists">
         ///     If set true, check command exists
@@ -59,15 +61,15 @@ namespace G9Common.Abstract
         ///     If set true, check command send type
         ///     If func send data type not equal with command send type throw exception
         /// </param>
-        public abstract void SendCommandAsync<TCommand, TTypeSend>(TTypeSend commandData, bool checkCommandExists = true,
-            bool checkCommandSendType = true)
-            where TCommand : IG9CommandWithSend;
+        public abstract void SendCommandAsync<TCommand, TTypeSend>(TTypeSend commandData, Guid? customRequestId = null,
+            bool checkCommandExists = true, bool checkCommandSendType = true) where TCommand : IG9CommandWithSend;
 
         /// <summary>
         ///     Send request by command
         /// </summary>
         /// <typeparam name="TCommand">Command for send</typeparam>
         /// <typeparam name="TTypeSend">Type of data for send</typeparam>
+        /// <param name="customRequestId">send data by custom request id</param>
         /// <param name="commandData">Data for send</param>
         /// <param name="checkCommandExists">
         ///     If set true, check command exists
@@ -77,9 +79,8 @@ namespace G9Common.Abstract
         ///     If set true, check command send type
         ///     If func send data type not equal with command send type throw exception
         /// </param>
-        public abstract void SendCommand<TCommand, TTypeSend>(TTypeSend commandData, bool checkCommandExists = true,
-            bool checkCommandSendType = true)
-            where TCommand : IG9CommandWithSend;
+        public abstract void SendCommand<TCommand, TTypeSend>(TTypeSend commandData, Guid? customRequestId = null,
+            bool checkCommandExists = true, bool checkCommandSendType = true) where TCommand : IG9CommandWithSend;
 
         /// <summary>
         ///     Get session information
@@ -109,6 +110,11 @@ namespace G9Common.Abstract
         ///     Get ip address of session
         /// </summary>
         public IPAddress SessionIpAddress { protected set; get; }
+
+        /// <summary>
+        ///     Specified client authorization
+        /// </summary>
+        public bool IsAuthorization { protected set; get; }
 
         #region Ping Utilities
 

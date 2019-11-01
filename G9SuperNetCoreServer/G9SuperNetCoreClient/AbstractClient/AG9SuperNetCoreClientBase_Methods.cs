@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using G9Common.Enums;
 using G9Common.HelperClass;
 using G9Common.JsonHelper;
 using G9Common.LogIdentity;
@@ -45,9 +48,12 @@ namespace G9SuperNetCoreClient.AbstractClient
                     var client = new Socket(Configuration.IpAddress.AddressFamily,
                         SocketType.Stream, ProtocolType.Tcp);
 
+                    
+
                     // Connect to the remote endpoint.  
                     client.BeginConnect(remoteEndPoint,
                         ConnectCallback, client);
+
                     _connectDone.WaitOne();
 
                     // Run event on connected handler
@@ -134,11 +140,13 @@ namespace G9SuperNetCoreClient.AbstractClient
         /// </summary>
         /// <param name="commandName">Command name</param>
         /// <param name="data">Data for send</param>
+        /// <param name="packetDataType">Custom packet data type</param>
+        /// <param name="customRequestId">send data by custom request id</param>
         /// <returns>Ready packet split handler</returns>
 
         #region ReadyDataForSend
 
-        private PacketSplitHandler ReadyDataForSend(string commandName, object data)
+        private G9PacketSplitHandler ReadyDataForSend(string commandName, object data, G9PacketDataType packetDataType, Guid? customRequestId)
         {
             // Ready data for send
             ReadOnlySpan<byte> dataForSend = data is byte[]
@@ -150,7 +158,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                 Configuration.EncodingAndDecoding.EncodingType.GetBytes(
                     commandName.GenerateStandardCommandName(_packetManagement.CalculateCommandSize));
 
-            return _packetManagement.PackingRequestByData(commandData, dataForSend);
+            return _packetManagement.PackingRequestByData(commandData, dataForSend, packetDataType, customRequestId);
         }
 
         #endregion
@@ -162,6 +170,7 @@ namespace G9SuperNetCoreClient.AbstractClient
         /// </summary>
         /// <param name="commandName">Name of command</param>
         /// <param name="commandData">Data for send</param>
+        /// <param name="customRequestId">send data by custom request id</param>
         /// <param name="checkCommandExists">
         ///     If set true, check command exists
         ///     If not exists throw exception
@@ -173,7 +182,7 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         #region SendCommandByName
 
-        public void SendCommandByName(string commandName, object commandData, bool checkCommandExists = true,
+        public void SendCommandByName(string commandName, object commandData, Guid? customRequestId = null, bool checkCommandExists = true,
             bool checkCommandSendType = true)
         {
             try
@@ -189,7 +198,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                         $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_commandHandler.GetCommandSendType(commandName)}");
 
                 // Ready data for send
-                var dataForSend = ReadyDataForSend(commandName, commandData);
+                var dataForSend = ReadyDataForSend(commandName, commandData, G9PacketDataType.StandardCommand, customRequestId);
 
                 // Get total packets
                 var packets = dataForSend.GetPacketsArray();
@@ -218,6 +227,7 @@ namespace G9SuperNetCoreClient.AbstractClient
         /// </summary>
         /// <param name="commandName">Name of command</param>
         /// <param name="commandData">Data for send</param>
+        /// <param name="customRequestId">send data by custom request id</param>
         /// <param name="checkCommandExists">
         ///     If set true, check command exists
         ///     If not exists throw exception
@@ -229,7 +239,7 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         #region SendCommandByNameAsync
 
-        public void SendCommandByNameAsync(string commandName, object commandData,
+        public void SendCommandByNameAsync(string commandName, object commandData, Guid? customRequestId = null,
             bool checkCommandExists = true, bool checkCommandSendType = true)
         {
             try
@@ -245,7 +255,66 @@ namespace G9SuperNetCoreClient.AbstractClient
                         $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_commandHandler.GetCommandSendType(commandName)}");
 
                 // Ready data for send
-                var dataForSend = ReadyDataForSend(commandName, commandData);
+                var dataForSend = ReadyDataForSend(commandName, commandData, G9PacketDataType.StandardCommand, customRequestId);
+
+                // Get total packets
+                var packets = dataForSend.GetPacketsArray();
+
+                // Send total packets
+                for (var i = 0; i < dataForSend.TotalPackets; i++)
+                    // Try to send
+                    Send(_clientSocket, packets[i]);
+            }
+            catch (Exception ex)
+            {
+                // Set log
+                if (_logging.CheckLoggingIsActive(LogsType.EXCEPTION))
+                    _logging.LogException(ex, LogMessage.FailSendComandByNameAsync,
+                        G9LogIdentity.CLIENT_SEND_DATA, LogMessage.FailedOperation);
+
+                // Run event on error
+                OnErrorHandler(ex, ClientErrorReason.ErrorReadyToSendDataToServer);
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     <para>Send async command request by name</para>
+        ///     <para>With custom packet data type</para>
+        /// </summary>
+        /// <param name="commandName">Name of command</param>
+        /// <param name="commandData">Data for send</param>
+        /// <param name="packetDataType">custom packet data type</param>
+        /// <param name="customRequestId">send data by custom request id</param>
+        /// <param name="checkCommandExists">
+        ///     <para>If set true, check command exists</para>
+        ///     <para>If not exists throw exception</para>
+        /// </param>
+        /// <param name="checkCommandSendType">
+        ///     <para>If set true, check command send type</para>
+        ///     <para>If func send data type not equal with command send type throw exception</para>
+        /// </param>
+
+        #region SendCommandByNameAsyncWithCustomPacketDataType
+
+        private void SendCommandByNameAsyncWithCustomPacketDataType(string commandName, object commandData, G9PacketDataType packetDataType, Guid? customRequestId = null,
+            bool checkCommandExists = true, bool checkCommandSendType = true)
+        {
+            try
+            {
+                // Check exists command
+                if (checkCommandExists && !_commandHandler.CheckCommandExist(commandName))
+                    throw new Exception($"{LogMessage.Command}\n{LogMessage.CommandName}: {commandName}");
+
+                // Check exists command
+                if (checkCommandSendType &&
+                    _commandHandler.GetCommandSendType(commandName) != commandData.GetType())
+                    throw new Exception(
+                        $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_commandHandler.GetCommandSendType(commandName)}");
+
+                // Ready data for send
+                var dataForSend = ReadyDataForSend(commandName, commandData, packetDataType, customRequestId);
 
                 // Get total packets
                 var packets = dataForSend.GetPacketsArray();
@@ -277,6 +346,7 @@ namespace G9SuperNetCoreClient.AbstractClient
         ///     Send command request by command
         /// </summary>
         /// <param name="commandData">Data for send</param>
+        /// <param name="customRequestId">send data by custom request id</param>
         /// <param name="checkCommandExists">
         ///     If set true, check command exists
         ///     If not exists throw exception
@@ -288,10 +358,10 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         #region SendCommand
 
-        public void SendCommand<TCommand, TTypeSend>(TTypeSend commandData, bool checkCommandExists = true,
+        public void SendCommand<TCommand, TTypeSend>(TTypeSend commandData, Guid? customRequestId = null, bool checkCommandExists = true,
             bool checkCommandSendType = true)
         {
-            SendCommandByName(typeof(TCommand).Name, commandData, checkCommandExists, checkCommandSendType);
+            SendCommandByName(typeof(TCommand).Name, commandData, customRequestId, checkCommandExists, checkCommandSendType);
         }
 
         #endregion
@@ -300,6 +370,7 @@ namespace G9SuperNetCoreClient.AbstractClient
         ///     Send async command request by command
         /// </summary>
         /// <param name="commandData">Data for send</param>
+        /// <param name="customRequestId">send data by custom request id</param>
         /// <param name="checkCommandExists">
         ///     If set true, check command exists
         ///     If not exists throw exception
@@ -312,11 +383,11 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         #region SendCommandByNameAsync
 
-        public void SendCommandAsync<TCommand, TTypeSend>(TTypeSend commandData,
+        public void SendCommandAsync<TCommand, TTypeSend>(TTypeSend commandData, Guid? customRequestId = null,
             bool checkCommandExists = true,
             bool checkCommandSendType = true)
         {
-            SendCommandByNameAsync(typeof(TCommand).Name, commandData, checkCommandExists,
+            SendCommandByNameAsync(typeof(TCommand).Name, commandData, customRequestId, checkCommandExists,
                 checkCommandSendType);
         }
 
@@ -326,16 +397,16 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         #region Helper Class For Send
 
-        private void SendCommandByName(uint sessionId, string commandName, object commandData,
+        private void SendCommandByName(uint sessionId, string commandName, object commandData, Guid? customRequestId = null,
             bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            SendCommandByName(commandName, commandData, checkCommandExists, checkCommandSendType);
+            SendCommandByName(commandName, commandData, customRequestId, checkCommandExists, checkCommandSendType);
         }
 
-        private void SendCommandByNameAsync(uint sessionId, string commandName, object commandData,
+        private void SendCommandByNameAsync(uint sessionId, string commandName, object commandData, Guid? customRequestId = null,
             bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            SendCommandByNameAsync(commandName, commandData, checkCommandExists, checkCommandSendType);
+            SendCommandByNameAsync(commandName, commandData, customRequestId, checkCommandExists, checkCommandSendType);
         }
 
         #endregion

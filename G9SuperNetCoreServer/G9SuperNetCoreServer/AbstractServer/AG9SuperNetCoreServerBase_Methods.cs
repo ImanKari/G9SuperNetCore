@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using G9Common.Enums;
 using G9Common.HelperClass;
 using G9Common.Interface;
 using G9Common.JsonHelper;
@@ -21,8 +22,8 @@ namespace G9SuperNetCoreServer.AbstractServer
         #region Methods
 
         /// <summary>
-        ///     Start server
-        ///     Ready listen connection and accept request
+        ///     <para>Start server</para>
+        ///     <para>Ready listen connection and accept request</para>
         /// </summary>
 
         #region Start
@@ -45,6 +46,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                     // Create a TCP/IP socket.  
                     _mainSocketListener = new Socket(_core.Configuration.IpAddress.AddressFamily,
                         SocketType.Stream, ProtocolType.Tcp);
+
                     // Set Log
                     if (_core.Logging.CheckLoggingIsActive(LogsType.EVENT))
                         _core.Logging.LogEvent(
@@ -117,8 +119,8 @@ namespace G9SuperNetCoreServer.AbstractServer
         #endregion
 
         /// <summary>
-        ///     Stop server
-        ///     Releases all resources used by server
+        ///     <para>Stop server</para>
+        ///     <para>Releases all resources used by server</para>
         /// </summary>
 
         #region Stop
@@ -182,8 +184,8 @@ namespace G9SuperNetCoreServer.AbstractServer
         ///     Enable command test send and receive for all clients
         /// </summary>
         /// <param name="testMessage">
-        ///     Test message
-        ///     If set null => $"Test Mode - Session Id: {SessionId}"
+        ///     <para>Test message</para>
+        ///     <para>If set null => $"Test Mode - Session Id: {SessionId}"</para>
         /// </param>
 
         #region EnableCommandTestSendAndReceiveForAllClients
@@ -271,11 +273,14 @@ namespace G9SuperNetCoreServer.AbstractServer
         /// </summary>
         /// <param name="commandName">Command name</param>
         /// <param name="data">Data for send</param>
+        /// <param name="packetDataType">Custom packet data type</param>
+        /// <param name="customRequestId">send data by custom request id</param>
         /// <returns>Ready packet split handler</returns>
 
         #region ReadyDataForSend
 
-        private PacketSplitHandler ReadyDataForSend(string commandName, object data)
+        private G9PacketSplitHandler ReadyDataForSend(string commandName, object data, G9PacketDataType packetDataType,
+            Guid? customRequestId)
         {
             // Ready data for send
             ReadOnlySpan<byte> dataForSend = data is byte[]
@@ -287,7 +292,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 _core.Configuration.EncodingAndDecoding.EncodingType.GetBytes(
                     commandName.GenerateStandardCommandName(_packetManagement.CalculateCommandSize));
 
-            return _packetManagement.PackingRequestByData(commandData, dataForSend);
+            return _packetManagement.PackingRequestByData(commandData, dataForSend, packetDataType, customRequestId);
         }
 
         #endregion
@@ -300,19 +305,20 @@ namespace G9SuperNetCoreServer.AbstractServer
         /// <param name="sessionId">Session id for send</param>
         /// <param name="commandName">Name of command</param>
         /// <param name="commandData">Data for send</param>
+        /// <param name="customRequestId">send data by custom request id</param>
         /// <param name="checkCommandExists">
-        ///     If set true, check command exists
-        ///     If not exists throw exception
+        ///     <para>If set true, check command exists</para>
+        ///     <para>If not exists throw exception</para>
         /// </param>
         /// <param name="checkCommandSendType">
-        ///     If set true, check command send type
-        ///     If func send data type not equal with command send type throw exception
+        ///     <para>If set true, check command send type</para>
+        ///     <para>If func send data type not equal with command send type throw exception</para>
         /// </param>
 
         #region SendCommandByName
 
         public void SendCommandByName(uint sessionId, string commandName, object commandData,
-            bool checkCommandExists = true, bool checkCommandSendType = true)
+            Guid? customRequestId = null, bool checkCommandExists = true, bool checkCommandSendType = true)
         {
             try
             {
@@ -327,17 +333,18 @@ namespace G9SuperNetCoreServer.AbstractServer
                         $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
 
                 // Ready data for send
-                var dataForSend = ReadyDataForSend(commandName, commandData);
+                var dataForSend = ReadyDataForSend(commandName, commandData, G9PacketDataType.StandardCommand,
+                    customRequestId);
 
                 // Get total packets
                 var packets = dataForSend.GetPacketsArray();
 
-                // Get socket by session id
-                var socket = _core.GetAccountUtilitiesBySessionId(sessionId).SessionSocket;
+                // Get account utilities by session id
+                var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
 
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
-                    Send(socket, sessionId, packets[i])?.WaitOne();
+                    Send(accountUtilities.SessionSocket, accountUtilities.Account, packets[i])?.WaitOne();
             }
             catch (Exception ex)
             {
@@ -356,18 +363,81 @@ namespace G9SuperNetCoreServer.AbstractServer
         /// <param name="sessionId">Session id for send</param>
         /// <param name="commandName">Name of command</param>
         /// <param name="commandData">Data for send</param>
+        /// <param name="customRequestId">send data by custom request id</param>
         /// <param name="checkCommandExists">
-        ///     If set true, check command exists
-        ///     If not exists throw exception
+        ///     <para>If set true, check command exists</para>
+        ///     <para>If not exists throw exception</para>
         /// </param>
         /// <param name="checkCommandSendType">
-        ///     If set true, check command send type
-        ///     If func send data type not equal with command send type throw exception
+        ///     <para>If set true, check command send type</para>
+        ///     <para>If func send data type not equal with command send type throw exception</para>
         /// </param>
 
         #region SendCommandByNameAsync
 
         public void SendCommandByNameAsync(uint sessionId, string commandName, object commandData,
+            Guid? customRequestId = null, bool checkCommandExists = true, bool checkCommandSendType = true)
+        {
+            try
+            {
+                // Check exists command
+                if (checkCommandExists && !_core.CommandHandler.CheckCommandExist(commandName))
+                    throw new Exception($"{LogMessage.Command}\n{LogMessage.CommandName}: {commandName}");
+
+                // Check exists command
+                if (checkCommandSendType &&
+                    _core.CommandHandler.GetCommandSendType(commandName) != commandData.GetType())
+                    throw new Exception(
+                        $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
+
+                // Ready data for send
+                var dataForSend = ReadyDataForSend(commandName, commandData, G9PacketDataType.StandardCommand,
+                    customRequestId);
+
+                // Get total packets
+                var packets = dataForSend.GetPacketsArray();
+
+                // Get account utilities by session id
+                var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
+
+                // Send total packets
+                for (var i = 0; i < dataForSend.TotalPackets; i++)
+                    // Try to send
+                    Send(accountUtilities.SessionSocket, accountUtilities.Account, packets[i]);
+            }
+            catch (Exception ex)
+            {
+                if (_core.Logging.CheckLoggingIsActive(LogsType.EXCEPTION))
+                    _core.Logging.LogException(ex, LogMessage.FailSendComandByNameAsync,
+                        G9LogIdentity.SERVER_SEND_DATA, LogMessage.FailedOperation);
+                OnErrorHandler(ex, ServerErrorReason.ErrorReadyToSendDataToClient);
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     <para>Send async command request by name</para>
+        ///     <para>With custom packet data type</para>
+        /// </summary>
+        /// <param name="sessionId">Session id for send</param>
+        /// <param name="commandName">Name of command</param>
+        /// <param name="commandData">Data for send</param>
+        /// <param name="customRequestId">send data by custom request id</param>
+        /// <param name="packetDataType">custom packet data type</param>
+        /// <param name="checkCommandExists">
+        ///     <para>If set true, check command exists</para>
+        ///     <para>If not exists throw exception</para>
+        /// </param>
+        /// <param name="checkCommandSendType">
+        ///     <para>If set true, check command send type</para>
+        ///     <para>If func send data type not equal with command send type throw exception</para>
+        /// </param>
+
+        #region SendCommandByNameAsyncWithCustomPacketDataType
+
+        private void SendCommandByNameAsyncWithCustomPacketDataType(uint sessionId, string commandName,
+            object commandData, G9PacketDataType packetDataType, Guid? customRequestId = null,
             bool checkCommandExists = true, bool checkCommandSendType = true)
         {
             try
@@ -383,19 +453,18 @@ namespace G9SuperNetCoreServer.AbstractServer
                         $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
 
                 // Ready data for send
-                var dataForSend = ReadyDataForSend(commandName, commandData);
+                var dataForSend = ReadyDataForSend(commandName, commandData, packetDataType, customRequestId);
 
                 // Get total packets
                 var packets = dataForSend.GetPacketsArray();
 
-                // Get socket by session id
-                var socket = _core.GetAccountUtilitiesBySessionId(sessionId).SessionSocket;
+                // Get account utilities by session id
+                var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
 
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
                     // Try to send
-                    Send(socket, sessionId, packets[i]);
-
+                    Send(accountUtilities.SessionSocket, accountUtilities.Account, packets[i]);
             }
             catch (Exception ex)
             {
@@ -403,7 +472,6 @@ namespace G9SuperNetCoreServer.AbstractServer
                     _core.Logging.LogException(ex, LogMessage.FailSendComandByNameAsync,
                         G9LogIdentity.SERVER_SEND_DATA, LogMessage.FailedOperation);
                 OnErrorHandler(ex, ServerErrorReason.ErrorReadyToSendDataToClient);
-
             }
         }
 
@@ -414,19 +482,20 @@ namespace G9SuperNetCoreServer.AbstractServer
         /// </summary>
         /// <param name="commandName">Name of command</param>
         /// <param name="commandData">Data for send</param>
+        /// <param name="customRequestId">send data by custom request id</param>
         /// <param name="checkCommandExists">
-        ///     If set true, check command exists
-        ///     If not exists throw exception
+        ///     <para>If set true, check command exists</para>
+        ///     <para>If not exists throw exception</para>
         /// </param>
         /// <param name="checkCommandSendType">
-        ///     If set true, check command send type
-        ///     If func send data type not equal with command send type throw exception
+        ///     <para>If set true, check command send type</para>
+        ///     <para>If func send data type not equal with command send type throw exception</para>
         /// </param>
 
         #region SendCommandToAllByName
 
-        public void SendCommandToAllByName(string commandName, object commandData, bool checkCommandExists = true,
-            bool checkCommandSendType = true)
+        public void SendCommandToAllByName(string commandName, object commandData, Guid? customRequestId = null,
+            bool checkCommandExists = true, bool checkCommandSendType = true)
         {
             try
             {
@@ -441,7 +510,8 @@ namespace G9SuperNetCoreServer.AbstractServer
                         $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
 
                 // Ready data for send
-                var dataForSend = ReadyDataForSend(commandName, commandData);
+                var dataForSend = ReadyDataForSend(commandName, commandData, G9PacketDataType.StandardCommand,
+                    customRequestId);
 
                 // Get total packets
                 var packets = dataForSend.GetPacketsArray();
@@ -451,7 +521,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 {
                     var i1 = i;
                     _core.ScrollingAllAccountUtilities(socketConnection =>
-                        Send(socketConnection.SessionSocket, socketConnection.Account.Session.SessionId, packets[i1])
+                        Send(socketConnection.SessionSocket, socketConnection.Account, packets[i1])
                             ?.WaitOne());
                 }
             }
@@ -474,18 +544,19 @@ namespace G9SuperNetCoreServer.AbstractServer
         /// </summary>
         /// <param name="commandName">Name of command</param>
         /// <param name="commandData">Data for send</param>
+        /// <param name="customRequestId">send data by custom request id</param>
         /// <param name="checkCommandExists">
-        ///     If set true, check command exists
-        ///     If not exists throw exception
+        ///     <para>If set true, check command exists</para>
+        ///     <para>If not exists throw exception</para>
         /// </param>
         /// <param name="checkCommandSendType">
-        ///     If set true, check command send type
-        ///     If func send data type not equal with command send type throw exception
+        ///     <para>If set true, check command send type</para>
+        ///     <para>If func send data type not equal with command send type throw exception</para>
         /// </param>
 
         #region SendCommandToAllByNameAsync
 
-        public void SendCommandToAllByNameAsync(string commandName, object commandData,
+        public void SendCommandToAllByNameAsync(string commandName, object commandData, Guid? customRequestId = null,
             bool checkCommandExists = true, bool checkCommandSendType = true)
         {
             try
@@ -501,7 +572,8 @@ namespace G9SuperNetCoreServer.AbstractServer
                         $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
 
                 // Ready data for send
-                var dataForSend = ReadyDataForSend(commandName, commandData);
+                var dataForSend = ReadyDataForSend(commandName, commandData, G9PacketDataType.StandardCommand,
+                    customRequestId);
 
                 // Get total packets
                 var packets = dataForSend.GetPacketsArray();
@@ -511,7 +583,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 {
                     var i1 = i;
                     _core.ScrollingAllAccountUtilities(socketConnection =>
-                        Send(socketConnection.SessionSocket, socketConnection.Account.Session.SessionId,
+                        Send(socketConnection.SessionSocket, socketConnection.Account,
                             packets[i1]));
                 }
             }
@@ -538,6 +610,7 @@ namespace G9SuperNetCoreServer.AbstractServer
         /// </summary>
         /// <param name="sessionId">Session id for send</param>
         /// <param name="commandData">Data for send</param>
+        /// <param name="customRequestId">send data by custom request id</param>
         /// <param name="checkCommandExists">
         ///     If set true, check command exists
         ///     If not exists throw exception
@@ -550,11 +623,10 @@ namespace G9SuperNetCoreServer.AbstractServer
         #region SendCommand
 
         public void SendCommand<TCommand, TTypeSend>(uint sessionId, TTypeSend commandData,
-            bool checkCommandExists = true,
-            bool checkCommandSendType = true)
+            Guid? customRequestId = null, bool checkCommandExists = true, bool checkCommandSendType = true)
             where TCommand : IG9CommandWithSend
         {
-            SendCommandByName(sessionId, typeof(TCommand).Name, commandData, checkCommandExists,
+            SendCommandByName(sessionId, typeof(TCommand).Name, commandData, customRequestId, checkCommandExists,
                 checkCommandSendType);
         }
 
@@ -565,6 +637,7 @@ namespace G9SuperNetCoreServer.AbstractServer
         /// </summary>
         /// <param name="sessionId">Session id for send</param>
         /// <param name="commandData">Data for send</param>
+        /// <param name="customRequestId">send data by custom request id</param>
         /// <param name="checkCommandExists">
         ///     If set true, check command exists
         ///     If not exists throw exception
@@ -577,10 +650,9 @@ namespace G9SuperNetCoreServer.AbstractServer
         #region SendCommandAsync
 
         public void SendCommandAsync<TCommand, TTypeSend>(uint sessionId, TTypeSend commandData,
-            bool checkCommandExists = true,
-            bool checkCommandSendType = true)
+            Guid? customRequestId = null, bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            SendCommandByNameAsync(sessionId, typeof(TCommand).Name, commandData, checkCommandExists,
+            SendCommandByNameAsync(sessionId, typeof(TCommand).Name, commandData, customRequestId, checkCommandExists,
                 checkCommandSendType);
         }
 
@@ -590,6 +662,7 @@ namespace G9SuperNetCoreServer.AbstractServer
         ///     Send command request to all clients by command
         /// </summary>
         /// <param name="commandData">Data for send</param>
+        /// <param name="customRequestId">send data by custom request id</param>
         /// <param name="checkCommandExists">
         ///     If set true, check command exists
         ///     If not exists throw exception
@@ -601,11 +674,11 @@ namespace G9SuperNetCoreServer.AbstractServer
 
         #region SendCommandToAll
 
-        public void SendCommandToAll<TCommand, TTypeSend>(TTypeSend commandData,
-            bool checkCommandExists = true,
-            bool checkCommandSendType = true)
+        public void SendCommandToAll<TCommand, TTypeSend>(TTypeSend commandData, Guid? customRequestId = null,
+            bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            SendCommandToAllByName(typeof(TCommand).Name, commandData, checkCommandExists, checkCommandSendType);
+            SendCommandToAllByName(typeof(TCommand).Name, commandData, customRequestId, checkCommandExists,
+                checkCommandSendType);
         }
 
         #endregion
@@ -614,6 +687,7 @@ namespace G9SuperNetCoreServer.AbstractServer
         ///     Send command request to all clients by command
         /// </summary>
         /// <param name="commandData">Data for send</param>
+        /// <param name="customRequestId">send data by custom request id</param>
         /// <param name="checkCommandExists">
         ///     If set true, check command exists
         ///     If not exists throw exception
@@ -625,11 +699,10 @@ namespace G9SuperNetCoreServer.AbstractServer
 
         #region SendCommandToAllAsync
 
-        public void SendCommandToAllAsync<TCommand, TTypeSend>(TTypeSend commandData,
-            bool checkCommandExists = true,
-            bool checkCommandSendType = true)
+        public void SendCommandToAllAsync<TCommand, TTypeSend>(TTypeSend commandData, Guid? customRequestId = null,
+            bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            SendCommandToAllByNameAsync(typeof(TCommand).Name, commandData, checkCommandExists,
+            SendCommandToAllByNameAsync(typeof(TCommand).Name, commandData, customRequestId, checkCommandExists,
                 checkCommandSendType);
         }
 

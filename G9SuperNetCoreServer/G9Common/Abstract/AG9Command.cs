@@ -1,5 +1,6 @@
 ﻿using System;
 using G9Common.CommandHandler;
+using G9Common.Enums;
 using G9Common.Interface;
 using G9Common.JsonHelper;
 
@@ -74,11 +75,19 @@ namespace G9Common.Abstract
                 ((Action<string, CommandDataType<TAccount>>) accessToCommandDataType)?.Invoke(
                     CommandName, new CommandDataType<TAccount>(
                         // Access to method "ReceiveCommand" in command
-                        (data, account) =>
+                        (data, account, requestId) =>
                         {
                             try
                             {
-                                ReceiveCommand(data.ToArray().FromJson<TReceiveType>(), account);
+                                ReceiveCommand(data.ToArray().FromJson<TReceiveType>(), account, requestId,
+                                    (data, sendType) =>
+                                    {
+                                        if (sendType == CommandSendType.Asynchronous)
+                                            account.SessionSendCommand.SendCommandByNameAsync(CommandName, data,
+                                                requestId);
+                                        else
+                                            account.SessionSendCommand.SendCommandByName(CommandName, data, requestId);
+                                    });
                             }
                             catch (Exception ex)
                             {
@@ -103,8 +112,11 @@ namespace G9Common.Abstract
         /// </summary>
         /// <param name="data">Received data</param>
         /// <param name="account">Access to account</param>
+        /// <param name="requestId">Access to requestId</param>
+        /// <param name="sendAnswerWithReceiveRequestId">Action for send command with receive request id like answer</param>
         /// <returns>return data</returns>
-        public abstract void ReceiveCommand(TReceiveType data, TAccount account);
+        public abstract void ReceiveCommand(TReceiveType data, TAccount account, Guid requestId,
+            Action<TSendType, CommandSendType> sendAnswerWithReceiveRequestId);
 
         /// <summary>
         ///     Method call when throw exception for this command

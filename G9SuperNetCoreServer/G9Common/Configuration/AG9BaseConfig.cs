@@ -65,29 +65,32 @@ namespace G9Common.Configuration
         #region Fields And Properties
 
         /// <summary>
-        ///     Specify packet type size => is 1 byte
-        ///     Packet has two type => OnePacket = 0, MultiPacket = 1
+        ///     <para>Specify packet type size => is 1 byte</para>
+        ///     <para>Packet has two type => OnePacket = 0, MultiPacket = 1</para>
         /// </summary>
         public const byte PacketTypeSizeSpaceBusy = 1;
 
         /// <summary>
-        ///     Specify space busy for body size
-        ///     Just 1 byte => size between 1 to 255
+        /// <para>Specify packet data type size => is 1 byte (enum byte)</para>
+        /// </summary>
+        public const byte PacketDataTypeSizeSpaceBusy = 1;
+
+        /// <summary>
+        ///     <para>Specify space busy for body size</para>
+        ///     <para>Just 1 byte => size between 1 to 255</para>
         /// </summary>
         public const byte PacketBodySizeSpaceBusy = 1;
 
         /// <summary>
-        ///     Sum 'PacketTypeSizeSpaceBusy' and 'PacketBodySizeSpaceBusy'
+        ///     Sum 'PacketTypeSizeSpaceBusy' and 'PacketDataTypeSizeSpaceBusy' and 'PacketBodySizeSpaceBusy'
         /// </summary>
-        public const byte PacketTypeAndBodySpaceBusy = 2;
+        public const byte PacketTypeSizeAndPacketDataTypeSizeAndBodySizeSpaceBusy = 3;
 
         /// <summary>
-        ///     Specify packet request id => is 16 byte
-        ///     Guid.NewGuid().ToByteArray().Length
+        ///     <para>Specify packet request id => is 16 byte</para>
+        ///     <para>Guid.NewGuid().ToByteArray().Length</para>
         /// </summary>
         public const byte PacketRequestIdSize = 16;
-
-        
 
         /// <summary>
         ///     Specify server ip address
@@ -100,28 +103,27 @@ namespace G9Common.Configuration
         public readonly ushort PortNumber;
 
         /// <summary>
-        ///     Specify socket mode
-        ///     TCP or UDP
+        ///     <para>Specify socket mode</para>
+        ///     <para>TCP or UDP</para>
         /// </summary>
         public readonly SocketMode Mode;
 
         /// <summary>
-        ///     Specify max command size
-        ///     Example: if set "n" length is "n*16" => if set 1 length is 16 then maximum command name length is 16 byte or
-        ///     character
+        ///     <para>Specify max command size</para>
+        ///     <para>Example: if set "n" length is "n*16" => if set 1 length is 16 then maximum command name length is 16 byte or</para>
+        ///     <para>character</para>
         /// </summary>
         public readonly byte CommandSize;
 
         /// <summary>
-        ///     Specify max body length size
-        ///     Example: if set "n" length is "n*16" => if set 8 length is 128 then maximum body length is 128 byte or character
-        ///     Minimum is 1 maximum is 255
+        ///     <para>Specify max body length size</para>
+        ///     <para>Example: if set "n" length is "n*16" => if set 8 length is 128 then maximum body length is 128 byte or character</para>
         /// </summary>
         public readonly byte BodySize;
 
         /// <summary>
-        ///     Specify encoding and decoding type
-        ///     Default value is UTF-8
+        ///     <para>Specify encoding and decoding type</para>
+        ///     <para>Default value is UTF-8</para>
         /// </summary>
         public readonly G9Encoding EncodingAndDecoding;
 

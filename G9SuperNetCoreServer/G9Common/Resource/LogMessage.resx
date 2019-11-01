@@ -369,4 +369,37 @@
   <data name="Warning" xml:space="preserve">
     <value>Warning</value>
   </data>
+  <data name="CertificateDoseNotHavePrivateKey" xml:space="preserve">
+    <value>The certificate does not have a private key</value>
+  </data>
+  <data name="CertificateIsNotExportable" xml:space="preserve">
+    <value>The certificate is not exportable. Use 'X509KeyStorageFlags.Exportable' when creating 'X509Certificate2'.</value>
+  </data>
+  <data name="ChangeBodyMultiPacketNotFill" xml:space="preserve">
+    <value>Envelopes are not a complete request for body modification</value>
+  </data>
+  <data name="CountryCodeIsTwoChar" xml:space="preserve">
+    <value>Country code like "US" should be 2 characters</value>
+  </data>
+  <data name="PacketNumberIsGreater" xml:space="preserve">
+    <value>Packet number is greater than total packets!</value>
+  </data>
+  <data name="AuthorizationFail" xml:space="preserve">
+    <value>The problem in the authorization process</value>
+  </data>
+  <data name="AuthorizationSuccess" xml:space="preserve">
+    <value>Authorization approved correctly</value>
+  </data>
+  <data name="ClientWithOutCertificate" xml:space="preserve">
+    <value>The server is implemented as SSL. But the client is connected to it without a certificate.</value>
+  </data>
+  <data name="ExtraPassIsNot32Char" xml:space="preserve">
+    <value>The hashed password must be 32 characters</value>
+  </data>
+  <data name="Reason" xml:space="preserve">
+    <value>Reason</value>
+  </data>
+  <data name="ServerWithOutCertificate" xml:space="preserve">
+    <value>The client is implemented as SSL. But the server without a certificate.</value>
+  </data>
 </root>

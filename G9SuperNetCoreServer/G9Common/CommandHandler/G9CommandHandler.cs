@@ -105,13 +105,14 @@ namespace G9Common.CommandHandler
         /// </summary>
         /// <param name="request">Received request</param>
         /// <param name="account">Access to account</param>
+        /// <param name="waitForFinish">If true, wait task to finish progress</param>
         /// <returns>Response for client</returns>
 
         #region G9CallHandler
 
-        public void G9CallHandler(G9SendAndReceivePacket request, TAccount account)
+        public void G9CallHandler(G9SendAndReceivePacket request, TAccount account, bool waitForFinish = false)
         {
-            Task.Run(() =>
+            var progressPacket = Task.Run(() =>
             {
                 CommandDataType<TAccount> command = null;
                 try
@@ -138,7 +139,7 @@ namespace G9Common.CommandHandler
                             LogMessage.SuccessfulOperation);
 
                     // Execute command with information
-                    command.AccessToMethodReceiveCommand(request.Body, account);
+                    command.AccessToMethodReceiveCommand(request.Body, account, request.RequestId);
                 }
                 catch (Exception ex)
                 {
@@ -151,6 +152,9 @@ namespace G9Common.CommandHandler
                     command?.AccessToMethodOnErrorInCommand?.Invoke(ex, account);
                 }
             });
+
+            if (waitForFinish)
+                progressPacket.Wait();
         }
 
         #endregion
@@ -183,7 +187,7 @@ namespace G9Common.CommandHandler
                 _instanceCommandCollection.Add(oType.Name.GenerateStandardCommandName(_commandSize),
                     instance);
                 var method = oType.GetMethod("InitializeRequirement");
-                method.Invoke(instance, new object[1] {addCommandDataType});
+                method?.Invoke(instance, new object[] {addCommandDataType});
             });
 
             #endregion
@@ -212,8 +216,11 @@ namespace G9Common.CommandHandler
         ///         <paramref name="receiveHandler.G9Session&lt;TAccount&gt;" /> :Access to sender session
         ///     </para>
         ///     <para>
+        ///         <paramref name="receiveHandler.G9Session&lt;Guid&gt;" /> :Access to sender request id
+        ///     </para>
+        ///     <para>
         ///         <paramref name="receiveHandler.Action&lt;TSendType, SendTypeForCommand, Action&lt;bool&gt;&gt;&gt;" />:Access
-        ///         to action for send data for sender
+        ///         to action for send data for sender with receive request id
         ///     </para>
         /// </param>
         /// <param name="errorHandler">
@@ -233,7 +240,7 @@ namespace G9Common.CommandHandler
 
         public void AddCustomCommand<TSendAndReceive>(
             string commandName,
-            Action<TSendAndReceive, TAccount, Action<TSendAndReceive, SendTypeForCommand>>
+            Action<TSendAndReceive, TAccount, Guid, Action<TSendAndReceive, CommandSendType>>
                 receiveHandler,
             Action<Exception, TAccount> errorHandler)
         {
@@ -260,8 +267,11 @@ namespace G9Common.CommandHandler
         ///         <paramref name="receiveHandler.G9Session&lt;TAccount&gt;" /> :Access to sender session
         ///     </para>
         ///     <para>
+        ///         <paramref name="receiveHandler.G9Session&lt;Guid&gt;" /> :Access to sender request id
+        ///     </para>
+        ///     <para>
         ///         <paramref name="receiveHandler.Action&lt;TSendType, SendTypeForCommand, Action&lt;int&gt;&gt;&gt;" />:Access
-        ///         to action for send data for sender
+        ///         to action for send data for sender with receive request id
         ///     </para>
         /// </param>
         /// <param name="errorHandler">
@@ -281,7 +291,7 @@ namespace G9Common.CommandHandler
 
         public void AddCustomCommand<TReceiveType, TSendType>(
             string commandName,
-            Action<TReceiveType, TAccount, Action<TSendType, SendTypeForCommand>>
+            Action<TReceiveType, TAccount, Guid, Action<TSendType, CommandSendType>>
                 receiveHandler,
             Action<Exception, TAccount> errorHandler)
         {
@@ -289,19 +299,19 @@ namespace G9Common.CommandHandler
                 commandName.GenerateStandardCommandName(_commandSize),
                 new CommandDataType<TAccount>(
                     // Access to method "ResponseService" in command
-                    (data, account) =>
+                    (data, account, requestId) =>
                     {
                         try
                         {
-                            receiveHandler(data.ToArray().FromJson<TReceiveType>(), account,
+                            receiveHandler(data.ToArray().FromJson<TReceiveType>(), account, requestId,
                                 (type, command) =>
                                 {
                                     try
                                     {
-                                        if (command == SendTypeForCommand.Asynchronous)
-                                            account.SessionSendCommand.SendCommandByNameAsync(commandName, type);
+                                        if (command == CommandSendType.Asynchronous)
+                                            account.SessionSendCommand.SendCommandByNameAsync(commandName, type, requestId);
                                         else
-                                            account.SessionSendCommand.SendCommandByName(commandName, type);
+                                            account.SessionSendCommand.SendCommandByName(commandName, type, requestId);
                                     }
                                     catch (Exception ex)
                                     {

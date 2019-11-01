@@ -1,4 +1,7 @@
-﻿using System.Net.Sockets;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Sockets;
+using G9Common.Packet;
 
 namespace G9Common.Abstract
 {
@@ -16,7 +19,7 @@ namespace G9Common.Abstract
 
         #region StateObjectServer
 
-        protected AG9SuperNetCoreStateObjectBase(int oBufferSize, uint oSessionIdentity)
+        protected AG9SuperNetCoreStateObjectBase(ushort oBufferSize, uint oSessionIdentity)
         {
             BufferSize = oBufferSize;
             SessionIdentity = oSessionIdentity;
@@ -32,7 +35,7 @@ namespace G9Common.Abstract
         /// <summary>
         ///     Size of receive buffer.
         /// </summary>
-        public static int BufferSize { get; private set; }
+        public static ushort BufferSize { get; protected set; }
 
         /// <summary>
         ///     Get Unique identity from session
@@ -48,6 +51,12 @@ namespace G9Common.Abstract
         ///     Receive buffer.
         /// </summary>
         public byte[] Buffer;
+
+        /// <summary>
+        ///     Collection for save and access multi packages
+        /// </summary>
+        public readonly Dictionary<Guid, G9PacketSplitHandler> MultiPacketCollection =
+            new Dictionary<Guid, G9PacketSplitHandler>();
 
         #endregion
     }

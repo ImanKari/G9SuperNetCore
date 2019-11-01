@@ -43,7 +43,7 @@
         ServerIsStoppedAndReceiveRequestForStop,
 
         /// <summary>
-        /// Error when stop server fail
+        ///     Error when stop server fail
         /// </summary>
         ErrorInStopServer
     }

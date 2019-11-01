@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Net.Sockets;
+using System.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using G9Common.CommandHandler;
 using G9Common.HelperClass;
@@ -44,11 +46,6 @@ namespace G9SuperNetCoreClient.AbstractClient
         /// <summary>
         ///     ManualResetEvent instances signal completion.
         /// </summary>
-        private readonly ManualResetEvent _receiveDone = new ManualResetEvent(false);
-
-        /// <summary>
-        ///     ManualResetEvent instances signal completion.
-        /// </summary>
         private readonly ManualResetEvent _sendDone = new ManualResetEvent(false);
 
         /// <summary>
@@ -76,6 +73,12 @@ namespace G9SuperNetCoreClient.AbstractClient
         /// </summary>
         public DateTime ClientConnectedDateTime;
 
+        /// <summary>
+        ///     Specified packet size
+        ///     Diff between ssl mode and normal mode
+        /// </summary>
+        private ushort _packetSize;
+
         #region Send And Receive Bytes
 
         /// <summary>
@@ -97,6 +100,31 @@ namespace G9SuperNetCoreClient.AbstractClient
         ///     Access to total receive packet count
         /// </summary>
         public uint TotalReceivePacket { private set; get; }
+
+        #endregion
+
+        #region Ssl Utilities
+
+        /// <summary>
+        ///     Access to encrypt decrypt object
+        /// </summary>
+        private G9EncryptAndDecryptDataWithCertificate _encryptAndDecryptDataWithCertificate;
+
+        /// <summary>
+        ///     Specified enable ssl (Secure) connection for client socket
+        ///     Automatic set by server
+        /// </summary>
+        public bool EnableSslConnection { private set; get; }
+
+        /// <summary>
+        /// Field for save private key ssl connection certificate
+        /// </summary>
+        private readonly string _privateKey;
+
+        /// <summary>
+        /// Field for save client unique identity string
+        /// </summary>
+        private readonly string _clientIdentity;
 
         #endregion
     }

@@ -10,9 +10,9 @@ using G9SuperNetCoreClientSampleApp.Commands;
 
 namespace G9SuperNetCoreClientSampleApp
 {
-    class Program
+    internal class Program
     {
-        static async Task Main()
+        private static async Task Main()
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine(
@@ -26,57 +26,71 @@ namespace G9SuperNetCoreClientSampleApp
 ");
             Console.ResetColor();
 
-            await Task.Delay(963);
             Console.WriteLine("Hello World!");
+            Console.WriteLine("Enter Ip Address Like '127.0.0.1' Or '192.168.1.103':");
+            var ipAddress = Console.ReadLine();
+            Console.WriteLine("Enter Port Like '9639':");
+            var port = Console.ReadLine();
+
+            if (string.IsNullOrEmpty(ipAddress))
+                ipAddress = "127.0.0.1";
+
+            ushort intPort;
+
+            if (string.IsNullOrEmpty(port))
+                intPort = 9639;
+            else
+                intPort = ushort.Parse(port);
+
+            await Task.Delay(963);
+
+            const string privateKey =
+                "9ZdBx9VQ6D97XZwFlTjqR6QtL1hXZhkCIQCFTw1vlf9QO5ZdxnuqjfSeXj2A4hibPQdEiMu/mEgp2lIX5Tbvvskmz7ue7F1MYEWybe8kdq9ByLTQPBEuEMoiJxQr7Nqj";
+
             var client1 =
                 new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>(
-                    new G9ClientConfig(IPAddress.Parse("127.0.0.1"), 9639, SocketMode.Tcp), Assembly.GetExecutingAssembly());
-            G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>[] clients = new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>[9999];
+                    new G9ClientConfig(IPAddress.Parse(ipAddress), intPort, SocketMode.Tcp),
+                    Assembly.GetExecutingAssembly(), privateKey, Guid.NewGuid().ToString("P"));
+
+            //G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>[] clients = new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>[9999];
 
             await client1.StartConnection();
 
-            for (var i = 0; i < clients.Length - 1; i++)
-            {
-                clients[i] = new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>(
-                    new G9ClientConfig(IPAddress.Parse("127.0.0.1"), 9639, SocketMode.Tcp),
-                    Assembly.GetExecutingAssembly());
-#pragma warning disable 4014
-                clients[i].StartConnection();
-#pragma warning restore 4014
-            }
-            clients[^1] = new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>(
-                    new G9ClientConfig(IPAddress.Parse("127.0.0.1"), 9639, SocketMode.Tcp), Assembly.GetExecutingAssembly());
-            await clients[^1].StartConnection();
+//            for (var i = 0; i < clients.Length - 1; i++)
+//            {
+//                clients[i] = new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>(
+//                    new G9ClientConfig(IPAddress.Parse("127.0.0.1"), 9639, SocketMode.Tcp),
+//                    Assembly.GetExecutingAssembly(), null, certificate);
+//#pragma warning disable 4014
+//                clients[i].StartConnection();
+//#pragma warning restore 4014
+//            }
+//            clients[^1] = new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>(
+//                    new G9ClientConfig(IPAddress.Parse("127.0.0.1"), 9639, SocketMode.Tcp), Assembly.GetExecutingAssembly(), null, certificate);
+//            await clients[^1].StartConnection();
 
             Console.WriteLine("Connected all clients...");
 
-            int counter = 0;
+            var counter = 0;
             string message;
             while ((message = Console.ReadLine()?.ToUpper()) != "Q")
-            {
-                if (message == "G9TEST")
-                {
-                    for (var i = 0; i < 100; i++)
-                    {
-                        client1.SendCommandByName("G9EchoCommand", $"Client send a message {counter++}: {i}");
-                    }
-                }
-                else if (message == "STOP")
+                if (message == "STOP")
                 {
                     await client1.Disconnect();
                 }
                 else if (message == "COUNTER")
                 {
                     client1.SendCommandAsync<CounterCommand, int>(0);
-                    for (var i = 0; i < clients.Length; i++)
-                    {
-                        clients[i].SendCommandAsync<CounterCommand, int>(0);
-                    }
+                    //for (var i = 0; i < clients.Length; i++)
+                    //{
+                    //    clients[i].SendCommandAsync<CounterCommand, int>(0);
+                    //}
                     Console.WriteLine("Active counter for all clients...");
                 }
                 else
-                    client1.SendCommandByName("G9TestSendReceive", $"Client send a message {counter++}: {message}");
-            }
+                {
+                    client1.SendCommandByName("G9EchoCommand", $"Client send a message {counter++}: {message}");
+                }
 
             Console.WriteLine("Press any key to exist.");
             Console.ReadLine();

@@ -1,95 +1,129 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.IO;
 using System.Linq;
-using System.Text;
+using G9Common.Resource;
 
 namespace G9Common.Packet
 {
-    public class PacketSplitHandler
+    /// <summary>
+    ///     Class Used for packet split handler
+    ///     Management single and multi packets
+    /// </summary>
+    public class G9PacketSplitHandler
     {
+        #region Fields And Properties
+
         /// <summary>
-        /// Request id for packets
+        ///     Request id for packets
         /// </summary>
         public Guid RequestId { get; }
+
         /// <summary>
-        /// Date time create split packet
-        /// user for delete packet at timeout
+        ///     Date time create split packet
+        ///     user for delete packet at timeout
         /// </summary>
         public DateTime PacketCreateDateTime { get; }
+
         /// <summary>
-        /// Specify total packet
+        ///     Specify total packet
         /// </summary>
         public int TotalPackets { get; }
-        /// <summary>
-        /// Memory stream for save packets
-        /// </summary>
-        public MemoryStream Packets { get; }
 
         /// <summary>
-        /// save packet total length
+        ///     Memory stream for save packets
         /// </summary>
-        private readonly int _packetTotalLength;
+        private readonly byte[][] _packets;
 
         /// <summary>
-        /// Constructor
-        /// Initialize requirements
+        ///     Specified fill all packet
+        /// </summary>
+        public bool FillAllPacket { private set; get; }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        ///     Constructor
+        ///     Initialize requirements
         /// </summary>
         /// <param name="requestId">Request id</param>
         /// <param name="totalPackets">Specify total packets</param>
-        public PacketSplitHandler(Guid requestId, int totalPackets, int packetTotalLength)
+
+        #region PacketSplitHandler
+
+        public G9PacketSplitHandler(Guid requestId, byte totalPackets)
         {
-            _packetTotalLength = packetTotalLength;
             PacketCreateDateTime = DateTime.Now;
             RequestId = requestId;
             TotalPackets = totalPackets;
-            Packets = new MemoryStream();
+            _packets = new byte[TotalPackets][];
         }
 
+        #endregion
+
         /// <summary>
-        /// Add new packet
+        ///     Add new packet
         /// </summary>
+        /// <param name="packetNumber">Specified packet number</param>
         /// <param name="packetData">Packet data</param>
-        public void AddPacket(byte[] packetData)
+
+        #region AddPacket
+
+        public void AddPacket(byte packetNumber, byte[] packetData)
         {
-            Packets.Write(packetData, 0, packetData.Length);
+            // Set exception if packet is greater
+            if (packetNumber > TotalPackets)
+                throw new ArgumentException(LogMessage.PacketNumberIsGreater, nameof(packetNumber));
+            // Add packet
+            _packets[packetNumber] = packetData;
+            // Set flag
+            if (_packets.All(s => s != null))
+                FillAllPacket = true;
         }
 
+        #endregion
+
         /// <summary>
-        /// Get total packets like Jagged Arrays
+        ///     Get total packets like Jagged Arrays
         /// </summary>
         /// <returns>Jagged Arrays of packets</returns>
+
+        #region GetPacketsArray
+
         public List<byte[]> GetPacketsArray()
         {
-            Packets.Seek(0, SeekOrigin.Begin);
-            List<byte[]> result = new List<byte[]>();
-            if (TotalPackets > 1)
-            {
-                for (var i = 0; i < TotalPackets - 1; i++)
-                {
-                    result.Add(new byte[0]);
-                    Packets.Read(result[i], i * _packetTotalLength, _packetTotalLength);
-                }
-
-                var lastIndex = TotalPackets - 1;
-                var lastOffset = lastIndex * _packetTotalLength;
-                result.Add(new byte[0]);
-                Packets.Read(result[lastIndex], lastOffset, (int) (Packets.Length - lastOffset));
-                return result;
-            }
-            result.Add(new byte[Packets.Length]);
-            Packets.Read(result[0], 0, (int) Packets.Length);
+            var result = new List<byte[]>();
+            for (var i = 0; i < TotalPackets; i++) result.Add(_packets[i]);
             return result;
         }
 
+        #endregion
+
         /// <summary>
-        /// Add all packet data to one packet 
+        ///     Add all packet data to one packet
         /// </summary>
         /// <returns>flush bytes of all packets</returns>
+
+        #region FlushPackets
+
         public byte[] FlushPackets()
         {
-            return Packets.ToArray();
+            using var packets = new MemoryStream();
+            if (TotalPackets > 1)
+                // Start from 1 because first packet is information
+                for (var i = 1; i < TotalPackets; i++)
+                    // Write with offset 1 because first byte specified packet number
+                    packets.Write(_packets[i], 1, _packets[i].Length - 1);
+            else
+                packets.Write(_packets[0]);
+
+            return packets.ToArray();
         }
+
+        #endregion
+
+        #endregion
     }
 }

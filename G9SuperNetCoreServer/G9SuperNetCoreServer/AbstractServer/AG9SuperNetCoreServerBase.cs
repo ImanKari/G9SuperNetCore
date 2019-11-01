@@ -4,8 +4,10 @@ using System.Reflection;
 using System.Threading;
 using G9Common.Abstract;
 using G9Common.Enums;
+using G9Common.HelperClass;
 using G9Common.Interface;
 using G9Common.LogIdentity;
+using G9Common.Packet;
 using G9Common.PacketManagement;
 using G9Common.Resource;
 using G9LogManagement.Enums;
@@ -30,31 +32,40 @@ namespace G9SuperNetCoreServer.AbstractServer
         /// <param name="superNetCoreConfig">Server config</param>
         /// <param name="commandAssembly">Specified command assembly (find command in specified assembly)</param>
         /// <param name="customLogging">Specified custom logging system</param>
+        /// <param name="sslCertificate">Specified object of G9SslCertificate for manage ssl connection</param>
 
         #region G9SuperNetCoreServerBase
 
         protected AG9SuperNetCoreServerBase(G9ServerConfig superNetCoreConfig, Assembly commandAssembly,
-            IG9Logging customLogging = null)
+            IG9Logging customLogging = null, G9SslCertificate sslCertificate = null)
         {
             // Initialize core
             _core = new G9Core<TAccount, TSession>(superNetCoreConfig, commandAssembly, SendCommandByName,
                 SendCommandByNameAsync, OnSessionReceiveRequestOverTheLimitInSecondHandler, OnUnhandledCommandHandler,
-                customLogging);
+                customLogging, sslCertificate);
 
             // ######################## Add default command ########################
             // G9 Echo Command
             _core.CommandHandler.AddCustomCommand<string>(nameof(G9ReservedCommandName.G9EchoCommand),
-                G9EchoCommandPingCommandReceiveHandler, null);
+                G9EchoCommandReceiveHandler, null);
             // G9 Test Send Receive
             _core.CommandHandler.AddCustomCommand<string>(nameof(G9ReservedCommandName.G9TestSendReceive),
                 G9TestSendReceiveCommandReceiveHandler, null);
             // G9 Ping Command
             _core.CommandHandler.AddCustomCommand<string>(nameof(G9ReservedCommandName.G9PingCommand),
-                PingCommandReceiveHandler, null);
+                G9PingCommandReceiveHandler, null);
+            // G9 Ping Command
+            _core.CommandHandler.AddCustomCommand<byte[]>(nameof(G9ReservedCommandName.G9Authorization),
+                AuthorizationReceiveHandler, null);
 
             // Initialize packet management
             _packetManagement = new G9PacketManagement(_core.Configuration.CommandSize, _core.Configuration.BodySize,
                 _core.Configuration.EncodingAndDecoding, _core.Logging);
+
+            // Set packet size
+            _packetSize = _core.EnableSslConnection
+                ? _packetManagement.MaximumPacketSizeInSslMode()
+                : _packetManagement.MaximumPacketSize;
 
             // Set log
             if (_core.Logging.CheckLoggingIsActive(LogsType.EVENT))
@@ -91,8 +102,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 if (!accept) return;
 
                 // Create the state object for receive 
-                var stateReceive = new G9SuperNetCoreStateObjectServer(_packetManagement.MaximumPacketSize,
-                    account.Session.SessionId)
+                var stateReceive = new G9SuperNetCoreStateObjectServer(_packetSize, account.Session.SessionId)
                 {
                     WorkSocket = handler
                 };
@@ -156,11 +166,28 @@ namespace G9SuperNetCoreServer.AbstractServer
                     TotalReceiveBytes += bytesRead;
                     TotalReceivePacket++;
 
-                    // unpacking request
-                    var receivePacket = _packetManagement.UnpackingRequestByData(state.Buffer);
+                    G9SendAndReceivePacket receivePacket;
 
-                    // Set last command (check ping automatically when set last command)
-                    accountUtilities.SessionHandler.Core_SetLastCommand(receivePacket.Command);
+                    // in position 1 specified packet data type
+                    // if it's == Authorization, not encrypted
+                    if (!accountUtilities.Account.Session.IsAuthorization &&
+                        state.Buffer[1] == (byte) G9PacketDataType.Authorization)
+                        // unpacking request - Decrypt data if need
+                    {
+                        receivePacket = _packetManagement.UnpackingRequestByData(state.Buffer);
+                    }
+                    else
+                    {
+                        // unpacking request - Decrypt data if need
+                        receivePacket = _packetManagement.UnpackingRequestByData(_core.EnableSslConnection
+                            ? _core.EncryptAndDecryptDataWithCertificate.DecryptDataWithCertificate(state.Buffer,
+                                accountUtilities.Account.Session.CertificateNumber)
+                            : state.Buffer);
+
+                        // Ignore for auth command
+                        // Set last command (check ping automatically when set last command)
+                        accountUtilities.SessionHandler.Core_SetLastCommand(receivePacket.Command);
+                    }
 
                     // Plus receive bytes for session
                     accountUtilities.SessionHandler.Core_PlusSessionTotalReceiveBytes(bytesRead);
@@ -168,15 +195,47 @@ namespace G9SuperNetCoreServer.AbstractServer
                     // Set log
                     if (_core.Logging.CheckLoggingIsActive(LogsType.INFO))
                         _core.Logging.LogInformation(
-                            $"{LogMessage.SuccessUnpackingReceiveData}\n{LogMessage.PacketType}: {receivePacket.TypeOfPacketType.ToString()}\n{LogMessage.Command}: {receivePacket.Command}\n{LogMessage.Body}: '{_core.Configuration.EncodingAndDecoding.EncodingType.GetString(receivePacket.Body.ToArray())}'\n{LogMessage.PacketRequestId}: {receivePacket.RequestId}",
+                            $"{LogMessage.SuccessUnpackingReceiveData}\n{LogMessage.PacketType}: {receivePacket.PacketType.ToString()}\n{LogMessage.Command}: {receivePacket.Command}\n{LogMessage.Body}: '{_core.Configuration.EncodingAndDecoding.EncodingType.GetString(receivePacket.Body.ToArray())}'\n{LogMessage.PacketRequestId}: {receivePacket.RequestId}",
                             G9LogIdentity.SERVER_RECEIVE_DATA, LogMessage.SuccessfulOperation);
 
                     // Clear Data
                     Array.Clear(state.Buffer, 0, AG9SuperNetCoreStateObjectBase.BufferSize);
 
-                    // Progress packet
-                    _core.CommandHandler.G9CallHandler(receivePacket,
-                        _core.GetAccountUtilitiesBySessionId(sessionId).Account);
+                    #region Handle single and multi package
+
+                    if (receivePacket.PacketType == G9PacketType.MultiPacket)
+                    {
+                        if (state.MultiPacketCollection.ContainsKey(receivePacket.RequestId))
+                        {
+                            state.MultiPacketCollection[receivePacket.RequestId]
+                                .AddPacket(receivePacket.Body.Span[0], receivePacket.Body.ToArray());
+                            if (state.MultiPacketCollection[receivePacket.RequestId].FillAllPacket)
+                            {
+                                // Change request body
+                                receivePacket.ChangePackageBodyByMultiPackage(
+                                    state.MultiPacketCollection[receivePacket.RequestId]);
+                                // Progress packet
+                                _core.CommandHandler.G9CallHandler(receivePacket, accountUtilities.Account);
+                            }
+                        }
+                        else
+                        {
+                            if (receivePacket.Body.Span[0] == 0)
+                            {
+                                state.MultiPacketCollection.Add(receivePacket.RequestId,
+                                    new G9PacketSplitHandler(receivePacket.RequestId, receivePacket.Body.Span[1]));
+                                state.MultiPacketCollection[receivePacket.RequestId]
+                                    .AddPacket(0, receivePacket.Body.ToArray());
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Progress packet
+                        _core.CommandHandler.G9CallHandler(receivePacket, accountUtilities.Account);
+                    }
+
+                    #endregion
                 }
 
                 // Set log
@@ -210,9 +269,20 @@ namespace G9SuperNetCoreServer.AbstractServer
             }
             finally
             {
-                // Listen and get other packet
-                state?.WorkSocket.BeginReceive(state.Buffer, 0, AG9SuperNetCoreStateObjectBase.BufferSize, 0,
-                    ReadCallback, state);
+                try
+                {
+                    // Listen and get other packet
+                    state?.WorkSocket.BeginReceive(
+                        state.Buffer ??
+                        throw new InvalidOperationException("state.Buffer is null for BeginReceive in block finally!"),
+                        0,
+                        AG9SuperNetCoreStateObjectBase.BufferSize, 0,
+                        ReadCallback, state);
+                }
+                catch
+                {
+                    // Ignore
+                }
             }
         }
 
@@ -222,20 +292,31 @@ namespace G9SuperNetCoreServer.AbstractServer
         ///     Send data to client
         /// </summary>
         /// <param name="handler">Socket handler for send</param>
-        /// <param name="sessionId">Specified session id</param>
+        /// <param name="account">Specified account</param>
         /// <param name="byteData">Specify byte data for send</param>
         /// <returns>return WaitHandle for begin send</returns>
 
         #region Send
 
-        private WaitHandle Send(Socket handler, uint sessionId, byte[] byteData)
+        private WaitHandle Send(Socket handler, TAccount account, byte[] byteData)
         {
             // Create the state object for sent
-            var stateSend = new G9SuperNetCoreStateObjectServer(_packetManagement.MaximumPacketSize, sessionId)
-            {
-                WorkSocket = handler,
-                Buffer = byteData
-            };
+            var stateSend =
+                new G9SuperNetCoreStateObjectServer(_packetSize, account.Session.SessionId)
+                {
+                    WorkSocket = handler,
+                    // Set buffer for send - Encrypt if need
+                    Buffer =
+                        // in position 1 specified packet data type
+                        // if it's == Authorization, not encrypted
+                        !account.Session.IsAuthorization && byteData[1] == (byte) G9PacketDataType.Authorization
+                            ? byteData
+                            // check enable or disable ssl connection for encrypt
+                            : _core.EnableSslConnection
+                                ? _core.EncryptAndDecryptDataWithCertificate.EncryptDataByCertificate(byteData,
+                                    account.Session.CertificateNumber)
+                                : byteData
+                };
 
             // Set log
             if (_core.Logging.CheckLoggingIsActive(LogsType.EVENT))
@@ -243,7 +324,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                     G9LogIdentity.SERVER_SEND_DATA, LogMessage.SuccessfulOperation);
 
             // Begin sending the data to the remote device.  
-            return handler.BeginSend(stateSend.Buffer, 0, byteData.Length, 0,
+            return handler.BeginSend(stateSend.Buffer, 0, stateSend.Buffer.Length, 0,
                     SendCallback, stateSend)
                 ?.AsyncWaitHandle;
         }

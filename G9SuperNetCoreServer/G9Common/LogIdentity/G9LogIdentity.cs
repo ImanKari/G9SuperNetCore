@@ -108,6 +108,14 @@
         /// Log Identity => On test send and receive enable
         /// </summary>
         public const string ECHO_COMMAND = "ECHO_COMMAND";
+        /// <summary>
+        /// Log Identity => On test authorization fail
+        /// </summary>
+        public const string AUTHORIZATION_FAIL = "AUTHORIZATION_FAIL";
+        /// <summary>
+        /// Log Identity => On test authorization success
+        /// </summary>
+        public const string AUTHORIZATION_SUCCESS = "AUTHORIZATION_SUCCESS";
         #endregion
 
         /* ########################################## Client Identity ########################################## */

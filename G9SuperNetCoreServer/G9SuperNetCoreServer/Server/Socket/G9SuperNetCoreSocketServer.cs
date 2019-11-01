@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
-using G9Common.Abstract;
-using G9Common.Configuration;
+using G9Common.HelperClass;
 using G9Common.Interface;
 using G9SuperNetCoreServer.Abstarct;
 using G9SuperNetCoreServer.AbstractServer;
@@ -13,7 +12,8 @@ namespace G9SuperNetCoreServer
         where TSession : AServerSession, new()
     {
         public G9SuperNetCoreSocketServer(G9ServerConfig superNetCoreConfig, Assembly commandAssembly,
-            IG9Logging customLogging = null) : base(superNetCoreConfig, commandAssembly, customLogging)
+            IG9Logging customLogging = null, G9SslCertificate sslCertificate = null) : base(superNetCoreConfig,
+            commandAssembly, customLogging, sslCertificate)
         {
         }
     }

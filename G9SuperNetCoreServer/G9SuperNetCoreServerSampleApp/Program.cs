@@ -3,6 +3,7 @@ using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using G9Common.Enums;
+using G9Common.HelperClass;
 using G9SuperNetCoreClientSampleApp.Commands;
 using G9SuperNetCoreServer;
 using G9SuperNetCoreServer.Config;
@@ -10,9 +11,9 @@ using G9SuperNetCoreServer.Sample;
 
 namespace G9SuperNetCoreServerSampleApp
 {
-    class Program
+    internal class Program
     {
-        static async Task Main()
+        private static async Task Main()
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(
@@ -28,21 +29,25 @@ namespace G9SuperNetCoreServerSampleApp
             Console.WriteLine("Hello World!");
             Console.ResetColor();
 
+            const string privateKey =
+                "9ZdBx9VQ6D97XZwFlTjqR6QtL1hXZhkCIQCFTw1vlf9QO5ZdxnuqjfSeXj2A4hibPQdEiMu/mEgp2lIX5Tbvvskmz7ue7F1MYEWybe8kdq9ByLTQPBEuEMoiJxQr7Nqj";
+
+            var sslCertificate = new G9SslCertificate(privateKey, 9, "IR");
 
             var server = new G9SuperNetCoreSocketServer<ServerAccountSample, ServerSessionSample>(
-                new G9ServerConfig("Test Server", IPAddress.Any, 9639, SocketMode.Tcp), Assembly.GetExecutingAssembly());
+                new G9ServerConfig("Test Server", IPAddress.Any, 9639, SocketMode.Tcp), Assembly.GetExecutingAssembly(),
+                null, sslCertificate);
 
 #pragma warning disable 4014
             server.Start();
 #pragma warning restore 4014
 
-            int counter = 0;
+            var counter = 0;
             string message;
             while ((message = Console.ReadLine()?.ToUpper()) != "Q")
-            {
                 if (message == "G9TEST")
                 {
-                    if (server.EnableCommandTestSendReceiveAllClients) 
+                    if (server.EnableCommandTestSendReceiveAllClients)
                         server.DisableCommandTestSendAndReceiveForAllClients();
                     else
                         server.EnableCommandTestSendAndReceiveForAllClients();
@@ -62,12 +67,12 @@ namespace G9SuperNetCoreServerSampleApp
                     Console.ResetColor();
                 }
                 else
+                {
                     server.SendCommandToAllByName("G9EchoCommand", $"Server send a message {counter++}: {message}");
-            }
+                }
 
             Console.WriteLine("Press any key to exist.");
             Console.ReadLine();
-
         }
     }
 }

@@ -35,15 +35,16 @@ namespace G9Common.PacketManagement
         private int _packetHeaderSize = -1;
 
         /// <summary>
-        ///     Specify packet header size
-        ///     Header size => PacketTypeSize + CalculateCommandSize + PacketSpecifyBodySize
+        ///     <para>Specify packet header size</para>
+        ///     <para>Header size => PacketTypeSize + CalculateCommandSize + PacketSpecifyBodySize</para>
         /// </summary>
         public int PacketHeaderSize
         {
             get
             {
                 if (_packetHeaderSize == -1)
-                    _packetHeaderSize = AG9BaseConfig.PacketTypeAndBodySpaceBusy + CalculateCommandSize;
+                    _packetHeaderSize = AG9BaseConfig.PacketTypeSizeAndPacketDataTypeSizeAndBodySizeSpaceBusy +
+                                        CalculateCommandSize;
 
                 return _packetHeaderSize;
             }
@@ -51,11 +52,11 @@ namespace G9Common.PacketManagement
 
 
         /// <summary>
-        ///     Specify max command size
-        ///     Example: if set "n" length is "n*16" => if set 1 length is 16 then maximum command name length is 16 byte or
-        ///     character
+        ///     <para>Specify max command size</para>
+        ///     <para>Example: if set "n" length is "n*16" => if set 1 length is 16 then maximum command name length is 16 byte or</para>
+        ///     <para>character</para>
         /// </summary>
-        public readonly int CommandSize;
+        public readonly byte CommandSize;
 
         /// <summary>
         ///     Specify calculated command size => if set "n" set "n*16"
@@ -63,16 +64,19 @@ namespace G9Common.PacketManagement
         public readonly int CalculateCommandSize;
 
         /// <summary>
-        ///     Specify max body length size
-        ///     Example: if set "n" length is "n*16" => if set 8 length is 128 then maximum body length is 128 byte or character
-        ///     Minimum is 1 maximum is 255
+        ///     <para>Specify max body length size</para>
+        ///     <para>
+        ///         Example: if set "n" length is "n*16" => if set 8 length is 128 then maximum body length is 128 byte or
+        ///         character
+        ///     </para>
+        ///     <para>Minimum is 1 maximum is 255</para>
         /// </summary>
-        public readonly int BodySize;
+        public readonly byte BodySize;
 
         /// <summary>
         ///     Specify calculated body size => if set "n" set "n*16"
         /// </summary>
-        public readonly int CalculateBodySize;
+        public readonly ushort CalculateBodySize;
 
         /// <summary>
         ///     Save total packet size
@@ -80,21 +84,45 @@ namespace G9Common.PacketManagement
         private int _getPacketSize = -1;
 
         /// <summary>
-        ///     Specify maximum packet size
-        ///     The package is made of the following items:
-        ///     PacketTypeSize(Const 1 byte) + (CommandSize * 16) + PacketSpecifyBodySize((BodySize * 16).ToString().Length) +
-        ///     (BodySize * 16) + PacketRequestIdSize(Const 16 byte => Guid.NewGuid().ToByteArray().Length)
+        ///     <para>Specify maximum packet size</para>
+        ///     <para>The package is made of the following items:</para>
+        ///     <para>
+        ///         PacketTypeSize(Const 1 byte) +  + PacketDataTypeSizeSpaceBusy(Const 1 byte) + (CommandSize * 16) +
+        ///         PacketSpecifyBodySize((BodySize * 16).ToString().Length) +
+        ///         (BodySize * 16) + PacketRequestIdSize(Const 16 byte => Guid.NewGuid().ToByteArray().Length)
+        ///     </para>
         /// </summary>
-        public int MaximumPacketSize
+        public ushort MaximumPacketSize
         {
             get
             {
                 if (_getPacketSize == -1)
-                    _getPacketSize = AG9BaseConfig.PacketTypeSizeSpaceBusy + CommandSize * 16 +
+                    _getPacketSize = AG9BaseConfig.PacketTypeSizeSpaceBusy + AG9BaseConfig.PacketDataTypeSizeSpaceBusy +
+                                     CommandSize * 16 +
                                      AG9BaseConfig.PacketBodySizeSpaceBusy + BodySize * 16 +
                                      AG9BaseConfig.PacketRequestIdSize;
 
-                return _getPacketSize;
+                return (ushort) _getPacketSize;
+            }
+        }
+
+        /// <summary>
+        ///     <para>Specified packet size when ssl mode is enable</para>
+        ///     <para>fixed size => pow (2, n)</para>
+        /// </summary>
+        /// <returns>return max packet size when ssl mode enable</returns>
+        public ushort MaximumPacketSizeInSslMode()
+        {
+            checked
+            {
+                ushort packetSize = 0;
+                var counter = 2;
+                do
+                {
+                    packetSize = (ushort) Math.Pow(2, counter++);
+                } while (packetSize < MaximumPacketSize);
+
+                return packetSize;
             }
         }
 
@@ -103,11 +131,13 @@ namespace G9Common.PacketManagement
         #region Methods
 
         /// <summary>
-        ///     Constructor
-        ///     Initialize requirement for packet management
-        ///     The package is made of the following items:
-        ///     PacketTypeSize(Const 1 byte) + (CommandSize * 16) + PacketSpecifyBodySize((BodySize * 16).ToString().Length) +
-        ///     (BodySize * 16) + PacketRequestIdSize(Const 16 byte => Guid.NewGuid().ToByteArray().Length)
+        ///     <para>Constructor</para>
+        ///     <para>Initialize requirement for packet management</para>
+        ///     <para>The package is made of the following items:</para>
+        ///     <para>
+        ///         PacketTypeSize(Const 1 byte) + (CommandSize * 16) + PacketSpecifyBodySize((BodySize * 16).ToString().Length) +
+        ///         (BodySize * 16) + PacketRequestIdSize(Const 16 byte => Guid.NewGuid().ToByteArray().Length)
+        ///     </para>
         /// </summary>
         /// <param name="oPacketCommandSize">Specify packet command size</param>
         /// <param name="oPacketBodySize">Specify packet body size</param>
@@ -116,13 +146,14 @@ namespace G9Common.PacketManagement
 
         #region G9PacketManagement
 
-        public G9PacketManagement(int oPacketCommandSize, int oPacketBodySize, G9Encoding oEncoding, IG9Logging logging)
+        public G9PacketManagement(byte oPacketCommandSize, byte oPacketBodySize, G9Encoding oEncoding,
+            IG9Logging logging)
         {
             _logging = logging;
             CommandSize = oPacketCommandSize;
             BodySize = oPacketBodySize;
 
-            CalculateBodySize = BodySize * 16;
+            CalculateBodySize = (ushort) (BodySize * 16);
             CalculateCommandSize = CommandSize * 16;
             EncodingHandler = oEncoding;
         }
@@ -130,73 +161,80 @@ namespace G9Common.PacketManagement
         #endregion
 
         /// <summary>
-        ///     Generate and packing request by data
-        ///     Perform calculations to prepare the request
+        ///     <para>Generate and packing request by data</para>
+        ///     <para>Perform calculations to prepare the request</para>
         /// </summary>
         /// <param name="command">Specify package command</param>
         /// <param name="body">Specify package body</param>
+        /// <param name="dataType">Specified packet data type</param>
         /// <returns>Generated PacketSplitHandler by data</returns>
 
         #region PackingRequestByData
 
-        public PacketSplitHandler PackingRequestByData(ReadOnlySpan<byte> command, ReadOnlySpan<byte> body)
+        public G9PacketSplitHandler PackingRequestByData(ReadOnlySpan<byte> command, ReadOnlySpan<byte> body,
+            G9PacketDataType dataType, Guid? customRequestId)
         {
             try
             {
                 if (command.Length == CalculateCommandSize)
                 {
-                    var requestId = Guid.NewGuid();
-                    PacketSplitHandler packet;
+                    var requestId = customRequestId ?? Guid.NewGuid();
+                    G9PacketSplitHandler packet;
                     if (body.Length <= CalculateBodySize)
                     {
                         // Initialize packet split handler
-                        packet = new PacketSplitHandler(requestId, 1, MaximumPacketSize);
+                        packet = new G9PacketSplitHandler(requestId, 1);
 
                         // Initialize memory stream and save packet data
-                        var oMemoryStream = new MemoryStream();
-                        oMemoryStream.WriteByte((byte) PacketType.OnePacket);
-                        oMemoryStream.WriteByte(checked((byte) body.Length));
-                        oMemoryStream.Write(command);
-                        oMemoryStream.Write(body);
-                        oMemoryStream.Write(requestId.ToByteArray());
+                        var memoryStream = new MemoryStream();
+                        memoryStream.WriteByte((byte) G9PacketType.OnePacket);
+                        memoryStream.WriteByte((byte) dataType);
+                        memoryStream.WriteByte(checked((byte) body.Length));
+                        memoryStream.Write(command);
+                        memoryStream.Write(body);
+                        memoryStream.Write(requestId.ToByteArray());
 
                         // Add packet
-                        packet.AddPacket(oMemoryStream.ToArray());
+                        packet.AddPacket(0, memoryStream.ToArray());
                     }
                     else
                     {
                         // Calculate packet size
-                        var counter = (int) Math.Ceiling(body.Length / (decimal) CalculateBodySize);
+                        var counter = (byte) Math.Ceiling(body.Length / (decimal) CalculateBodySize);
 
                         // Packet size plus one => because first packet specify packet count information
                         // counter.ToString().Length * counter => Reserve first byte for packet number
-                        counter = (int) Math.Ceiling(((decimal) body.Length +
-                                                      counter.ToString().Length * counter) /
-                                                     CalculateBodySize) + 1;
+                        counter = (byte) (Math.Ceiling(((decimal) body.Length +
+                                                        counter.ToString().Length * counter) /
+                                                       CalculateBodySize) + 1);
 
                         // Specify counter length
-                        var counterLength = counter.ToString().Length;
+                        // counter length = 1 => Like byte 0 To 256 
+                        var counterLength = 1;
 
                         // Initialize packet split
-                        packet = new PacketSplitHandler(requestId, counter, MaximumPacketSize);
+                        packet = new G9PacketSplitHandler(requestId, counter);
 
                         // Initialize memory stream and save packet data
-                        using (var oMemoryStream = new MemoryStream())
+                        using (var memoryStream = new MemoryStream())
                         {
-                            oMemoryStream.WriteByte((byte) PacketType.MultiPacket);
-                            oMemoryStream.WriteByte(checked((byte) body.Length));
-                            oMemoryStream.Write(command);
-                            oMemoryStream.Write(EncodingHandler.EncodingType.GetBytes(counter.ToString()));
-                            oMemoryStream.Write(requestId.ToByteArray());
+                            memoryStream.WriteByte((byte) G9PacketType.MultiPacket);
+                            memoryStream.WriteByte((byte) dataType);
+                            // First packet length is 2 | 0 => packet number | 1 => Total packet count
+                            memoryStream.WriteByte(2);
+                            memoryStream.Write(command);
+                            // write packet number
+                            memoryStream.WriteByte(0);
+                            // write total packet count
+                            memoryStream.WriteByte(counter);
+                            memoryStream.Write(requestId.ToByteArray());
 
                             // Set first packet => packet count information
-                            packet.AddPacket(oMemoryStream.ToArray());
+                            packet.AddPacket(0, memoryStream.ToArray());
                         }
 
-                        for (var i = 1; i < counter; i++)
+                        for (byte i = 1; i < counter; i++)
                         {
-                            if (i == counter - 26) Console.WriteLine("X");
-
                             var newBodyStandardSize = CalculateBodySize - (i == 1
                                                           ? 0
                                                           : counterLength);
@@ -208,17 +246,17 @@ namespace G9Common.PacketManagement
                                 : CalculateBodySize - counterLength;
 
                             // Initialize memory stream and save packet data
-                            using var oMemoryStream = new MemoryStream();
-                            oMemoryStream.WriteByte((byte) PacketType.MultiPacket);
-                            oMemoryStream.WriteByte(checked((byte) body.Length));
-                            oMemoryStream.Write(command);
-                            oMemoryStream.Write(
-                                EncodingHandler.EncodingType.GetBytes(i.ToString().PadLeft(counterLength, '0')));
-                            oMemoryStream.Write(body.Slice(offset, length));
-                            oMemoryStream.Write(requestId.ToByteArray());
+                            using var memoryStream = new MemoryStream();
+                            memoryStream.WriteByte((byte) G9PacketType.MultiPacket);
+                            memoryStream.WriteByte((byte) dataType);
+                            memoryStream.WriteByte(checked((byte) (length + 1)));
+                            memoryStream.Write(command);
+                            memoryStream.WriteByte(i);
+                            memoryStream.Write(body.Slice(offset, length));
+                            memoryStream.Write(requestId.ToByteArray());
 
                             // Add total packet
-                            packet.AddPacket(oMemoryStream.ToArray());
+                            packet.AddPacket(i, memoryStream.ToArray());
                         }
                     }
 
@@ -254,14 +292,17 @@ namespace G9Common.PacketManagement
         public G9SendAndReceivePacket UnpackingRequestByData(ReadOnlySpan<byte> packetData)
         {
             // Set body size
-            var packetBodySize = packetData[1];
+            var packetBodySize = packetData[2];
 
             // Initialize data
             return new G9SendAndReceivePacket(
                 // Set packet type
-                (PacketType) packetData[0],
+                (G9PacketType) packetData[0],
+                // Set packet data type
+                (G9PacketDataType) packetData[1],
                 // Set command
-                EncodingHandler.EncodingType.GetString(packetData.Slice(AG9BaseConfig.PacketTypeAndBodySpaceBusy,
+                EncodingHandler.EncodingType.GetString(packetData.Slice(
+                    AG9BaseConfig.PacketTypeSizeAndPacketDataTypeSizeAndBodySizeSpaceBusy,
                     CalculateCommandSize)),
                 // Set body
                 packetData.Slice(PacketHeaderSize, packetBodySize),

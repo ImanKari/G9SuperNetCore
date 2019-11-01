@@ -40,6 +40,13 @@ namespace G9SuperNetCoreServer.HelperClass
         /// </summary>
         public Action<uint> Session_OnSessionReceiveRequestOverTheLimitInSecond;
 
+        /// <summary>
+        ///     ### Execute From Core ###
+        ///     Set certificate number for encrypt and decrypt data
+        ///     byte => certificate number
+        /// </summary>
+        public Action<ushort> Core_SetCertificateNumber;
+
         #endregion
 
         #endregion

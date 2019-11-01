@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
-using System.Threading.Tasks;
+using System.Security.Cryptography.X509Certificates;
 using G9Common.CommandHandler;
 using G9Common.HelperClass;
 using G9Common.Interface;
@@ -59,27 +59,44 @@ namespace G9SuperNetCoreServer.Core
         public readonly G9CommandHandler<TAccount> CommandHandler;
 
         /// <summary>
-        ///     Access to func send command by name
-        ///     long => session id
-        ///     string => command name
-        ///     bool => If set true, check command exists
-        ///     object => data for send
+        ///     <para>### Execute From Session ###</para>
+        ///     <para>Access to action send command by name</para>
+        ///     <para>uint => session id</para>
+        ///     <para>string => command name</para>
+        ///     <para>object => data for send</para>
+        ///     <para>Guid? => set custom request id</para>
+        ///     <para>bool => If set true, check command exists</para>
+        ///     <para>bool => If set true, check command send type</para>
         /// </summary>
-        private readonly Action<uint, string, object, bool, bool> _sendCommandByName;
+        private readonly Action<uint, string, object, Guid?, bool, bool> _sendCommandByName;
 
         /// <summary>
-        ///     Access to func send command by name async
-        ///     long => session id
-        ///     string => command name
-        ///     bool => If set true, check command exists
-        ///     object => data for send
+        ///     <para>### Execute From Session ###</para>
+        ///     <para>Access to action send command by name async</para>
+        ///     <para>uint => session id</para>
+        ///     <para>string => command name</para>
+        ///     <para>object => data for send</para>
+        ///     <para>Guid? => set custom request id</para>
+        ///     <para>bool => If set true, check command exists</para>
+        ///     <para>bool => If set true, check command send type</para>
         /// </summary>
-        private readonly Action<uint, string, object, bool, bool> _sendCommandByNameAsync;
+        private readonly Action<uint, string, object, Guid?, bool, bool> _sendCommandByNameAsync;
 
         /// <summary>
-        ///     Access to event OnSessionReceiveRequestOverTheLimitInSecond 
+        ///     Access to event OnSessionReceiveRequestOverTheLimitInSecond
         /// </summary>
         private readonly Action<TAccount> _onSessionReceiveRequestOverTheLimitInSecond;
+
+        /// <summary>
+        ///     Used for encrypt and decrypt with certificates
+        /// </summary>
+        public readonly G9EncryptAndDecryptDataWithCertificate EncryptAndDecryptDataWithCertificate;
+
+        /// <summary>
+        ///     Specified enable ssl (Secure) connection for server socket
+        ///     If set certificates => it's true
+        /// </summary>
+        public readonly bool EnableSslConnection;
 
         #endregion
 
@@ -93,17 +110,22 @@ namespace G9SuperNetCoreServer.Core
         /// <param name="commandAssembly">Specified command assembly (find command in specified assembly)</param>
         /// <param name="sendCommandByName">Specify func send command by name</param>
         /// <param name="sendCommandByNameAsync">Specify func send command by name async</param>
-        /// <param name="onSessionReceiveRequestOverTheLimitInSecond">Specify action for event OnSessionReceiveRequestOverTheLimitInSecond</param>
+        /// <param name="onSessionReceiveRequestOverTheLimitInSecond">
+        ///     Specify action for event
+        ///     OnSessionReceiveRequestOverTheLimitInSecond
+        /// </param>
         /// <param name="onUnhandledCommand">Specified event on unhandled command</param>
         /// <param name="customLogging">Specified custom logging system</param>
+        /// <param name="sslCertificate">Specified object of G9SslCertificate for manage ssl connection</param>
 
         #region G9Core
 
         public G9Core(G9ServerConfig superNetCoreConfig, Assembly commandAssembly,
-            Action<uint, string, object, bool, bool> sendCommandByName,
-            Action<uint, string, object, bool, bool> sendCommandByNameAsync,
+            Action<uint, string, object, Guid?, bool, bool> sendCommandByName,
+            Action<uint, string, object, Guid?, bool, bool> sendCommandByNameAsync,
             Action<TAccount> onSessionReceiveRequestOverTheLimitInSecond,
-            Action<G9SendAndReceivePacket, TAccount> onUnhandledCommand, IG9Logging customLogging = null)
+            Action<G9SendAndReceivePacket, TAccount> onUnhandledCommand, IG9Logging customLogging = null,
+            G9SslCertificate sslCertificate = null)
         {
             // TODO: change fixed array to change sizable array
             // Set array
@@ -112,6 +134,13 @@ namespace G9SuperNetCoreServer.Core
 
             // Set logging system
             Logging = customLogging ?? new G9LoggingServer();
+
+            // Initialize EncryptAndDecryptDataWithCertificate
+            if (sslCertificate != null && sslCertificate.Certificates.Length > 0)
+            {
+                EnableSslConnection = true;
+                EncryptAndDecryptDataWithCertificate = new G9EncryptAndDecryptDataWithCertificate(sslCertificate);
+            }
 
             // Set send command
             _sendCommandByName = sendCommandByName;
@@ -157,20 +186,20 @@ namespace G9SuperNetCoreServer.Core
                 return (false, null);
             }
 
-            var newAccountUtilities = CreateAccountByAcceptedSocket(connectionSocket);
+            var newAccountData = CreateAccountByAcceptedSocket(connectionSocket);
 
-            if (newAccountUtilities != null)
+            if (newAccountData != null)
             {
                 if (Logging.CheckLoggingIsActive(LogsType.INFO))
                     Logging.LogInformation(LogMessage.AccountAndSessionCreated, G9LogIdentity.CREATE_NEW_ACCOUNT,
                         LogMessage.CreateNewAccount);
 
-                _accountCollection[_sessionIdentityCounter++] = newAccountUtilities;
+                _accountCollection[_sessionIdentityCounter++] = newAccountData;
 
                 if (Logging.CheckLoggingIsActive(LogsType.INFO))
                     Logging.LogInformation(LogMessage.SuccessAccountAdded, G9LogIdentity.CREATE_NEW_ACCOUNT,
                         LogMessage.CreateNewAccount);
-                return (true, newAccountUtilities.Account);
+                return (true, newAccountData.Account);
             }
 
             // TODO: فرمت ارسال باید برای کامند مناسب درست بشه
@@ -285,18 +314,19 @@ namespace G9SuperNetCoreServer.Core
         /// <summary>
         ///     Create new account and session by connection socket
         /// </summary>
-        /// <param name="acceptedScoket">connection socket</param>
-        /// <returns>Created account</returns>
+        /// <param name="acceptedSocket">connection socket</param>
+        /// <returns>Return G9AccountUtilities account data</returns>
 
         #region CreateAccountByAcceptedSocket
 
         private G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>
-            CreateAccountByAcceptedSocket(Socket acceptedScoket)
+            CreateAccountByAcceptedSocket(Socket acceptedSocket)
         {
             try
             {
                 // Initialize result
                 var result = new G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>();
+
 
                 // Instance session and pass requirement to constructor
                 var session = new TSession();
@@ -312,13 +342,22 @@ namespace G9SuperNetCoreServer.Core
                             Session_OnSessionReceiveRequestOverTheLimitInSecond = sessionId =>
                                 _onSessionReceiveRequestOverTheLimitInSecond(GetAccountUtilitiesBySessionId(sessionId)
                                     .Account)
-
                         }, _sessionIdentityCounter,
-                    ((IPEndPoint) acceptedScoket.RemoteEndPoint).Address);
-                
+                    ((IPEndPoint) acceptedSocket.RemoteEndPoint).Address);
+
                 // ########### Set requirement###########
                 // Set max request
                 result.SessionHandler.Core_SetMaxRequestRequirement(Configuration.MaxRequestPerSecond);
+
+                // Variable for result
+                ushort certNumber = 0;
+
+                if (EnableSslConnection)
+                    // Get certificate number
+                    certNumber = EncryptAndDecryptDataWithCertificate.GetRandomCertificateNumber();
+
+                // Set certificate number
+                result.SessionHandler.Core_SetCertificateNumber(certNumber);
 
                 // Instance account and pass session to constructor
                 var newAccount = result.Account = new TAccount();
@@ -326,7 +365,7 @@ namespace G9SuperNetCoreServer.Core
                     new G9ServerAccountHandler(), session);
 
                 // Set socket
-                result.SessionSocket = acceptedScoket;
+                result.SessionSocket = acceptedSocket;
 
                 // return result
                 return result;

@@ -27,6 +27,12 @@ namespace G9SuperNetCoreServer.AbstractServer
         private readonly G9PacketManagement _packetManagement;
 
         /// <summary>
+        ///     Specified packet size
+        ///     Diff between ssl mode and normal mode
+        /// </summary>
+        private readonly ushort _packetSize;
+
+        /// <summary>
         ///     Specify main socket listener for server
         /// </summary>
         private Socket _mainSocketListener;

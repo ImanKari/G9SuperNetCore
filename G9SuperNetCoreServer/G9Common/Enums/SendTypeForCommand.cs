@@ -1,9 +1,9 @@
 ﻿namespace G9Common.Enums
 {
     /// <summary>
-    ///     Send type for command
+    ///     Specified command send type
     /// </summary>
-    public enum SendTypeForCommand
+    public enum CommandSendType
     {
         Asynchronous,
         Synchronous

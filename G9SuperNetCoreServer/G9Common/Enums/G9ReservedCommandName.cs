@@ -18,6 +18,13 @@
         ///     Ping Command
         ///     Automatically used from server when need get ping from client
         /// </summary>
-        G9PingCommand
+        G9PingCommand,
+
+        /// <summary>
+        ///     Authorization command
+        ///     Automatically used from server
+        ///     Set certificate and requirement for auth
+        /// </summary>
+        G9Authorization
     }
 }

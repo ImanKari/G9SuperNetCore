@@ -97,6 +97,24 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The problem in the authorization process.
+        /// </summary>
+        public static string AuthorizationFail {
+            get {
+                return ResourceManager.GetString("AuthorizationFail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Authorization approved correctly.
+        /// </summary>
+        public static string AuthorizationSuccess {
+            get {
+                return ResourceManager.GetString("AuthorizationSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Body.
         /// </summary>
         public static string Body {
@@ -124,6 +142,33 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The certificate does not have a private key.
+        /// </summary>
+        public static string CertificateDoseNotHavePrivateKey {
+            get {
+                return ResourceManager.GetString("CertificateDoseNotHavePrivateKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The certificate is not exportable. Use &apos;X509KeyStorageFlags.Exportable&apos; when creating &apos;X509Certificate2&apos;..
+        /// </summary>
+        public static string CertificateIsNotExportable {
+            get {
+                return ResourceManager.GetString("CertificateIsNotExportable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Envelopes are not a complete request for body modification.
+        /// </summary>
+        public static string ChangeBodyMultiPacketNotFill {
+            get {
+                return ResourceManager.GetString("ChangeBodyMultiPacketNotFill", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ClientPing.
         /// </summary>
         public static string ClientPing {
@@ -147,6 +192,15 @@ namespace G9Common.Resource {
         public static string ClientSessionIdentity {
             get {
                 return ResourceManager.GetString("ClientSessionIdentity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The server is implemented as SSL. But the client is connected to it without a certificate..
+        /// </summary>
+        public static string ClientWithOutCertificate {
+            get {
+                return ResourceManager.GetString("ClientWithOutCertificate", resourceCulture);
             }
         }
         
@@ -228,6 +282,15 @@ namespace G9Common.Resource {
         public static string CommanTestSendReceive {
             get {
                 return ResourceManager.GetString("CommanTestSendReceive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Country code like &quot;US&quot; should be 2 characters.
+        /// </summary>
+        public static string CountryCodeIsTwoChar {
+            get {
+                return ResourceManager.GetString("CountryCodeIsTwoChar", resourceCulture);
             }
         }
         
@@ -318,6 +381,15 @@ namespace G9Common.Resource {
         public static string ErrorInRunningCommand {
             get {
                 return ResourceManager.GetString("ErrorInRunningCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The hashed password must be 32 characters.
+        /// </summary>
+        public static string ExtraPassIsNot32Char {
+            get {
+                return ResourceManager.GetString("ExtraPassIsNot32Char", resourceCulture);
             }
         }
         
@@ -484,6 +556,15 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Packet number is greater than total packets!.
+        /// </summary>
+        public static string PacketNumberIsGreater {
+            get {
+                return ResourceManager.GetString("PacketNumberIsGreater", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PacketRequestId.
         /// </summary>
         public static string PacketRequestId {
@@ -534,6 +615,15 @@ namespace G9Common.Resource {
         public static string ProblemCreateServerSocket {
             get {
                 return ResourceManager.GetString("ProblemCreateServerSocket", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reason.
+        /// </summary>
+        public static string Reason {
+            get {
+                return ResourceManager.GetString("Reason", resourceCulture);
             }
         }
         
@@ -651,6 +741,15 @@ namespace G9Common.Resource {
         public static string ServerUpTime {
             get {
                 return ResourceManager.GetString("ServerUpTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The client is implemented as SSL. But the server without a certificate..
+        /// </summary>
+        public static string ServerWithOutCertificate {
+            get {
+                return ResourceManager.GetString("ServerWithOutCertificate", resourceCulture);
             }
         }
         

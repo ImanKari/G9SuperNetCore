@@ -21,6 +21,11 @@ namespace G9SuperNetCoreServer.Abstarct
         /// </summary>
         public bool EnableTestSendReceiveMode { private set; get; }
 
+        /// <summary>
+        ///     Specified certificate number for encrypt and decrypt
+        /// </summary>
+        public ushort CertificateNumber { private set; get; }
+
         #region LastCommand Utilities
 
         /// <summary>
@@ -128,6 +133,12 @@ namespace G9SuperNetCoreServer.Abstarct
 
             // Set ip
             SessionIpAddress = oIpAddress;
+
+            // Set certificate number
+            handler.Core_SetCertificateNumber = certNumber => CertificateNumber = certNumber;
+
+            // Set authorization
+            _sessionHandler.Core_AuthorizationClient = () => IsAuthorization = true;
         }
 
         #endregion
@@ -192,10 +203,10 @@ namespace G9SuperNetCoreServer.Abstarct
         #region SendCommandByNameAsync
 
         public override void SendCommandByNameAsync(string commandName, object commandData,
-            bool checkCommandExists = true, bool checkCommandSendType = true)
+            Guid? customRequestId = null, bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            _sessionHandler.Session_SendCommandByNameAsync(SessionId, commandName, commandData, checkCommandExists,
-                checkCommandSendType);
+            _sessionHandler.Session_SendCommandByNameAsync(SessionId, commandName, commandData, customRequestId,
+                checkCommandExists, checkCommandSendType);
         }
 
         #endregion
@@ -204,11 +215,11 @@ namespace G9SuperNetCoreServer.Abstarct
 
         #region SendCommandByName
 
-        public override void SendCommandByName(string commandName, object commandData, bool checkCommandExists = true,
-            bool checkCommandSendType = true)
+        public override void SendCommandByName(string commandName, object commandData, Guid? customRequestId = null,
+            bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            _sessionHandler.Session_SendCommandByName(SessionId, commandName, commandData, checkCommandExists,
-                checkCommandSendType);
+            _sessionHandler.Session_SendCommandByName(SessionId, commandName, commandData, customRequestId,
+                checkCommandExists, checkCommandSendType);
         }
 
         #endregion
@@ -217,11 +228,11 @@ namespace G9SuperNetCoreServer.Abstarct
 
         #region SendCommandAsync
 
-        public override void SendCommandAsync<TCommand, TTypeSend>(TTypeSend commandData,
+        public override void SendCommandAsync<TCommand, TTypeSend>(TTypeSend commandData, Guid? customRequestId = null,
             bool checkCommandExists = true, bool checkCommandSendType = true)
         {
             _sessionHandler.Session_SendCommandByNameAsync(SessionId, typeof(TCommand).Name, commandData,
-                checkCommandExists, checkCommandSendType);
+                customRequestId, checkCommandExists, checkCommandSendType);
         }
 
         #endregion
@@ -230,11 +241,11 @@ namespace G9SuperNetCoreServer.Abstarct
 
         #region SendCommand
 
-        public override void SendCommand<TCommand, TTypeSend>(TTypeSend commandData, bool checkCommandExists = true,
-            bool checkCommandSendType = true)
+        public override void SendCommand<TCommand, TTypeSend>(TTypeSend commandData, Guid? customRequestId = null,
+            bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            _sessionHandler.Session_SendCommandByName(SessionId, typeof(TCommand).Name, commandData, checkCommandExists,
-                checkCommandSendType);
+            _sessionHandler.Session_SendCommandByName(SessionId, typeof(TCommand).Name, commandData, customRequestId,
+                checkCommandExists, checkCommandSendType);
         }
 
         #endregion
