@@ -97,7 +97,7 @@ namespace G9SuperNetCoreServer.AbstractServer
             {
                 if (_core.EnableSslConnection)
                 {
-                    SendCommandByNameAsyncWithCustomPacketDataType(account.Session.SessionId,
+                    SendCommandByNameWithCustomPacketDataType(account.Session.SessionId,
                         nameof(G9ReservedCommandName.G9Authorization),
                         new[] {(byte) DisconnectReason.AuthorizationFailServerIsSslButClientWithoutSsl},
                         G9PacketDataType.Authorization, requestId);
@@ -150,7 +150,7 @@ namespace G9SuperNetCoreServer.AbstractServer
             {
                 if (!_core.EnableSslConnection)
                 {
-                    SendCommandByNameAsyncWithCustomPacketDataType(account.Session.SessionId,
+                    SendCommandByNameWithCustomPacketDataType(account.Session.SessionId,
                         nameof(G9ReservedCommandName.G9Authorization),
                         new[] {(byte) DisconnectReason.AuthorizationFailClientIsSslButServerWithoutSsl},
                         G9PacketDataType.Authorization, requestId);
@@ -163,7 +163,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 }
                 else
                 {
-                    SendCommandByNameAsyncWithCustomPacketDataType(account.Session.SessionId,
+                    SendCommandByNameWithCustomPacketDataType(account.Session.SessionId,
                         nameof(G9ReservedCommandName.G9Authorization),
                         _core.EncryptAndDecryptDataWithCertificate.GetCertificateByCertificateNumber(
                             account.Session.CertificateNumber,

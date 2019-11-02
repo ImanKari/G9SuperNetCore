@@ -361,6 +361,10 @@ namespace G9SuperNetCoreClient.AbstractClient
                     }
 
                     #endregion
+
+                    // Get the rest of the data.  
+                    client.BeginReceive(_stateObject.Buffer, 0, AG9SuperNetCoreStateObjectBase.BufferSize, 0,
+                        ReceiveCallback, _stateObject);
                 }
             }
             catch (Exception ex)
@@ -381,19 +385,10 @@ namespace G9SuperNetCoreClient.AbstractClient
                             LogMessage.FailedOperation);
 
                     OnErrorHandler(ex, ClientErrorReason.ErrorInReceiveData);
-                }
-            }
-            finally
-            {
-                try
-                {
+
                     // Get the rest of the data.  
                     client?.BeginReceive(_stateObject.Buffer, 0, AG9SuperNetCoreStateObjectBase.BufferSize, 0,
                         ReceiveCallback, _stateObject);
-                }
-                catch
-                {
-                    // Ignore
                 }
             }
         }

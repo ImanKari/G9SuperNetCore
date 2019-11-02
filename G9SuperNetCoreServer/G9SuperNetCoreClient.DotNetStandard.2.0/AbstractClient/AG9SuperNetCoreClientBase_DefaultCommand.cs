@@ -164,7 +164,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                 _mainAccountUtilities.SessionHandler.Core_AuthorizationClient();
 
                 // Send answer for authorization
-                SendCommandByNameAsyncWithCustomPacketDataType(nameof(G9ReservedCommandName.G9Authorization),
+                SendCommandByNameWithCustomPacketDataType(nameof(G9ReservedCommandName.G9Authorization),
                     new[] {(byte) DisconnectReason.AuthorizationIsSuccess},
                     G9PacketDataType.Authorization);
 
@@ -196,7 +196,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                 }
 
                 // Send answer for authorization
-                SendCommandByNameAsyncWithCustomPacketDataType(nameof(G9ReservedCommandName.G9Authorization),
+                SendCommandByNameWithCustomPacketDataType(nameof(G9ReservedCommandName.G9Authorization),
                     new[] {(byte) reason}, G9PacketDataType.Authorization);
 
                 // Run like a task because if disconnect can't send disconnect reason to server

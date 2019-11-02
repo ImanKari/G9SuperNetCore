@@ -213,7 +213,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                 Receive(_clientSocket);
 
                 // Call authorization
-                SendCommandByNameAsyncWithCustomPacketDataType(nameof(G9ReservedCommandName.G9Authorization),
+                SendCommandByNameWithCustomPacketDataType(nameof(G9ReservedCommandName.G9Authorization),
                     string.IsNullOrEmpty(_privateKey)
                         ? new byte[0]
                         : Configuration.EncodingAndDecoding.EncodingType.GetBytes(_clientIdentity),
@@ -361,6 +361,10 @@ namespace G9SuperNetCoreClient.AbstractClient
                     }
 
                     #endregion
+
+                    // Get the rest of the data.  
+                    client.BeginReceive(_stateObject.Buffer, 0, AG9SuperNetCoreStateObjectBase.BufferSize, 0,
+                        ReceiveCallback, _stateObject);
                 }
             }
             catch (Exception ex)
@@ -381,19 +385,10 @@ namespace G9SuperNetCoreClient.AbstractClient
                             LogMessage.FailedOperation);
 
                     OnErrorHandler(ex, ClientErrorReason.ErrorInReceiveData);
-                }
-            }
-            finally
-            {
-                try
-                {
+
                     // Get the rest of the data.  
                     client?.BeginReceive(_stateObject.Buffer, 0, AG9SuperNetCoreStateObjectBase.BufferSize, 0,
                         ReceiveCallback, _stateObject);
-                }
-                catch
-                {
-                    // Ignore
                 }
             }
         }

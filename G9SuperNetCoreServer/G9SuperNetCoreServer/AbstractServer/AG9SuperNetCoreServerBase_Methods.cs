@@ -478,6 +478,67 @@ namespace G9SuperNetCoreServer.AbstractServer
         #endregion
 
         /// <summary>
+        ///     <para>Send command request by name</para>
+        ///     <para>With custom packet data type</para>
+        /// </summary>
+        /// <param name="sessionId">Session id for send</param>
+        /// <param name="commandName">Name of command</param>
+        /// <param name="commandData">Data for send</param>
+        /// <param name="customRequestId">send data by custom request id</param>
+        /// <param name="packetDataType">custom packet data type</param>
+        /// <param name="checkCommandExists">
+        ///     <para>If set true, check command exists</para>
+        ///     <para>If not exists throw exception</para>
+        /// </param>
+        /// <param name="checkCommandSendType">
+        ///     <para>If set true, check command send type</para>
+        ///     <para>If func send data type not equal with command send type throw exception</para>
+        /// </param>
+
+        #region SendCommandByNameWithCustomPacketDataType
+
+        private void SendCommandByNameWithCustomPacketDataType(uint sessionId, string commandName,
+            object commandData, G9PacketDataType packetDataType, Guid? customRequestId = null,
+            bool checkCommandExists = true, bool checkCommandSendType = true)
+        {
+            try
+            {
+                // Check exists command
+                if (checkCommandExists && !_core.CommandHandler.CheckCommandExist(commandName))
+                    throw new Exception($"{LogMessage.Command}\n{LogMessage.CommandName}: {commandName}");
+
+                // Check exists command
+                if (checkCommandSendType &&
+                    _core.CommandHandler.GetCommandSendType(commandName) != commandData.GetType())
+                    throw new Exception(
+                        $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
+
+                // Ready data for send
+                var dataForSend = ReadyDataForSend(commandName, commandData, packetDataType, customRequestId);
+
+                // Get total packets
+                var packets = dataForSend.GetPacketsArray();
+
+                // Get account utilities by session id
+                var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
+
+                // Send total packets
+                for (var i = 0; i < dataForSend.TotalPackets; i++)
+                    // Try to send
+                    Send(accountUtilities.SessionSocket, accountUtilities.Account, packets[i])?.WaitOne();
+            }
+            catch (Exception ex)
+            {
+                if (_core.Logging.CheckLoggingIsActive(LogsType.EXCEPTION))
+                    _core.Logging.LogException(ex, LogMessage.FailSendComandByNameAsync,
+                        G9LogIdentity.SERVER_SEND_DATA, LogMessage.FailedOperation);
+                OnErrorHandler(ex, ServerErrorReason.ErrorReadyToSendDataToClient);
+            }
+        }
+
+        #endregion
+
+        /// <summary>
         ///     Send command request to all clients by name
         /// </summary>
         /// <param name="commandName">Name of command</param>

@@ -13,7 +13,7 @@ namespace G9SuperNetCoreClientSampleApp.Commands
         public override void ReceiveCommand(int data, ClientAccountSample account, Guid requestId,
             Action<int, CommandSendType> sendAnswerWithReceiveRequestId)
         {
-            if (EnableCounterScript) return;
+            if (!EnableCounterScript) return;
 
             Console.WriteLine($"Receive Counter: {data}");
             sendAnswerWithReceiveRequestId(data + 1, CommandSendType.Asynchronous);

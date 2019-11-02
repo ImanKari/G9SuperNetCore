@@ -23,7 +23,7 @@ public class G9SuperNetCoreClient4Unity : MonoBehaviour
     async Task Start()
     {
      
-        string ipAddress = "127.0.0.1";
+        string ipAddress = "192.168.1.103";
         ushort port = 9639;
         _client =
             new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>(
@@ -43,8 +43,16 @@ public class G9SuperNetCoreClient4Unity : MonoBehaviour
             else
             {
                 CounterCommand.EnableCounterScript = true;
-                _client.SendCommandAsync<CounterCommand, int>(0);
+                _client.SendCommand<CounterCommand, int>(0);
             }
         }
     }
+
+    private async Task OnApplicationQuit()
+    {
+        await _client.Disconnect();
+        _client = null;
+    }
+
+
 }

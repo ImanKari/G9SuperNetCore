@@ -236,6 +236,13 @@ namespace G9SuperNetCoreServer.AbstractServer
                     }
 
                     #endregion
+
+                    // Listen and get other packet
+                    state.WorkSocket.BeginReceive(
+                        state.Buffer,
+                        0,
+                        AG9SuperNetCoreStateObjectBase.BufferSize, 0,
+                        ReadCallback, state);
                 }
 
                 // Set log
@@ -265,13 +272,7 @@ namespace G9SuperNetCoreServer.AbstractServer
 
                     // Run event on connected error
                     OnErrorHandler(ex, ServerErrorReason.ErrorReceiveDataFromClient);
-                }
-            }
-            finally
-            {
-                try
-                {
-                    // TODO: Process high change line
+
                     // Listen and get other packet
                     state?.WorkSocket.BeginReceive(
                         state.Buffer ??
@@ -279,10 +280,6 @@ namespace G9SuperNetCoreServer.AbstractServer
                         0,
                         AG9SuperNetCoreStateObjectBase.BufferSize, 0,
                         ReadCallback, state);
-                }
-                catch
-                {
-                    // Ignore
                 }
             }
         }
