@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using G9Common.Enums;
 using G9Common.HelperClass;
@@ -32,7 +34,17 @@ namespace G9SuperNetCoreServerSampleApp
             const string privateKey =
                 "9ZdBx9VQ6D97XZwFlTjqR6QtL1hXZhkCIQCFTw1vlf9QO5ZdxnuqjfSeXj2A4hibPQdEiMu/mEgp2lIX5Tbvvskmz7ue7F1MYEWybe8kdq9ByLTQPBEuEMoiJxQr7Nqj";
 
-            var sslCertificate = new G9SslCertificate(privateKey, 9, "IR");
+#if NETCOREAPP2_1
+            var sslCertificate = new G9SslCertificate(privateKey, 1);
+#else
+            var sslCertificate = new G9SslCertificate(privateKey,
+                // Add certificates
+                new X509Certificate2(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Cert", "G9TM.pfx"), "G9TM",
+                    X509KeyStorageFlags.Exportable),
+                new X509Certificate2(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Cert", "G9TM1.pfx"), "G9TM",
+                    X509KeyStorageFlags.Exportable)
+            );
+#endif
 
             var server = new G9SuperNetCoreSocketServer<ServerAccountSample, ServerSessionSample>(
                 new G9ServerConfig("Test Server", IPAddress.Any, 9639, SocketMode.Tcp), Assembly.GetExecutingAssembly(),

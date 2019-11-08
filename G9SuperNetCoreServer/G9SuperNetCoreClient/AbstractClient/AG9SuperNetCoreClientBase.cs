@@ -61,20 +61,24 @@ namespace G9SuperNetCoreClient.AbstractClient
                     Account = new TAccount()
                 };
 
+            // Set configuration
+            Configuration = clientConfig;
+
             // Initialize account and session
             var session = new TSession();
             session.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(_mainAccountUtilities.SessionHandler =
                 new G9ClientSessionHandler
                 {
+                    // Set send command sync
                     Session_SendCommandByName = SendCommandByName,
-                    Session_SendCommandByNameAsync = SendCommandByNameAsync
+                    // Set send command async
+                    Session_SendCommandByNameAsync = SendCommandByNameAsync,
+                    // Set session encoding
+                    Session_GetSessionEncoding = () => Configuration.EncodingAndDecoding
                 }, 0, IPAddress.Any);
             var account = new TAccount();
             _mainAccountUtilities.Account.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(
                 _mainAccountUtilities.AccountHandler = new G9ClientAccountHandler(), session);
-
-            // Set configuration
-            Configuration = clientConfig;
 
             // Initialize packet management
             _packetManagement = new G9PacketManagement(Configuration.CommandSize, Configuration.BodySize,
@@ -109,6 +113,7 @@ namespace G9SuperNetCoreClient.AbstractClient
             // G9 Authorization Command
             _commandHandler.AddCustomCommand<byte[]>(nameof(G9ReservedCommandName.G9Authorization),
                 AuthorizationReceiveHandler, null);
+
 
             // Set private key
             if (!string.IsNullOrEmpty(privateKeyForSslConnection))
@@ -317,7 +322,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                     // Set log
                     if (_logging.CheckLoggingIsActive(LogsType.INFO))
                         _logging.LogInformation(
-                            $"{LogMessage.SuccessUnpackingReceiveData}\n{LogMessage.PacketType}: {receivePacket.PacketType.ToString()}\n{LogMessage.Command}: {receivePacket.Command}\n{LogMessage.Body}: '{Configuration.EncodingAndDecoding.EncodingType.GetString(receivePacket.Body.ToArray())}'\n{LogMessage.PacketRequestId}: {receivePacket.RequestId}",
+                            $"{LogMessage.SuccessUnpackingReceiveData}\n{LogMessage.PacketType}: {receivePacket.PacketType.ToString()}\n{LogMessage.Command}: {receivePacket.Command}\n{LogMessage.Body}: '{Configuration.EncodingAndDecoding.GetString(receivePacket.Body)}'\n{LogMessage.PacketRequestId}: {receivePacket.RequestId}",
                             $"{G9LogIdentity.CLIENT_RECEIVE}", LogMessage.SuccessfulOperation);
 
                     // Clear Data
@@ -330,7 +335,13 @@ namespace G9SuperNetCoreClient.AbstractClient
                         if (_stateObject.MultiPacketCollection.ContainsKey(receivePacket.RequestId))
                         {
                             _stateObject.MultiPacketCollection[receivePacket.RequestId]
-                                .AddPacket(receivePacket.Body.Span[0], receivePacket.Body.ToArray());
+                                .AddPacket(
+#if NETSTANDARD2_1
+                                    receivePacket.Body.Span[0], receivePacket.Body.ToArray()
+#else
+                                    receivePacket.Body[0], receivePacket.Body
+#endif
+                                );
                             if (_stateObject.MultiPacketCollection[receivePacket.RequestId].FillAllPacket)
                             {
                                 // Change request body
@@ -345,12 +356,30 @@ namespace G9SuperNetCoreClient.AbstractClient
                         }
                         else
                         {
-                            if (receivePacket.Body.Span[0] == 0)
+                            if (
+#if NETSTANDARD2_1
+                                    receivePacket.Body.Span[0]
+#else
+                                receivePacket.Body[0]
+#endif
+                                == 0)
                             {
                                 _stateObject.MultiPacketCollection.Add(receivePacket.RequestId,
-                                    new G9PacketSplitHandler(receivePacket.RequestId, receivePacket.Body.Span[1]));
+                                    new G9PacketSplitHandler(receivePacket.RequestId,
+#if NETSTANDARD2_1
+                                    receivePacket.Body.Span[1]
+#else
+                                        receivePacket.Body[1]
+#endif
+                                    ));
                                 _stateObject.MultiPacketCollection[receivePacket.RequestId]
-                                    .AddPacket(0, receivePacket.Body.ToArray());
+                                    .AddPacket(0,
+#if NETSTANDARD2_1
+                                    receivePacket.Body.ToArray()
+#else
+                                        receivePacket.Body
+#endif
+                                    );
                             }
                         }
                     }
@@ -405,7 +434,13 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         #region Send
 
-        private WaitHandle Send(Socket clientSocket, ReadOnlySpan<byte> data)
+        private WaitHandle Send(Socket clientSocket,
+#if NETSTANDARD2_1
+            ReadOnlySpan<byte>
+#else
+            byte[]
+#endif
+                data)
         {
             // Set log
             if (_logging.CheckLoggingIsActive(LogsType.EVENT))
@@ -414,15 +449,32 @@ namespace G9SuperNetCoreClient.AbstractClient
 
             // Specify array data for send
             var arrayDataForSend =
-                // in position 1 specified packet data type
-                // if it's == Authorization, not encrypted
-                !_mainAccountUtilities.Account.Session.IsAuthorization &&
-                data[1] == (byte) G9PacketDataType.Authorization
-                    ? data.ToArray()
-                    // check enable or disable ssl connection for encrypt
-                    : EnableSslConnection
-                        ? _encryptAndDecryptDataWithCertificate.EncryptDataByCertificate(data.ToArray(), 0)
-                        : data.ToArray();
+                    // in position 1 specified packet data type
+                    // if it's == Authorization, not encrypted
+                    !_mainAccountUtilities.Account.Session.IsAuthorization &&
+                    data[1] == (byte) G9PacketDataType.Authorization
+                        ?
+#if NETSTANDARD2_1
+                     data.ToArray()
+#else
+                        data
+#endif
+                        // check enable or disable ssl connection for encrypt
+                        : EnableSslConnection
+                            ? _encryptAndDecryptDataWithCertificate.EncryptDataByCertificate(
+#if NETSTANDARD2_1
+                     data.ToArray()
+#else
+                                data
+#endif
+                                , 0)
+                            :
+#if NETSTANDARD2_1
+                     data.ToArray()
+#else
+                            data
+#endif
+                ;
 
             // Begin sending the data to the remote device.  
             return clientSocket.BeginSend(arrayDataForSend, 0, arrayDataForSend.Length, 0, SendCallback, clientSocket)

@@ -144,7 +144,7 @@ namespace G9SuperNetCoreServer.AbstractServer
             // Set log
             if (_core.Logging.CheckLoggingIsActive(LogsType.WARN))
                 _core.Logging.LogWarning(
-                    $"{LogMessage.ReceivedUnhandledCommand}\n{LogMessage.CommandName}: {packet.Command}\n{LogMessage.Body}: {_core.Configuration.EncodingAndDecoding.EncodingType.GetString(packet.Body.Span)}\n{LogMessage.PacketType}: {packet.PacketType}",
+                    $"{LogMessage.ReceivedUnhandledCommand}\n{LogMessage.CommandName}: {packet.Command}\n{LogMessage.Body}: {_core.Configuration.EncodingAndDecoding.GetString(packet.Body)}\n{LogMessage.PacketType}: {packet.PacketType}",
                     G9LogIdentity.RECEIVE_UNHANDLED_COMMAND, LogMessage.UnhandledCommand);
 
             // Run event

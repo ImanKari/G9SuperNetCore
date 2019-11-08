@@ -212,6 +212,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1483110312}
+  - component: {fileID: 1483110313}
   - component: {fileID: 1483110311}
   m_Layer: 0
   m_Name: G9SuperNetCoreClient4Unity
@@ -246,3 +247,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1483110313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1483110310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a81421dae6b48c4cb779e514ef46347, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IsEnableExceptionLogging: 1
+  IsEnableErrorLogging: 1
+  IsEnableWarningLogging: 1
+  IsEnableInformationLogging: 1
+  IsEnableEventLogging: 1

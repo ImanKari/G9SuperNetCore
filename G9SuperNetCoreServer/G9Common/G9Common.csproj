@@ -1,13 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <DefineConstants>_WINDOWS</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(OS)' == 'Unix' ">
+    <DefineConstants>_Unix</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(OS)' == 'MacOSX' ">
+    <DefineConstants>_MacOSX</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="G9LogManagement" Version="2.0.0.3" />
-    <PackageReference Include="G9ScheduleManagement" Version="1.1.0" />
+    <PackageReference Include="G9LogManagement" Version="3.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="Portable.BouncyCastle" Version="1.8.5.2" />
     <PackageReference Include="System.Security.Cryptography.Cng" Version="4.6.0" />
   </ItemGroup>
 

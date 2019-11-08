@@ -1,13 +1,14 @@
-﻿using System;
+﻿#if NETSTANDARD2_1
 using System.Globalization;
-using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-using G9Common.RandomNumberWithoutDuplicates;
 using G9Common.Resource;
+#endif
+using System;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace G9Common.HelperClass
 {
@@ -40,8 +41,6 @@ namespace G9Common.HelperClass
 
         #region Methods
 
-        #region Constructor
-
         /// <summary>
         ///     <para>Constructor</para>
         ///     <para>Initialize requirement</para>
@@ -60,6 +59,10 @@ namespace G9Common.HelperClass
 
         public G9SslCertificate(string privateKey, params X509Certificate2[] exportableCertificates)
         {
+            // Check certificates
+            if (exportableCertificates == null || !exportableCertificates.Any())
+                throw new ArgumentException("Certificate is required!", nameof(exportableCertificates));
+
             // Check private key and set default private key if it's null or empty
             if (string.IsNullOrEmpty(privateKey))
                 privateKey = DEFAULT_PRIVATE_KEY;
@@ -73,6 +76,7 @@ namespace G9Common.HelperClass
 
         #endregion
 
+#if NETSTANDARD2_1
         /// <summary>
         ///     <para>Constructor</para>
         ///     <para>Initialize requirement</para>
@@ -90,7 +94,7 @@ namespace G9Common.HelperClass
         /// <para>Specified count of the certificate to be generated randomly</para>
         /// <para>Notice: Certificate generated programmatically with random data</para>
         /// </param>
-        #region G9SslCertificate
+#region G9SslCertificate
         public G9SslCertificate(string privateKey, ushort countOfRandomCertificateGenerate, string countryCode = "US")
         {
             // Check private key and set default private key if it's null or empty
@@ -104,9 +108,6 @@ namespace G9Common.HelperClass
             if (countryCode.Length != 2)
                 throw new ArgumentException(LogMessage.CountryCodeIsTwoChar, nameof(countryCode));
 
-            // Instance object for get random number
-            G9RandomNumberWithoutDuplicates randomNumberWithoutDuplicates = new G9RandomNumberWithoutDuplicates();
-
             // Initialize certificates array
             Certificates = new X509Certificate2[countOfRandomCertificateGenerate];
 
@@ -114,59 +115,19 @@ namespace G9Common.HelperClass
             Parallel.For(0, countOfRandomCertificateGenerate, (index) =>
             {
                 Certificates[index] = GenerateCustomX509Certificate2(
-                    $"{STARTER_PRIVATE_KEY}{randomNumberWithoutDuplicates.Next(999, 999999999)}",
-                    $"{DEFAULT_PRIVATE_KEY}{randomNumberWithoutDuplicates.Next(999, 999999999)}",
-                    $"XIXO-{randomNumberWithoutDuplicates.Next(999, 999999999)}",
+                    $"{STARTER_PRIVATE_KEY}{Guid.NewGuid()}",
+                    $"{DEFAULT_PRIVATE_KEY}{Guid.NewGuid()}",
+                    $"XIXO-{Guid.NewGuid()}",
                     countryCode: countryCode);
             });
         }
-        #endregion
-
-        #endregion
-
-        /// <summary>
-        ///     Generate new private key by private key
-        /// </summary>
-        /// <param name="privateKey">specified private key</param>
-        /// <returns>Generated new private key</returns>
-
-        #region GenerateNewPrivateKey
-
-        public static string GenerateNewPrivateKey(string privateKey)
-        {
-            if (privateKey.Length > 218)
-            {
-                privateKey = privateKey.Substring(0, 186) + privateKey.Substring(186).GenerateMd5();
-            }
-            else if (privateKey.Length < 218)
-            {
-                int counter = 0;
-                while (privateKey.Length < 218)
-                {
-                    if ((privateKey.Length & 1) == 1)
-                        privateKey += privateKey.Substring(privateKey.Length - counter - 2).GenerateMd5() + "9";
-                    else
-                        privateKey = privateKey.Substring(counter + 2).GenerateMd5() + privateKey + "9";
-                    counter++;
-                }
-
-                privateKey = privateKey.Substring(0, 186) + privateKey.Substring(186).GenerateMd5();
-            }
-            else
-            {
-                privateKey += privateKey.GenerateMd5();
-            }
-
-            return STARTER_PRIVATE_KEY + privateKey;
-        }
-
-        #endregion
+#endregion
 
         /// <summary>
         ///     Generate custom X509Certificate2 like pfx
         /// </summary>
 
-        #region GenerateCustomX509Certificate2
+#region GenerateCustomX509Certificate2
 
         public static X509Certificate2 GenerateCustomX509Certificate2(string commonName, string password,
             string friendlyName = null, string[] dnsNames = null, DateTime? expirationBefore = null,
@@ -244,6 +205,45 @@ namespace G9Common.HelperClass
             }
 
             return cert;
+        }
+
+#endregion
+#endif
+
+        /// <summary>
+        ///     Generate new private key by private key
+        /// </summary>
+        /// <param name="privateKey">specified private key</param>
+        /// <returns>Generated new private key</returns>
+
+        #region GenerateNewPrivateKey
+
+        public static string GenerateNewPrivateKey(string privateKey)
+        {
+            if (privateKey.Length > 218)
+            {
+                privateKey = privateKey.Substring(0, 186) + privateKey.Substring(186).GenerateMd5();
+            }
+            else if (privateKey.Length < 218)
+            {
+                var counter = 0;
+                while (privateKey.Length < 218)
+                {
+                    if ((privateKey.Length & 1) == 1)
+                        privateKey += privateKey.Substring(privateKey.Length - counter - 2).GenerateMd5() + "9";
+                    else
+                        privateKey = privateKey.Substring(counter + 2).GenerateMd5() + privateKey + "9";
+                    counter++;
+                }
+
+                privateKey = privateKey.Substring(0, 186) + privateKey.Substring(186).GenerateMd5();
+            }
+            else
+            {
+                privateKey += privateKey.GenerateMd5();
+            }
+
+            return STARTER_PRIVATE_KEY + privateKey;
         }
 
         #endregion

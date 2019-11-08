@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using G9Common.Enums;
 using G9SuperNetCoreClient.Client.Socket;
@@ -14,6 +15,7 @@ using UnityEngine;
 public class G9SuperNetCoreClient4Unity : MonoBehaviour
 {
 
+
     private const string privateKey =
         "9ZdBx9VQ6D97XZwFlTjqR6QtL1hXZhkCIQCFTw1vlf9QO5ZdxnuqjfSeXj2A4hibPQdEiMu/mEgp2lIX5Tbvvskmz7ue7F1MYEWybe8kdq9ByLTQPBEuEMoiJxQr7Nqj";
 
@@ -22,7 +24,6 @@ public class G9SuperNetCoreClient4Unity : MonoBehaviour
     // Start is called before the first frame update
     async Task Start()
     {
-     
         string ipAddress = "192.168.1.103";
         ushort port = 9639;
         _client =
@@ -30,7 +31,6 @@ public class G9SuperNetCoreClient4Unity : MonoBehaviour
                 new G9ClientConfig(IPAddress.Parse(ipAddress), port, SocketMode.Tcp),
                 Assembly.GetExecutingAssembly(), privateKey, Guid.NewGuid().ToString("P"));
         await _client.StartConnection();
-
     }
 
     // Update is called once per frame
@@ -48,11 +48,14 @@ public class G9SuperNetCoreClient4Unity : MonoBehaviour
         }
     }
 
-    private async Task OnApplicationQuit()
+    void OnApplicationQuit()
     {
-        await _client.Disconnect();
-        _client = null;
+        if (_client != null)
+        {
+            _client.Disconnect().Wait(369);
+            _client = null;
+            Thread.Sleep(3639);
+        }
     }
-
 
 }

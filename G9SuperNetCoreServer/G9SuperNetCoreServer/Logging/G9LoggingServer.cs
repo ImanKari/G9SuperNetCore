@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using G9Common.Interface;
 using G9LogManagement;
 using G9LogManagement.Enums;
@@ -12,33 +13,48 @@ namespace G9SuperNetCoreServer.Logging
         private readonly G9Log _logging = new G9Log("Server");
 
         /// <inheritdoc />
-        public void LogException(Exception ex, string message = null, string identity = null, string title = null)
+        public void LogException(Exception ex, string message = null, string identity = null, string title = null,
+            [CallerFilePath] string customCallerPath = null,
+            [CallerMemberName] string customCallerName = null,
+            [CallerLineNumber] int customLineNumber = 0)
         {
-            _logging.G9LogException(ex, message, identity, title);
+            _logging.G9LogException(ex, message, identity, title, customCallerPath, customCallerName, customLineNumber);
         }
 
         /// <inheritdoc />
-        public void LogError(string message, string identity = null, string title = null)
+        public void LogError(string message, string identity = null, string title = null,
+            [CallerFilePath] string customCallerPath = null,
+            [CallerMemberName] string customCallerName = null,
+            [CallerLineNumber] int customLineNumber = 0)
         {
-            _logging.G9LogError(message, identity, title);
+            _logging.G9LogError(message, identity, title, customCallerPath, customCallerName, customLineNumber);
         }
 
         /// <inheritdoc />
-        public void LogWarning(string message, string identity = null, string title = null)
+        public void LogWarning(string message, string identity = null, string title = null,
+            [CallerFilePath] string customCallerPath = null,
+            [CallerMemberName] string customCallerName = null,
+            [CallerLineNumber] int customLineNumber = 0)
         {
-            _logging.G9LogWarning(message, identity, title);
+            _logging.G9LogWarning(message, identity, title, customCallerPath, customCallerName, customLineNumber);
         }
 
         /// <inheritdoc />
-        public void LogInformation(string message, string identity = null, string title = null)
+        public void LogInformation(string message, string identity = null, string title = null,
+            [CallerFilePath] string customCallerPath = null,
+            [CallerMemberName] string customCallerName = null,
+            [CallerLineNumber] int customLineNumber = 0)
         {
-            _logging.G9LogInformation(message, identity, title);
+            _logging.G9LogInformation(message, identity, title, customCallerPath, customCallerName, customLineNumber);
         }
 
         /// <inheritdoc />
-        public void LogEvent(string message, string identity = null, string title = null)
+        public void LogEvent(string message, string identity = null, string title = null,
+            [CallerFilePath] string customCallerPath = null,
+            [CallerMemberName] string customCallerName = null,
+            [CallerLineNumber] int customLineNumber = 0)
         {
-            _logging.G9LogEvent(message, identity, title);
+            _logging.G9LogEvent(message, identity, title, customCallerPath, customCallerName, customLineNumber);
         }
 
         /// <inheritdoc />

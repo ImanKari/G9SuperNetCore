@@ -1,0 +1,7 @@
+﻿[*.cs]
+
+# IDE0067: Dispose objects before losing scope
+dotnet_diagnostic.IDE0067.severity = none
+
+# IDE0022: Use block body for methods
+csharp_style_expression_bodied_methods = when_on_single_line:silent

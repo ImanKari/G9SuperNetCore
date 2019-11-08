@@ -195,7 +195,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                     // Set log
                     if (_core.Logging.CheckLoggingIsActive(LogsType.INFO))
                         _core.Logging.LogInformation(
-                            $"{LogMessage.SuccessUnpackingReceiveData}\n{LogMessage.PacketType}: {receivePacket.PacketType.ToString()}\n{LogMessage.Command}: {receivePacket.Command}\n{LogMessage.Body}: '{_core.Configuration.EncodingAndDecoding.EncodingType.GetString(receivePacket.Body.ToArray())}'\n{LogMessage.PacketRequestId}: {receivePacket.RequestId}",
+                            $"{LogMessage.SuccessUnpackingReceiveData}\n{LogMessage.PacketType}: {receivePacket.PacketType.ToString()}\n{LogMessage.Command}: {receivePacket.Command}\n{LogMessage.Body}: '{_core.Configuration.EncodingAndDecoding.GetString(receivePacket.Body)}'\n{LogMessage.PacketRequestId}: {receivePacket.RequestId}",
                             G9LogIdentity.SERVER_RECEIVE_DATA, LogMessage.SuccessfulOperation);
 
                     // Clear Data
@@ -208,24 +208,50 @@ namespace G9SuperNetCoreServer.AbstractServer
                         if (state.MultiPacketCollection.ContainsKey(receivePacket.RequestId))
                         {
                             state.MultiPacketCollection[receivePacket.RequestId]
-                                .AddPacket(receivePacket.Body.Span[0], receivePacket.Body.ToArray());
+                                .AddPacket(
+#if NETSTANDARD2_1
+                                    receivePacket.Body.Span[0], receivePacket.Body.ToArray()
+#else
+                                    receivePacket.Body[0], receivePacket.Body
+#endif
+                                );
                             if (state.MultiPacketCollection[receivePacket.RequestId].FillAllPacket)
                             {
                                 // Change request body
                                 receivePacket.ChangePackageBodyByMultiPackage(
                                     state.MultiPacketCollection[receivePacket.RequestId]);
+
+                                // if authorization request => wait to finish progress
                                 // Progress packet
                                 _core.CommandHandler.G9CallHandler(receivePacket, accountUtilities.Account);
                             }
                         }
                         else
                         {
-                            if (receivePacket.Body.Span[0] == 0)
+                            if (
+#if NETSTANDARD2_1
+                                    receivePacket.Body.Span[0]
+#else
+                                receivePacket.Body[0]
+#endif
+                                == 0)
                             {
                                 state.MultiPacketCollection.Add(receivePacket.RequestId,
-                                    new G9PacketSplitHandler(receivePacket.RequestId, receivePacket.Body.Span[1]));
+                                    new G9PacketSplitHandler(receivePacket.RequestId,
+#if NETSTANDARD2_1
+                                    receivePacket.Body.Span[1]
+#else
+                                        receivePacket.Body[1]
+#endif
+                                    ));
                                 state.MultiPacketCollection[receivePacket.RequestId]
-                                    .AddPacket(0, receivePacket.Body.ToArray());
+                                    .AddPacket(0,
+#if NETSTANDARD2_1
+                                    receivePacket.Body.ToArray()
+#else
+                                        receivePacket.Body
+#endif
+                                    );
                             }
                         }
                     }
@@ -257,8 +283,10 @@ namespace G9SuperNetCoreServer.AbstractServer
                     // Clear Data
                     Array.Clear(state.Buffer, 0, AG9SuperNetCoreStateObjectBase.BufferSize);
 
-                if (ex is SocketException exception && exception.ErrorCode == 10054)
+                if (ex is SocketException exception && (exception.ErrorCode == 10054 || exception.ErrorCode == 10060))
                 {
+                    //Error 10060: 'An existing connection was forcibly closed by the remote host'
+                    // A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
                     // Run event disconnect
                     OnDisconnectedHandler(_core.GetAccountUtilitiesBySessionId(sessionId).Account,
                         DisconnectReason.DisconnectedFromClient);
@@ -273,13 +301,24 @@ namespace G9SuperNetCoreServer.AbstractServer
                     // Run event on connected error
                     OnErrorHandler(ex, ServerErrorReason.ErrorReceiveDataFromClient);
 
-                    // Listen and get other packet
-                    state?.WorkSocket.BeginReceive(
-                        state.Buffer ??
-                        throw new InvalidOperationException("state.Buffer is null for BeginReceive in block finally!"),
-                        0,
-                        AG9SuperNetCoreStateObjectBase.BufferSize, 0,
-                        ReadCallback, state);
+                    try
+                    {
+                        // Listen and get other packet
+                        state?.WorkSocket.BeginReceive(
+                            state.Buffer ??
+                            throw new InvalidOperationException(
+                                "state.Buffer is null for BeginReceive in block finally!"),
+                            0,
+                            AG9SuperNetCoreStateObjectBase.BufferSize, 0,
+                            ReadCallback, state);
+                    }
+                    catch
+                    {
+                        // Reject
+                        // Run event disconnect
+                        OnDisconnectedHandler(_core.GetAccountUtilitiesBySessionId(sessionId).Account,
+                            DisconnectReason.DisconnectedFromClient);
+                    }
                 }
             }
         }

@@ -19,6 +19,7 @@ namespace G9Common.Abstract
 
     #region AG9Command<TSendData, TReceiveData, TAccount>
 
+    // ReSharper disable once InconsistentNaming
     public abstract class AG9Command<TSendType, TReceiveType, TAccount> : IG9CommandWithSend
         where TAccount : AAccount, new()
     {
@@ -68,6 +69,8 @@ namespace G9Common.Abstract
 
         #region InitializeRequirement
 
+        // ReSharper disable once UnusedMember.Global
+        // Use programmatically
         public void InitializeRequirement(object accessToCommandDataType)
         {
             if (!_initializeCommand)
@@ -79,14 +82,16 @@ namespace G9Common.Abstract
                         {
                             try
                             {
-                                ReceiveCommand(data.ToArray().FromJson<TReceiveType>(), account, requestId,
-                                    (data, sendType) =>
+                                ReceiveCommand(data.FromJson<TReceiveType>(account.SessionSendCommand.SessionEncoding),
+                                    account, requestId,
+                                    (answerData, sendType) =>
                                     {
                                         if (sendType == CommandSendType.Asynchronous)
-                                            account.SessionSendCommand.SendCommandByNameAsync(CommandName, data,
+                                            account.SessionSendCommand.SendCommandByNameAsync(CommandName, answerData,
                                                 requestId);
                                         else
-                                            account.SessionSendCommand.SendCommandByName(CommandName, data, requestId);
+                                            account.SessionSendCommand.SendCommandByName(CommandName, answerData,
+                                                requestId);
                                     });
                             }
                             catch (Exception ex)
@@ -139,6 +144,7 @@ namespace G9Common.Abstract
 
     #region AG9Command<TSendAndReceiveData, TReceiverAccount>
 
+    // ReSharper disable once InconsistentNaming
     public abstract class AG9Command<TSendAndReceiveType, TAccount>
         : AG9Command<TSendAndReceiveType, TSendAndReceiveType, TAccount>
         where TAccount : AAccount, new()

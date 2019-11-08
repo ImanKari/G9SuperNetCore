@@ -139,6 +139,9 @@ namespace G9SuperNetCoreServer.Abstarct
 
             // Set authorization
             _sessionHandler.Core_AuthorizationClient = () => IsAuthorization = true;
+
+            // Set session Encoding
+            SessionEncoding = _sessionHandler.Session_GetSessionEncoding();
         }
 
         #endregion

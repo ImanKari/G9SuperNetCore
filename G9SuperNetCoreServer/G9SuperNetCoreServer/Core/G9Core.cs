@@ -341,7 +341,11 @@ namespace G9SuperNetCoreServer.Core
                             // Set event
                             Session_OnSessionReceiveRequestOverTheLimitInSecond = sessionId =>
                                 _onSessionReceiveRequestOverTheLimitInSecond(GetAccountUtilitiesBySessionId(sessionId)
-                                    .Account)
+                                    .Account),
+                            // Set session encoding
+                            Session_GetSessionEncoding = () => Configuration.EncodingAndDecoding
+
+
                         }, _sessionIdentityCounter,
                     ((IPEndPoint) acceptedSocket.RemoteEndPoint).Address);
 

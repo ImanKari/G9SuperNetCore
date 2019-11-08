@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using G9Common.Enums;
 using G9Common.HelperClass;
@@ -15,6 +16,7 @@ using G9SuperNetCoreServer.Enums;
 
 namespace G9SuperNetCoreServer.AbstractServer
 {
+    // ReSharper disable once InconsistentNaming
     public abstract partial class AG9SuperNetCoreServerBase<TAccount, TSession>
         where TAccount : AServerAccount<TSession>, new()
         where TSession : AServerSession, new()
@@ -283,12 +285,22 @@ namespace G9SuperNetCoreServer.AbstractServer
             Guid? customRequestId)
         {
             // Ready data for send
-            ReadOnlySpan<byte> dataForSend = data is byte[]
+#if NETSTANDARD2_1
+            ReadOnlySpan<byte>
+#else
+            var
+#endif
+            dataForSend = data is byte[]
                 ? (byte[]) data
                 : _core.Configuration.EncodingAndDecoding.EncodingType.GetBytes(data.ToJson());
 
             // Initialize command - length = CommandSize
-            var commandData =
+#if NETSTANDARD2_1
+            ReadOnlySpan<byte>
+#else
+            var
+#endif
+            commandData =
                 _core.Configuration.EncodingAndDecoding.EncodingType.GetBytes(
                     commandName.GenerateStandardCommandName(_packetManagement.CalculateCommandSize));
 
@@ -344,7 +356,7 @@ namespace G9SuperNetCoreServer.AbstractServer
 
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
-                    Send(accountUtilities.SessionSocket, accountUtilities.Account, packets[i])?.WaitOne();
+                    Send(accountUtilities.SessionSocket, accountUtilities.Account, packets[i]).WaitOne(1000);
             }
             catch (Exception ex)
             {
@@ -436,6 +448,7 @@ namespace G9SuperNetCoreServer.AbstractServer
 
         #region SendCommandByNameAsyncWithCustomPacketDataType
 
+        // ReSharper disable once UnusedMember.Local
         private void SendCommandByNameAsyncWithCustomPacketDataType(uint sessionId, string commandName,
             object commandData, G9PacketDataType packetDataType, Guid? customRequestId = null,
             bool checkCommandExists = true, bool checkCommandSendType = true)
@@ -524,8 +537,11 @@ namespace G9SuperNetCoreServer.AbstractServer
 
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
+                {
+                    Thread.Sleep(69);
                     // Try to send
-                    Send(accountUtilities.SessionSocket, accountUtilities.Account, packets[i])?.WaitOne();
+                    Send(accountUtilities.SessionSocket, accountUtilities.Account, packets[i]).WaitOne(1000);
+                }
             }
             catch (Exception ex)
             {
@@ -583,7 +599,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                     var i1 = i;
                     _core.ScrollingAllAccountUtilities(socketConnection =>
                         Send(socketConnection.SessionSocket, socketConnection.Account, packets[i1])
-                            ?.WaitOne());
+                            .WaitOne(1000));
                 }
             }
             catch (Exception ex)

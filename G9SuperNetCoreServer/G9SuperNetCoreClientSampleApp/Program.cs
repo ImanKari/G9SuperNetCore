@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using G9Common.Enums;
 using G9SuperNetCoreClient.Client.Socket;
@@ -95,5 +97,7 @@ namespace G9SuperNetCoreClientSampleApp
             Console.WriteLine("Press any key to exist.");
             Console.ReadLine();
         }
+
     }
+
 }
