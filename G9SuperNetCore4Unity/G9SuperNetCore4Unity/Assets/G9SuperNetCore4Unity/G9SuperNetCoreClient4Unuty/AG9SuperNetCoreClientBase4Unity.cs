@@ -181,7 +181,7 @@ namespace G9SuperNetCoreClient.AbstractClient
 
                     OnErrorHandler(ex, ClientErrorReason.ErrorInReceiveData);
 
-                    if (ex.Message == "Cannot access a disposed object.")
+                    if (ex.Message.Contains("Cannot access a disposed object."))
                     {
                         // Run event disconnect
                         OnDisconnectedHandler(_mainAccountUtilities.Account,

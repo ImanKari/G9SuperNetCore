@@ -285,7 +285,7 @@ namespace G9SuperNetCoreServer.AbstractServer
             Guid? customRequestId)
         {
             // Ready data for send
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
             ReadOnlySpan<byte>
 #else
             var
@@ -295,7 +295,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 : _core.Configuration.EncodingAndDecoding.EncodingType.GetBytes(data.ToJson());
 
             // Initialize command - length = CommandSize
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
             ReadOnlySpan<byte>
 #else
             var

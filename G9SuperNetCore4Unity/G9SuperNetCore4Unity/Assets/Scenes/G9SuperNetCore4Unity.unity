@@ -212,8 +212,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1483110312}
-  - component: {fileID: 1483110313}
   - component: {fileID: 1483110311}
+  - component: {fileID: 1483110313}
   m_Layer: 0
   m_Name: G9SuperNetCoreClient4Unity
   m_TagString: Untagged
@@ -233,6 +233,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0a216d138546454f92ca01a4c1129af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  EnableAutoStartConnection: 0
+  IpAddress: 
+  Port: 9639
+  EnableSecureConnection: 1
+  PrivateKey: 9ZdBx9VQ6D97XZwFlTjqR6QtL1hXZhkCIQCFTw1vlf9QO5ZdxnuqjfSeXj2A4hibPQdEiMu/mEgp2lIX5Tbvvskmz7ue7F1MYEWybe8kdq9ByLTQPBEuEMoiJxQr7Nqj
 --- !u!4 &1483110312
 Transform:
   m_ObjectHideFlags: 0

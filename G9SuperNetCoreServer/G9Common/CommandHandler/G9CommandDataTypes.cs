@@ -28,7 +28,7 @@ namespace G9Common.CommandHandler
 
         public CommandDataType(
             Action<
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
             ReadOnlyMemory<byte>,
 #else
                 byte[],
@@ -54,7 +54,7 @@ namespace G9Common.CommandHandler
         ///     Access to method "ResponseService" in command
         /// </summary>
         public readonly Action<
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
             ReadOnlyMemory<byte>,
 #else
             byte[],

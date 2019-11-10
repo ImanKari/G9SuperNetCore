@@ -56,6 +56,7 @@ namespace G9Common.Abstract
         #region AG9CommandWithSendReceiveData
 
         protected AG9Command()
+            :base()
         {
             CommandName = GetType().Name;
             TypeOfSend = typeof(TSendType);

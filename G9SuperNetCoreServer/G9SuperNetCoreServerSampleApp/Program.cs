@@ -34,8 +34,8 @@ namespace G9SuperNetCoreServerSampleApp
             const string privateKey =
                 "9ZdBx9VQ6D97XZwFlTjqR6QtL1hXZhkCIQCFTw1vlf9QO5ZdxnuqjfSeXj2A4hibPQdEiMu/mEgp2lIX5Tbvvskmz7ue7F1MYEWybe8kdq9ByLTQPBEuEMoiJxQr7Nqj";
 
-#if NETCOREAPP2_1
-            var sslCertificate = new G9SslCertificate(privateKey, 1);
+#if NETCOREAPP2_1 || NETCOREAPP3_0
+            var sslCertificate = new G9SslCertificate(privateKey, 9);
 #else
             var sslCertificate = new G9SslCertificate(privateKey,
                 // Add certificates

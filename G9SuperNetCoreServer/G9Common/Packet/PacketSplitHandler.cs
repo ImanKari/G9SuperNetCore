@@ -118,7 +118,7 @@ namespace G9Common.Packet
                         // Write with offset 1 because first byte specified packet number
                         packets.Write(_packets[i], 1, _packets[i].Length - 1);
                 else
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
                     packets.Write(_packets[0]);
 #else
                     packets.Write(_packets[0], 0, _packets[0].Length);

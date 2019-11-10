@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD2_1
+﻿#if NETSTANDARD2_1 || NETCOREAPP3_0
 using System;
 #endif
 using G9Common.HelperClass;
@@ -43,7 +43,7 @@ namespace G9Common.JsonHelper
 
         #endregion
 
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
         /// <summary>
         ///     Convert ReadOnlyMemory byte to type
         /// </summary>
@@ -51,14 +51,14 @@ namespace G9Common.JsonHelper
         /// <param name="byteData">ReadOnlyMemory byte data</param>
         /// <param name="encoding">Specify encoding</param>
         /// <returns>Converted type from byte[]</returns>
-#region FromJson
+        #region FromJson
         public static TResult FromJson<TResult>(this ReadOnlyMemory<byte> byteData, G9Encoding encoding)
         {
             return typeof(TResult) == typeof(byte[])
                 ? (TResult) (object) byteData.ToArray()
                 : JsonConvert.DeserializeObject<TResult>(encoding.GetString(byteData));
         }
-#endregion
+        #endregion
 #endif
 
         /// <summary>

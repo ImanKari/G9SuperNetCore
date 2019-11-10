@@ -10,59 +10,85 @@ using G9SuperNetCoreClient.Config;
 using G9SuperNetCoreClient.Sample;
 using G9SuperNetCoreClientSampleApp.Commands;
 using UnityEngine;
+using UnityScript.Steps;
 
 public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
 {
-    private const string privateKey =
+    
+    /// <summary>
+    /// Specified Client object
+    /// </summary>
+    public static G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample> G9SuperNetCoreClient;
+
+    /// <summary>
+    /// Specify Validation is true or false
+    /// </summary>
+    public bool Validation;
+
+    /// <summary>
+    /// Specified Enable auto start connection for client. connected automatic to server in first time after start game
+    /// </summary>
+    public bool EnableAutoStartConnection;
+
+    /// <summary>
+    /// Field for save server ip address
+    /// </summary>
+    public IPAddress ServerIpAddress = IPAddress.Parse("192.168.1.103");
+    
+    /// <summary>
+    /// Specified port
+    /// </summary>
+    [Range(10, ushort.MaxValue)]
+    public ushort Port = 9639;
+
+    /// <summary>
+    /// Specified ssl connection is enable
+    /// </summary>
+    public bool EnableSecureConnection = true;
+
+    /// <summary>
+    /// Specified private key
+    /// </summary>
+    public string PrivateKey =
         "9ZdBx9VQ6D97XZwFlTjqR6QtL1hXZhkCIQCFTw1vlf9QO5ZdxnuqjfSeXj2A4hibPQdEiMu/mEgp2lIX5Tbvvskmz7ue7F1MYEWybe8kdq9ByLTQPBEuEMoiJxQr7Nqj";
 
-    private G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample> _client;
-
-    private int _counter;
+    /// <summary>
+    /// Specified unique identity for connection
+    /// </summary>
+    public string UniqueIdentity;
 
     // Start is called before the first frame update
     private async Task Start()
     {
-        var ipAddress = "192.168.1.103";
-        ushort port = 9639;
-        _client =
-            new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>(
-                new G9ClientConfig(IPAddress.Parse(ipAddress), port, SocketMode.Tcp),
-                Assembly.GetExecutingAssembly(), privateKey, Guid.NewGuid().ToString("P"));
-        await _client.StartConnection();
+        if (!Validation)
+            throw new Exception("Invalid config exception. Please check G9NetCoreClient configuration!");
+
+        // Initialize
+        G9SuperNetCoreClient =
+            EnableSecureConnection
+                ? new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>(
+                    new G9ClientConfig(ServerIpAddress, Port, SocketMode.Tcp),
+                    Assembly.GetExecutingAssembly(), PrivateKey, UniqueIdentity)
+                : new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>(
+                    new G9ClientConfig(ServerIpAddress, Port, SocketMode.Tcp),
+                    Assembly.GetExecutingAssembly());
+
+        if (EnableAutoStartConnection)
+            await G9SuperNetCoreClient.StartConnection();
     }
 
-    // Update is called once per frame
-    private void Update()
+    private void FixedUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            if (CounterCommand.EnableCounterScript)
-                CounterCommand.EnableCounterScript = false;
-            else
-            {
-                CounterCommand.EnableCounterScript = true;
-                _client.SendCommandAsync<CounterCommand, int>(0);
-            }
-        }
-
-        if (Input.GetMouseButton(0))
-        {
-            _client.SendCommandByNameAsync(nameof(G9ReservedCommandName.G9EchoCommand), _counter.ToString());
-            _counter++;
-        }
-
-
         // Handle send receive in frame
         HandleSendReceiveInFrame();
     }
 
     private void OnApplicationQuit()
     {
-        if (_client != null)
+        if (G9SuperNetCoreClient != null)
         {
-            _client.Disconnect().Wait(369);
-            _client = null;
+            G9SuperNetCoreClient.Disconnect().Wait(369);
+            G9SuperNetCoreClient = null;
             Thread.Sleep(3639);
         }
     }

@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD2_1
+﻿#if NETSTANDARD2_1 || NETCOREAPP3_0
 using System.Globalization;
 using System.Net;
 using System.Security.Cryptography;
@@ -76,7 +76,7 @@ namespace G9Common.HelperClass
 
         #endregion
 
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
         /// <summary>
         ///     <para>Constructor</para>
         ///     <para>Initialize requirement</para>
@@ -94,7 +94,7 @@ namespace G9Common.HelperClass
         /// <para>Specified count of the certificate to be generated randomly</para>
         /// <para>Notice: Certificate generated programmatically with random data</para>
         /// </param>
-#region G9SslCertificate
+        #region G9SslCertificate
         public G9SslCertificate(string privateKey, ushort countOfRandomCertificateGenerate, string countryCode = "US")
         {
             // Check private key and set default private key if it's null or empty
@@ -121,13 +121,13 @@ namespace G9Common.HelperClass
                     countryCode: countryCode);
             });
         }
-#endregion
+        #endregion
 
         /// <summary>
         ///     Generate custom X509Certificate2 like pfx
         /// </summary>
 
-#region GenerateCustomX509Certificate2
+        #region GenerateCustomX509Certificate2
 
         public static X509Certificate2 GenerateCustomX509Certificate2(string commonName, string password,
             string friendlyName = null, string[] dnsNames = null, DateTime? expirationBefore = null,
@@ -207,7 +207,7 @@ namespace G9Common.HelperClass
             return cert;
         }
 
-#endregion
+        #endregion
 #endif
 
         /// <summary>

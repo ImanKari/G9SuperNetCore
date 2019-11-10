@@ -192,7 +192,7 @@ namespace G9SuperNetCoreServer.AbstractServer
 
                     var PropertyType = oTGameAccount.GetType().GetProperty(propertyName).PropertyType;
 
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
                     return typeOfCompare switch
                     {
                         TypeOfCompare.Contain => _core
