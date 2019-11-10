@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using G9Common.Abstract;
 using G9Common.Enums;
 using G9SuperNetCoreClient.Sample;
@@ -15,7 +16,7 @@ namespace G9SuperNetCoreClientSampleApp.Commands
         {
             if (!EnableCounterScript) return;
 
-            Console.WriteLine($"Receive Counter: {data}");
+            Debug.WriteLine($"Send : CounterCommand | UniqueId: {requestId} | {DateTime.Now:HH:mm:ss.fff}");
             sendAnswerWithReceiveRequestId(data + 1, CommandSendType.Asynchronous);
         }
 

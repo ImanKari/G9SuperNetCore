@@ -39,6 +39,7 @@
         public const string LastCommandUsed = "LastCommandUsed";
         public const string LastCommandUsedDateTime = "LastCommandUsedDateTime";
         public const string LengthEntered = "LengthEntered";
+        public const string Length = "Length";
         public const string OnSessionClose = "OnSessionClose";
         public const string PacketNumberIsGreater = "Packet number is greater than total packets!";
         public const string PacketRequestId = "PacketRequestId";

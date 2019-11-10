@@ -402,8 +402,10 @@ namespace G9SuperNetCoreClient.AbstractClient
                 if (_stateObject != null)
                     Array.Clear(_stateObject.Buffer, 0, _stateObject.Buffer.Length);
 
-                if (ex is SocketException exception && exception.ErrorCode == 10054)
+                if (ex is SocketException exception && (exception.ErrorCode == 10054 || exception.ErrorCode == 10060))
                 {
+                    //Error 10060: 'An existing connection was forcibly closed by the remote host'
+                    // A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
                     // Run event disconnect
                     OnDisconnectedHandler(_mainAccountUtilities.Account, DisconnectReason.DisconnectedFromServer);
                 }
@@ -415,9 +417,27 @@ namespace G9SuperNetCoreClient.AbstractClient
 
                     OnErrorHandler(ex, ClientErrorReason.ErrorInReceiveData);
 
-                    // Get the rest of the data.  
-                    client?.BeginReceive(_stateObject.Buffer, 0, AG9SuperNetCoreStateObjectBase.BufferSize, 0,
-                        ReceiveCallback, _stateObject);
+                    if (ex.Message == "Cannot access a disposed object.")
+                    {
+                        // Run event disconnect
+                        OnDisconnectedHandler(_mainAccountUtilities.Account,
+                            DisconnectReason.DisconnectedFromServer);
+                    }
+                    else
+                    {
+                        try
+                        {
+                            // Get the rest of the data.  
+                            client?.BeginReceive(_stateObject.Buffer, 0, AG9SuperNetCoreStateObjectBase.BufferSize, 0,
+                                ReceiveCallback, _stateObject);
+                        }
+                        catch
+                        {
+                            // Run event disconnect
+                            OnDisconnectedHandler(_mainAccountUtilities.Account,
+                                DisconnectReason.DisconnectedFromServer);
+                        }
+                    }
                 }
             }
         }

@@ -216,7 +216,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
                     // Try to send
-                    Send(_clientSocket, packets[i]).WaitOne();
+                    Send(_clientSocket, packets[i])?.WaitOne();
             }
             catch (Exception ex)
             {
@@ -394,7 +394,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
                     // Try to send
-                    Send(_clientSocket, packets[i]).WaitOne();
+                    Send(_clientSocket, packets[i])?.WaitOne();
             }
             catch (Exception ex)
             {

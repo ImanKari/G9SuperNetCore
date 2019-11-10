@@ -51,6 +51,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 _core.Logging.LogInformation($"{LogMessage.CommandEcho}\n{LogMessage.ReceiveData}: {receiveData}",
                     G9LogIdentity.ECHO_COMMAND,
                     LogMessage.SuccessfulOperation);
+            Console.WriteLine($"{LogMessage.CommandEcho}: {LogMessage.ReceiveData}: {receiveData}");
             sendDataForThisCommand(receiveData, CommandSendType.Asynchronous);
         }
 

@@ -119,6 +119,8 @@
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient\Sample\ClientAccountSample.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient\Sample\ClientSessionSample.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient4Unity.cs" />
+    <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient4Unuty\AG9SuperNetCoreClientBase4Unity.cs" />
+    <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient4Unuty\G9SuperNetCoreClient4UnityHelper.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\Library\Enums\LogsType.cs" />
     <Compile Include="Assets\Script\Commands\CounterCommand.cs" />
     <Reference Include="Unity.Timeline.Editor">

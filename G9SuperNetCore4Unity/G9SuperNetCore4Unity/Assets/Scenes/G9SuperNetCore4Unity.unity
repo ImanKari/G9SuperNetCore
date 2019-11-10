@@ -262,5 +262,5 @@ MonoBehaviour:
   IsEnableExceptionLogging: 1
   IsEnableErrorLogging: 1
   IsEnableWarningLogging: 1
-  IsEnableInformationLogging: 1
-  IsEnableEventLogging: 1
+  IsEnableInformationLogging: 0
+  IsEnableEventLogging: 0

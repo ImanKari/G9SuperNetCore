@@ -538,7 +538,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
                 {
-                    Thread.Sleep(69);
+                    Thread.Sleep(169);
                     // Try to send
                     Send(accountUtilities.SessionSocket, accountUtilities.Account, packets[i]).WaitOne(1000);
                 }

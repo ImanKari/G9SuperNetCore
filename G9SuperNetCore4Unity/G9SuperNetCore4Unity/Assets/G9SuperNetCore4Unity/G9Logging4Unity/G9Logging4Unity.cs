@@ -14,15 +14,15 @@ public class G9Logging4Unity : MonoBehaviour
     public bool IsEnableExceptionLogging = true;
     public bool IsEnableErrorLogging = true;
     public bool IsEnableWarningLogging = true;
-    public bool IsEnableInformationLogging = true;
-    public bool IsEnableEventLogging = true;
+    public bool IsEnableInformationLogging = false;
+    public bool IsEnableEventLogging = false;
 
     // Use for static methods
     private static bool StaticIsEnableExceptionLogging = true;
     private static bool StaticIsEnableErrorLogging = true;
     private static bool StaticIsEnableWarningLogging = true;
-    private static bool StaticIsEnableInformationLogging = true;
-    private static bool StaticIsEnableEventLogging = true;
+    private static bool StaticIsEnableInformationLogging = false;
+    private static bool StaticIsEnableEventLogging = false;
 
     // Logging colors
     private static readonly Color32[] loggingColors =
@@ -364,8 +364,9 @@ public class G9Logging4Unity : MonoBehaviour
             // Show console log
             Debug.LogFormat(_unityLogTypes[logTypeNumber],
                 LogOption.NoStacktrace,
-                this,
-                $"<color=#{loggingColors[logTypeNumber].r:X2}{loggingColors[logTypeNumber].g:X2}{loggingColors[logTypeNumber].b:X2}> | ### Log Type: {logItem.LogType} ### | \nDate & Time: {logItem.LogDateTime:yyyy/MM/ss HH:mm:ss.fff}\nIdentity: {logItem.Identity}\tTitle: {logItem.Title}\nBody: {logItem.Body}\nPath: {logItem.FileName}\nMethod: {logItem.MethodBase}\tLine: {logItem.LineNumber}\n</color>");
+                null,
+                $"<color=#{0:X2}{loggingColors[logTypeNumber].g:X2}{loggingColors[logTypeNumber].b:X2}> | ### Log Type: {logItem.LogType} ### | \nDate & Time: {logItem.LogDateTime:yyyy/MM/ss HH:mm:ss.fff}\nIdentity: {logItem.Identity}\tTitle: {logItem.Title}\nBody: {logItem.Body}\nPath: {logItem.FileName}\nMethod: {logItem.MethodBase}\tLine: {logItem.LineNumber}\n</color>"
+            );
         }
     }
 
