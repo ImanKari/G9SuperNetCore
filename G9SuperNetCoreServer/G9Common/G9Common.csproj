@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
@@ -20,7 +20,6 @@
   <ItemGroup>
     <PackageReference Include="G9LogManagement" Version="3.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="Portable.BouncyCastle" Version="1.8.5.2" />
     <PackageReference Include="System.Security.Cryptography.Cng" Version="4.6.0" />
   </ItemGroup>
 
@@ -43,5 +42,11 @@
       <LastGenOutput>LogMessage.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+
+  <Target Name="PrePackage" BeforeTargets="BuildPackage">
+    <PropertyGroup>
+      <BuildCommand>$(BuildCommand) -IncludeReferencedProjects</BuildCommand>
+    </PropertyGroup>
+  </Target>
 
 </Project>
