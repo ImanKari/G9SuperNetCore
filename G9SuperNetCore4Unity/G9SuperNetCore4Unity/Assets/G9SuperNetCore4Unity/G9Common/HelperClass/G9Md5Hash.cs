@@ -33,7 +33,7 @@ namespace G9Common.HelperClass
 
         public static string GenerateMd5(this byte[] inputBytes)
         {
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
             using var md5 = MD5.Create();
 
             Span<byte> hashBytes = stackalloc byte[16];

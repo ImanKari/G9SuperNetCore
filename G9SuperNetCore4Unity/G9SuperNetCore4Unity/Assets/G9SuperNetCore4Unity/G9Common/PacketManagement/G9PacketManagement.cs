@@ -173,7 +173,7 @@ namespace G9Common.PacketManagement
 
         #region PackingRequestByData
 
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
         public G9PacketSplitHandler PackingRequestByData(ReadOnlySpan<byte> command, ReadOnlySpan<byte> body,
             G9PacketDataType dataType, Guid? customRequestId)
 #else
@@ -199,7 +199,7 @@ namespace G9Common.PacketManagement
                             memoryStream.WriteByte((byte) G9PacketType.OnePacket);
                             memoryStream.WriteByte((byte) dataType);
                             memoryStream.WriteByte(checked((byte) body.Length));
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
                         memoryStream.Write(command);
                         memoryStream.Write(body);
                         memoryStream.Write(requestIdBytes);
@@ -238,7 +238,7 @@ namespace G9Common.PacketManagement
                             memoryStream.WriteByte((byte) dataType);
                             // First packet length is 2 | 0 => packet number | 1 => Total packet count
                             memoryStream.WriteByte(2);
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
                             memoryStream.Write(command);
 #else
                             memoryStream.Write(command, 0, command.Length);
@@ -247,7 +247,7 @@ namespace G9Common.PacketManagement
                             memoryStream.WriteByte(0);
                             // write total packet count
                             memoryStream.WriteByte(counter);
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
                             memoryStream.Write(requestIdBytes);
 #else
                             memoryStream.Write(requestIdBytes, 0, requestIdBytes.Length);
@@ -275,13 +275,13 @@ namespace G9Common.PacketManagement
                                 memoryStream.WriteByte((byte) G9PacketType.MultiPacket);
                                 memoryStream.WriteByte((byte) dataType);
                                 memoryStream.WriteByte(checked((byte) (length + 1)));
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
                             memoryStream.Write(command);
 #else
                                 memoryStream.Write(command, 0, command.Length);
 #endif
                                 memoryStream.WriteByte(i);
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
                             memoryStream.Write(body.Slice(offset, length));
                                 memoryStream.Write(requestId.ToByteArray());
 #else
@@ -325,7 +325,7 @@ namespace G9Common.PacketManagement
 
         #region UnpackingRequestByData
 
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
       public G9SendAndReceivePacket UnpackingRequestByData(ReadOnlySpan<byte> packetData)
 #else
         public G9SendAndReceivePacket UnpackingRequestByData(byte[] packetData)
@@ -334,7 +334,7 @@ namespace G9Common.PacketManagement
             // Set body size
             var packetBodySize = packetData[2];
 
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
       // Initialize data
             return new G9SendAndReceivePacket(
                 // Set packet type

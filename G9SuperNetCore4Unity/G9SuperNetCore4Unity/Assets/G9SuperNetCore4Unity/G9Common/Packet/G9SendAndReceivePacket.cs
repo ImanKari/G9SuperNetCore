@@ -21,7 +21,7 @@ namespace G9Common.Packet
 
         #region G9SendAndReceivePackage
 
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
       public G9SendAndReceivePacket(G9PacketType typeOfPacket, G9PacketDataType packetDataType, string command,
             ReadOnlySpan<byte> oBody, Guid requestId)
 #else
@@ -32,7 +32,7 @@ namespace G9Common.Packet
             PacketType = typeOfPacket;
             PacketDataType = packetDataType;
             Command = command;
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
             Body = oBody.ToArray();
 #else
             Body = oBody;
@@ -56,7 +56,7 @@ namespace G9Common.Packet
                 throw new ArgumentException(LogMessage.ChangeBodyMultiPacketNotFill, nameof(multiPackets));
 
             // Set new body
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
             Body = new ReadOnlyMemory<byte>(multiPackets.FlushPackets());
 #else
             Body = multiPackets.FlushPackets();
@@ -79,7 +79,7 @@ namespace G9Common.Packet
         public string Command { get; }
 
         ///<inheritdoc />
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
             public ReadOnlyMemory<byte> Body { private set; get; }
 #else
         public byte[] Body { private set; get; }

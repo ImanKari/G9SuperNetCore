@@ -81,7 +81,7 @@ namespace G9Common.HelperClass
             }
 
             // Set number of cert
-            _numberOfCert = (ushort)_sslCertificate.Certificates.Length;
+            _numberOfCert = (ushort) _sslCertificate.Certificates.Length;
 
             // Set read only public private key
             PrivateKey = _sslCertificate.PrivateKey;
@@ -142,7 +142,7 @@ namespace G9Common.HelperClass
             if (_numberOfCert == 0)
                 return 0;
             // return random cert number
-            return (ushort)_random.Next(0, _numberOfCert);
+            return (ushort) _random.Next(0, _numberOfCert);
         }
 
         #endregion

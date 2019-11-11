@@ -1,12 +1,14 @@
-﻿using System;
+﻿#if NETSTANDARD2_1 || NETCOREAPP3_0
 using System.Globalization;
-using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using G9Common.Resource;
+#endif
+using System;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace G9Common.HelperClass
 {
@@ -37,7 +39,7 @@ namespace G9Common.HelperClass
 
         #endregion
 
-        #region Constructor
+        #region Methods
 
         /// <summary>
         ///     <para>Constructor</para>
@@ -59,7 +61,7 @@ namespace G9Common.HelperClass
         {
             // Check certificates
             if (exportableCertificates == null || !exportableCertificates.Any())
-                throw new ArgumentException($"Certificate is required!", nameof(exportableCertificates));
+                throw new ArgumentException("Certificate is required!", nameof(exportableCertificates));
 
             // Check private key and set default private key if it's null or empty
             if (string.IsNullOrEmpty(privateKey))
@@ -74,8 +76,7 @@ namespace G9Common.HelperClass
 
         #endregion
 
-#if NETSTANDARD2_1
-
+#if NETSTANDARD2_1 || NETCOREAPP3_0
         /// <summary>
         ///     <para>Constructor</para>
         ///     <para>Initialize requirement</para>
@@ -93,7 +94,7 @@ namespace G9Common.HelperClass
         /// <para>Specified count of the certificate to be generated randomly</para>
         /// <para>Notice: Certificate generated programmatically with random data</para>
         /// </param>
-#region G9SslCertificate
+        #region G9SslCertificate
         public G9SslCertificate(string privateKey, ushort countOfRandomCertificateGenerate, string countryCode = "US")
         {
             // Check private key and set default private key if it's null or empty
@@ -120,13 +121,13 @@ namespace G9Common.HelperClass
                     countryCode: countryCode);
             });
         }
-#endregion
+        #endregion
 
         /// <summary>
         ///     Generate custom X509Certificate2 like pfx
         /// </summary>
 
-#region GenerateCustomX509Certificate2
+        #region GenerateCustomX509Certificate2
 
         public static X509Certificate2 GenerateCustomX509Certificate2(string commonName, string password,
             string friendlyName = null, string[] dnsNames = null, DateTime? expirationBefore = null,
@@ -206,7 +207,7 @@ namespace G9Common.HelperClass
             return cert;
         }
 
-#endregion
+        #endregion
 #endif
 
         /// <summary>
@@ -215,7 +216,7 @@ namespace G9Common.HelperClass
         /// <param name="privateKey">specified private key</param>
         /// <returns>Generated new private key</returns>
 
-#region GenerateNewPrivateKey
+        #region GenerateNewPrivateKey
 
         public static string GenerateNewPrivateKey(string privateKey)
         {
@@ -225,7 +226,7 @@ namespace G9Common.HelperClass
             }
             else if (privateKey.Length < 218)
             {
-                int counter = 0;
+                var counter = 0;
                 while (privateKey.Length < 218)
                 {
                     if ((privateKey.Length & 1) == 1)
@@ -245,8 +246,8 @@ namespace G9Common.HelperClass
             return STARTER_PRIVATE_KEY + privateKey;
         }
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
     }
 }

@@ -3,7 +3,6 @@ using G9Common.CommandHandler;
 using G9Common.Enums;
 using G9Common.Interface;
 using G9Common.JsonHelper;
-using UnityEngine;
 
 namespace G9Common.Abstract
 {
@@ -21,7 +20,7 @@ namespace G9Common.Abstract
     #region AG9Command<TSendData, TReceiveData, TAccount>
 
     // ReSharper disable once InconsistentNaming
-    public abstract class AG9Command<TSendType, TReceiveType, TAccount> : MonoBehaviour, IG9CommandWithSend
+    public abstract class AG9Command<TSendType, TReceiveType, TAccount> : IG9CommandWithSend
         where TAccount : AAccount, new()
     {
         #region Fields And Properties
@@ -56,7 +55,6 @@ namespace G9Common.Abstract
         #region AG9CommandWithSendReceiveData
 
         protected AG9Command()
-            :base()
         {
             CommandName = GetType().Name;
             TypeOfSend = typeof(TSendType);

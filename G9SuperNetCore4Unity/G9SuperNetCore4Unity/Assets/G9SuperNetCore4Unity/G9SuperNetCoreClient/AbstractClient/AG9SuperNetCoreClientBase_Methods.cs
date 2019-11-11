@@ -147,7 +147,7 @@ namespace G9SuperNetCoreClient.AbstractClient
             Guid? customRequestId)
         {
             // Ready data for send
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
             ReadOnlySpan<byte>
 #else
             var
@@ -157,7 +157,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                     : Configuration.EncodingAndDecoding.EncodingType.GetBytes(data.ToJson());
 
             // Initialize command - length = CommandSize
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
             ReadOnlySpan<byte>
 #else
             var

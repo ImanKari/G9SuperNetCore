@@ -6,6 +6,7 @@ using G9LogManagement.Enums;
 using G9LogManagement.Structures;
 using UnityEngine;
 
+// ReSharper disable once CheckNamespace
 public class G9Logging4Unity : MonoBehaviour
 {
     #region Start Fields And Properties
@@ -21,8 +22,8 @@ public class G9Logging4Unity : MonoBehaviour
     private static bool StaticIsEnableExceptionLogging = true;
     private static bool StaticIsEnableErrorLogging = true;
     private static bool StaticIsEnableWarningLogging = true;
-    private static bool StaticIsEnableInformationLogging = false;
-    private static bool StaticIsEnableEventLogging = false;
+    private static bool StaticIsEnableInformationLogging;
+    private static bool StaticIsEnableEventLogging;
 
     // Logging colors
     private static readonly Color32[] loggingColors =

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using G9Common.Abstract;
@@ -12,6 +13,7 @@ using G9SuperNetCoreClient.Abstract;
 using G9SuperNetCoreClient.Enums;
 using G9SuperNetCoreClient.Helper;
 
+// ReSharper disable once CheckNamespace
 namespace G9SuperNetCoreClient.AbstractClient
 {
 
@@ -19,6 +21,7 @@ namespace G9SuperNetCoreClient.AbstractClient
         where TAccount : AClientAccount<TSession>, new()
         where TSession : AClientSession, new()
     {
+
         #region Internal Client Method
 
         /// <summary>
@@ -283,5 +286,6 @@ namespace G9SuperNetCoreClient.AbstractClient
         #endregion
 
         #endregion
+
     }
 }

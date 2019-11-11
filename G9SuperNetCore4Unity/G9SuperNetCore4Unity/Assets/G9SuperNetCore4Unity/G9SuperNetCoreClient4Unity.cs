@@ -8,56 +8,66 @@ using G9SuperNetCoreClient.AbstractClient;
 using G9SuperNetCoreClient.Client.Socket;
 using G9SuperNetCoreClient.Config;
 using G9SuperNetCoreClient.Sample;
-using G9SuperNetCoreClientSampleApp.Commands;
 using UnityEngine;
-using UnityScript.Steps;
 
+// ReSharper disable once CheckNamespace
 public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
 {
-    
+
+    #region Fields And Properties
+
     /// <summary>
-    /// Specified Client object
+    ///     Specified Client object
     /// </summary>
     public static G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample> G9SuperNetCoreClient;
 
     /// <summary>
-    /// Specify Validation is true or false
+    ///     Specify Validation is true or false
     /// </summary>
     public bool Validation;
 
     /// <summary>
-    /// Specified Enable auto start connection for client. connected automatic to server in first time after start game
+    ///     Specified Enable auto start connection for client. connected automatic to server in first time after start game
     /// </summary>
     public bool EnableAutoStartConnection;
 
     /// <summary>
-    /// Field for save server ip address
+    ///     Field for save server ip address
     /// </summary>
     public IPAddress ServerIpAddress = IPAddress.Parse("192.168.1.103");
-    
-    /// <summary>
-    /// Specified port
-    /// </summary>
-    [Range(10, ushort.MaxValue)]
-    public ushort Port = 9639;
 
     /// <summary>
-    /// Specified ssl connection is enable
+    ///     Specified port
+    /// </summary>
+    [Range(10, ushort.MaxValue)] public ushort Port = 9639;
+
+    /// <summary>
+    ///     Specified ssl connection is enable
     /// </summary>
     public bool EnableSecureConnection = true;
 
     /// <summary>
-    /// Specified private key
+    ///     Specified private key
     /// </summary>
     public string PrivateKey =
         "9ZdBx9VQ6D97XZwFlTjqR6QtL1hXZhkCIQCFTw1vlf9QO5ZdxnuqjfSeXj2A4hibPQdEiMu/mEgp2lIX5Tbvvskmz7ue7F1MYEWybe8kdq9ByLTQPBEuEMoiJxQr7Nqj";
 
     /// <summary>
-    /// Specified unique identity for connection
+    ///     Specified unique identity for connection
     /// </summary>
     public string UniqueIdentity;
 
-    // Start is called before the first frame update
+    #endregion Fields And Properties
+
+    #region Methods
+
+    /// <summary>
+    ///     Start is called before the first frame update
+    /// </summary>
+    /// <returns></returns>
+
+    #region Start
+
     private async Task Start()
     {
         if (!Validation)
@@ -77,11 +87,27 @@ public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
             await G9SuperNetCoreClient.StartConnection();
     }
 
+    #endregion
+
+    /// <summary>
+    ///     Handle send and receive in fixed update
+    /// </summary>
+
+    #region FixedUpdate
+
     private void FixedUpdate()
     {
         // Handle send receive in frame
         HandleSendReceiveInFrame();
     }
+
+    #endregion
+
+    /// <summary>
+    ///     On application quit - disconnect from server
+    /// </summary>
+
+    #region OnApplicationQuit
 
     private void OnApplicationQuit()
     {
@@ -92,4 +118,9 @@ public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
             Thread.Sleep(3639);
         }
     }
+
+    #endregion
+
+    #endregion Methods
+
 }

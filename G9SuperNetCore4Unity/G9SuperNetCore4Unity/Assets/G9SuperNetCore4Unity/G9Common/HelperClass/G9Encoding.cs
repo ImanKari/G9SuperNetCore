@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD2_1
+﻿#if NETSTANDARD2_1 || NETCOREAPP3_0
 using System;
 #endif
 using System.ComponentModel;
@@ -32,7 +32,7 @@ namespace G9Common.HelperClass
 
         public G9Encoding(EncodingTypes typeOfEncoding)
         {
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
             EncodingType = typeOfEncoding switch
             {
                 EncodingTypes.ASCII => Encoding.ASCII,
@@ -54,8 +54,10 @@ namespace G9Common.HelperClass
                 case EncodingTypes.BigEndianUnicode:
                     EncodingType = Encoding.BigEndianUnicode;
                     break;
+#if NETSTANDARD2_0
                 case EncodingTypes.Default:
                     EncodingType = Encoding.Default;
+#endif
                     break;
                 case EncodingTypes.UTF_32:
                     EncodingType = Encoding.UTF32;
@@ -102,22 +104,22 @@ namespace G9Common.HelperClass
             return EncodingType.GetString(input);
         }
 
-#endregion
+        #endregion
 
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP3_0
 
         /// <summary>
         /// Easy access to get string
         /// </summary>
-#region GetString
+        #region GetString
         public string GetString(ReadOnlyMemory<byte> input)
         {
             return EncodingType.GetString(input.ToArray());
         }
-#endregion
+        #endregion
 
 #endif
 
-#endregion
+        #endregion
     }
 }
