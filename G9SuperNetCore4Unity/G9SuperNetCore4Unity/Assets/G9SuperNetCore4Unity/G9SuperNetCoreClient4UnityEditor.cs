@@ -18,6 +18,10 @@ public class G9SuperNetCoreClient4UnityEditor : Editor
     {
         _clientTarget.Validation = true;
 
+        EditorGUILayout.HelpBox(
+            $"Version G9SuperNetCoreClient4Unity: {G9SuperNetCoreClient4Unity.Version}",
+            MessageType.Info, true);
+
         #region Enable auto connected
 
         _clientTarget.EnableAutoStartConnection =

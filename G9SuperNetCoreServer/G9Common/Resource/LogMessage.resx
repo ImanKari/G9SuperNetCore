@@ -402,4 +402,10 @@
   <data name="ServerWithOutCertificate" xml:space="preserve">
     <value>The client is implemented as SSL. But the server without a certificate.</value>
   </data>
+  <data name="AddCommandSuccessfully" xml:space="preserve">
+    <value>Command add successfully</value>
+  </data>
+  <data name="FailAddCommandForGenericAccountType" xml:space="preserve">
+    <value>Fail in add command because account generic type is not equal between server and command</value>
+  </data>
 </root>

@@ -183,22 +183,43 @@ namespace G9Common.CommandHandler
 
             derivedTypes.ForEach(oType =>
             {
-                var instance = Activator.CreateInstance(oType);
-                _instanceCommandCollection.Add(oType.Name.GenerateStandardCommandName(_commandSize),
-                    instance);
-                var method = oType.GetMethod("InitializeRequirement");
+                // Check for account type is equal with server account type
+                // Get generic type from base type
+                if (oType.BaseType == null) return;
+                var genericAccountArgument = oType.BaseType.GetGenericArguments().Last();
+                if (genericAccountArgument == typeof(TAccount))
+                {
+                    // Create instance and get method initialize
+                    var instance = Activator.CreateInstance(oType);
+                    _instanceCommandCollection.Add(oType.Name.GenerateStandardCommandName(_commandSize),
+                        instance);
+                    var method = oType.GetMethod("InitializeRequirement");
 
-                method?.Invoke(instance, new object[] {addCommandDataType});
+                    // Initialize command and add to server
+                    method?.Invoke(instance, new object[] { addCommandDataType });
+
+                    if (_logging.CheckLoggingIsActive(LogsType.INFO))
+                        _logging.LogInformation(
+                            $"{LogMessage.AddCommandSuccessfully}\n{LogMessage.CommandName}: {oType.Name}\nPath: {oType.FullName}",
+                            G9LogIdentity.ADD_COMMAND, LogMessage.SuccessfulOperation);
+                }
+                else
+                {
+                    if (_logging.CheckLoggingIsActive(LogsType.WARN))
+                        _logging.LogWarning(
+                            $"{LogMessage.FailAddCommandForGenericAccountType}\n{LogMessage.CommandName}: {oType.Name}\nPath: {oType.FullName}",
+                            G9LogIdentity.ADD_COMMAND, LogMessage.FailedOperation);
+                }
             });
 
-#endregion
+            #endregion
         }
 
-#endregion
+        #endregion
 
         // Handler for add custom command
 
-#region AddCustomCommand
+        #region AddCustomCommand
 
         /// <summary>
         ///     Add custom command for send and receive
@@ -237,7 +258,7 @@ namespace G9Common.CommandHandler
         ///     </para>
         /// </param>
 
-#region AddCustomCommand<TSendAndReceive>
+        #region AddCustomCommand<TSendAndReceive>
 
         public void AddCustomCommand<TSendAndReceive>(
             string commandName,
@@ -248,7 +269,7 @@ namespace G9Common.CommandHandler
             AddCustomCommand<TSendAndReceive, TSendAndReceive>(commandName, receiveHandler, errorHandler);
         }
 
-#endregion
+        #endregion
 
         /// <summary>
         ///     Add custom command for send and receive
@@ -288,7 +309,7 @@ namespace G9Common.CommandHandler
         ///     </para>
         /// </param>
 
-#region AddCustomCommand<TReceiveType, TSendType>
+        #region AddCustomCommand<TReceiveType, TSendType>
 
         public void AddCustomCommand<TReceiveType, TSendType>(
             string commandName,
@@ -338,9 +359,9 @@ namespace G9Common.CommandHandler
             );
         }
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
         /// <summary>
         ///     Check command exists
@@ -348,7 +369,7 @@ namespace G9Common.CommandHandler
         /// <param name="commandName">Specified command name</param>
         /// <returns>return 'true' if exists</returns>
 
-#region CheckCommandExist
+        #region CheckCommandExist
 
         public bool CheckCommandExist(string commandName)
         {
@@ -356,7 +377,7 @@ namespace G9Common.CommandHandler
                 commandName.GenerateStandardCommandName(_commandSize));
         }
 
-#endregion
+        #endregion
 
         /// <summary>
         ///     Get command send type
@@ -364,7 +385,7 @@ namespace G9Common.CommandHandler
         /// <param name="commandName">Specified command name</param>
         /// <returns>return type of send for command</returns>
 
-#region GetCommandSendType
+        #region GetCommandSendType
 
         public Type GetCommandSendType(string commandName)
         {
@@ -372,8 +393,8 @@ namespace G9Common.CommandHandler
                 commandName.GenerateStandardCommandName(_commandSize)]?.CommandSendType;
         }
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
     }
 }

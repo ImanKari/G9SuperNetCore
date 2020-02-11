@@ -8,14 +8,18 @@
         public const string Body = "Body";
         public const string CantStopStoppedServer = "CantStopStoppedServer";
         public const string CertificateDoseNotHavePrivateKey = "The certificate does not have a private key";
+
         public const string CertificateIsNotExportable =
             "The certificate is not exportable. Use 'X509KeyStorageFlags.Exportable' when creating 'X509Certificate2'.";
+
         public const string ChangeBodyMultiPacketNotFill = "Envelopes are not a complete request for body modification";
         public const string ClientPing = "ClientPing";
         public const string ClientPingDateTime = "ClientPingDateTime";
         public const string ClientSessionIdentity = "ClientSessionIdentity";
+
         public const string ClientWithOutCertificate =
             "The server is implemented as SSL. But the client is connected to it without a certificate.";
+
         public const string CloseReason = "CloseReason";
         public const string Command = "Command";
         public const string CommandEcho = "CommandEcho";
@@ -51,9 +55,15 @@
         public const string ReceivedUnhandledCommand = "ReceivedUnhandledCommand";
         public const string RequestSendData = "RequestSendData";
         public const string RunningCommand = "RunningCommand";
+        public const string AddCommandSuccessfully = "Add command is successfully";
+
+        public const string FailAddCommandForGenericAccountType =
+            "Fail in add command because account generic type is not equal between server and command";
         public const string SendTypeWithFunction = "SendTypeWithFunction";
+
         public const string ServerWithOutCertificate =
             "The client is implemented as SSL. But the server without a certificate.";
+
         public const string StandardLength = "StandardLength";
         public const string StartClientConnection = "StartClientConnection";
         public const string StopServer = "StopServer";

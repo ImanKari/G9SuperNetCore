@@ -14,6 +14,11 @@ using UnityEngine;
 public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
 {
 
+    /// <summary>
+    /// Specified version of Super Net Core 4 Unity
+    /// </summary>
+    public const string Version = "2.0.0.0";
+
     #region Fields And Properties
 
     /// <summary>

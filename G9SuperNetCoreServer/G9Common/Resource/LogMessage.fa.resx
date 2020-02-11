@@ -123,6 +123,9 @@
   <data name="AccountAndSessionCreated" xml:space="preserve">
     <value>اکانت و نشست با موفقیت ایجاد شد.</value>
   </data>
+  <data name="AddCommandSuccessfully" xml:space="preserve">
+    <value>کامند با موفیت به سرور اضافه شد.</value>
+  </data>
   <data name="ArgumentNotCorrect" xml:space="preserve">
     <value>پارامتر درست نیست!</value>
   </data>
@@ -227,6 +230,9 @@
   </data>
   <data name="ExtraPassIsNot32Char" xml:space="preserve">
     <value>پسورد هش شده باید 32 کاراکتر باشد</value>
+  </data>
+  <data name="FailAddCommandForGenericAccountType" xml:space="preserve">
+    <value>در روند اضافه شدن کامند مشکلی ایجاد شده است، نوع اکانت مشخص شده در کامند با سرور متفاوت است.</value>
   </data>
   <data name="FailBindAndListenSocket" xml:space="preserve">
     <value>در روند آماده سازی انتظار سرور برای اتصال کلایت مشکلی پیش آمده است</value>

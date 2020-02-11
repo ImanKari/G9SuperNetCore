@@ -79,6 +79,15 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Command add successfully.
+        /// </summary>
+        public static string AddCommandSuccessfully {
+            get {
+                return ResourceManager.GetString("AddCommandSuccessfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ArgumentNotCorrect.
         /// </summary>
         public static string ArgumentNotCorrect {
@@ -390,6 +399,15 @@ namespace G9Common.Resource {
         public static string ExtraPassIsNot32Char {
             get {
                 return ResourceManager.GetString("ExtraPassIsNot32Char", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fail in add command because account generic type is not equal between server and command.
+        /// </summary>
+        public static string FailAddCommandForGenericAccountType {
+            get {
+                return ResourceManager.GetString("FailAddCommandForGenericAccountType", resourceCulture);
             }
         }
         
