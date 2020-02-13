@@ -316,7 +316,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                     {
                         // Reject
                         // Run event disconnect
-                        OnDisconnectedHandler(_core.GetAccountUtilitiesBySessionId(sessionId).Account,
+                        OnDisconnectedHandler(_core.GetAccountUtilitiesBySessionId(sessionId)?.Account,
                             DisconnectReason.DisconnectedFromClient);
                     }
                 }

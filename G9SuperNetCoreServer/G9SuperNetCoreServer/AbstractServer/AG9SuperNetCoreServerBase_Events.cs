@@ -182,6 +182,9 @@ namespace G9SuperNetCoreServer.AbstractServer
 
         private void OnDisconnectedHandler(TAccount account, DisconnectReason disconnectReason)
         {
+            // If account is null return
+            if (account == null) return;
+
             // Server disconnect handler
             _core.DisconnectAndCloseSession(account, disconnectReason);
 
