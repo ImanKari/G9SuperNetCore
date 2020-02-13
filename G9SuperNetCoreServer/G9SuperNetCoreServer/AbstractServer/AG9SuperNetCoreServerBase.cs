@@ -42,6 +42,7 @@ namespace G9SuperNetCoreServer.AbstractServer
             // Initialize core
             _core = new G9Core<TAccount, TSession>(superNetCoreConfig, commandAssembly, SendCommandByName,
                 SendCommandByNameAsync, OnSessionReceiveRequestOverTheLimitInSecondHandler, OnUnhandledCommandHandler,
+                OnDisconnectedHandler,
                 customLogging, sslCertificate);
 
             // ######################## Add default command ########################
@@ -168,26 +169,8 @@ namespace G9SuperNetCoreServer.AbstractServer
 
                     G9SendAndReceivePacket receivePacket;
 
-                    // in position 1 specified packet data type
-                    // if it's == Authorization, not encrypted
-                    if (!accountUtilities.Account.Session.IsAuthorization &&
-                        state.Buffer[1] == (byte) G9PacketDataType.Authorization)
-                        // unpacking request - Decrypt data if need
-                    {
-                        receivePacket = _packetManagement.UnpackingRequestByData(state.Buffer);
-                    }
-                    else
-                    {
-                        // unpacking request - Decrypt data if need
-                        receivePacket = _packetManagement.UnpackingRequestByData(_core.EnableSslConnection
-                            ? _core.EncryptAndDecryptDataWithCertificate.DecryptDataWithCertificate(state.Buffer,
-                                accountUtilities.Account.Session.CertificateNumber)
-                            : state.Buffer);
-
-                        // Ignore for auth command
-                        // Set last command (check ping automatically when set last command)
-                        accountUtilities.SessionHandler.Core_SetLastCommand(receivePacket.Command);
-                    }
+                    // Initialize receive packet
+                    HelperReceivePacket(out receivePacket, ref accountUtilities, ref state);
 
                     // Plus receive bytes for session
                     accountUtilities.SessionHandler.Core_PlusSessionTotalReceiveBytes(bytesRead);
@@ -201,67 +184,8 @@ namespace G9SuperNetCoreServer.AbstractServer
                     // Clear Data
                     Array.Clear(state.Buffer, 0, AG9SuperNetCoreStateObjectBase.BufferSize);
 
-                    #region Handle single and multi package
-
-                    if (receivePacket.PacketType == G9PacketType.MultiPacket)
-                    {
-                        if (state.MultiPacketCollection.ContainsKey(receivePacket.RequestId))
-                        {
-                            state.MultiPacketCollection[receivePacket.RequestId]
-                                .AddPacket(
-#if NETSTANDARD2_1 || NETCOREAPP3_0
-                                    receivePacket.Body.Span[0], receivePacket.Body.ToArray()
-#else
-                                    receivePacket.Body[0], receivePacket.Body
-#endif
-                                );
-                            if (state.MultiPacketCollection[receivePacket.RequestId].FillAllPacket)
-                            {
-                                // Change request body
-                                receivePacket.ChangePackageBodyByMultiPackage(
-                                    state.MultiPacketCollection[receivePacket.RequestId]);
-
-                                // if authorization request => wait to finish progress
-                                // Progress packet
-                                _core.CommandHandler.G9CallHandler(receivePacket, accountUtilities.Account);
-                            }
-                        }
-                        else
-                        {
-                            if (
-#if NETSTANDARD2_1 || NETCOREAPP3_0
-                                    receivePacket.Body.Span[0]
-#else
-                                receivePacket.Body[0]
-#endif
-                                == 0)
-                            {
-                                state.MultiPacketCollection.Add(receivePacket.RequestId,
-                                    new G9PacketSplitHandler(receivePacket.RequestId,
-#if NETSTANDARD2_1 || NETCOREAPP3_0
-                                    receivePacket.Body.Span[1]
-#else
-                                        receivePacket.Body[1]
-#endif
-                                    ));
-                                state.MultiPacketCollection[receivePacket.RequestId]
-                                    .AddPacket(0,
-#if NETSTANDARD2_1 || NETCOREAPP3_0
-                                    receivePacket.Body.ToArray()
-#else
-                                        receivePacket.Body
-#endif
-                                    );
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // Progress packet
-                        _core.CommandHandler.G9CallHandler(receivePacket, accountUtilities.Account);
-                    }
-
-                    #endregion
+                    // Handle receive packet
+                    HelperPacketHandler(ref receivePacket, ref accountUtilities, ref state);
 
                     // Listen and get other packet
                     state.WorkSocket.BeginReceive(
@@ -279,6 +203,8 @@ namespace G9SuperNetCoreServer.AbstractServer
             }
             catch (Exception ex)
             {
+                #region Exception
+
                 if (state?.Buffer != null)
                     // Clear Data
                     Array.Clear(state.Buffer, 0, AG9SuperNetCoreStateObjectBase.BufferSize);
@@ -320,7 +246,125 @@ namespace G9SuperNetCoreServer.AbstractServer
                             DisconnectReason.DisconnectedFromClient);
                     }
                 }
+
+                #endregion
             }
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Helper for receive packet data
+        /// </summary>
+        /// <param name="receivePacket">Field for save receive packet</param>
+        /// <param name="accountUtilities">Access to account utilities</param>
+        /// <param name="state">Access to state</param>
+
+        #region HelperReceivePacket
+
+        private void HelperReceivePacket(out G9SendAndReceivePacket receivePacket,
+            ref G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler> accountUtilities,
+            ref G9SuperNetCoreStateObjectServer state)
+        {
+            // in position 1 specified packet data type
+            // if it's == Authorization, not encrypted
+            if (!accountUtilities.Account.Session.IsAuthorization &&
+                state.Buffer[1] == (byte) G9PacketDataType.Authorization)
+                // unpacking request - Decrypt data if need
+            {
+                receivePacket = _packetManagement.UnpackingRequestByData(state.Buffer);
+            }
+            else
+            {
+                // unpacking request - Decrypt data if need
+                receivePacket = _packetManagement.UnpackingRequestByData(_core.EnableSslConnection
+                    ? _core.EncryptAndDecryptDataWithCertificate.DecryptDataWithCertificate(state.Buffer,
+                        accountUtilities.Account.Session.CertificateNumber)
+                    : state.Buffer);
+
+                // Ignore for auth command
+                // Set last command (check ping automatically when set last command)
+                accountUtilities.SessionHandler.Core_SetLastCommand(receivePacket.Command);
+            }
+        }
+
+        #endregion
+
+
+        /// <summary>
+        ///     Helper for handle receive packet
+        /// </summary>
+        /// <param name="receivePacket">Access to receive packet</param>
+        /// <param name="accountUtilities">Access to account utilities</param>
+        /// <param name="state">Access to state</param>
+
+        #region HelperPacketHandler
+
+        private void HelperPacketHandler(ref G9SendAndReceivePacket receivePacket,
+            ref G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler> accountUtilities,
+            ref G9SuperNetCoreStateObjectServer state)
+        {
+            #region Handle single and multi package
+
+            if (receivePacket.PacketType == G9PacketType.MultiPacket)
+            {
+                if (state.MultiPacketCollection.ContainsKey(receivePacket.RequestId))
+                {
+                    state.MultiPacketCollection[receivePacket.RequestId]
+                        .AddPacket(
+#if NETSTANDARD2_1 || NETCOREAPP3_0
+                            receivePacket.Body.Span[0], receivePacket.Body.ToArray()
+#else
+                                    receivePacket.Body[0], receivePacket.Body
+#endif
+                        );
+                    if (state.MultiPacketCollection[receivePacket.RequestId].FillAllPacket)
+                    {
+                        // Change request body
+                        receivePacket.ChangePackageBodyByMultiPackage(
+                            state.MultiPacketCollection[receivePacket.RequestId]);
+
+                        // if authorization request => wait to finish progress
+                        // Progress packet
+                        _core.CommandHandler.G9CallHandler(receivePacket, accountUtilities.Account);
+                    }
+                }
+                else
+                {
+                    if (
+#if NETSTANDARD2_1 || NETCOREAPP3_0
+                        receivePacket.Body.Span[0]
+#else
+                                receivePacket.Body[0]
+#endif
+                        == 0)
+                    {
+                        state.MultiPacketCollection.Add(receivePacket.RequestId,
+                            new G9PacketSplitHandler(receivePacket.RequestId,
+#if NETSTANDARD2_1 || NETCOREAPP3_0
+                                receivePacket.Body.Span[1]
+#else
+                                        receivePacket.Body[1]
+#endif
+                            ));
+                        state.MultiPacketCollection[receivePacket.RequestId]
+                            .AddPacket(0,
+#if NETSTANDARD2_1 || NETCOREAPP3_0
+                                receivePacket.Body.ToArray()
+#else
+                                        receivePacket.Body
+#endif
+                            );
+                    }
+                }
+            }
+            else
+            {
+                // Progress packet
+                _core.CommandHandler.G9CallHandler(receivePacket, accountUtilities.Account);
+            }
+
+            #endregion
         }
 
         #endregion

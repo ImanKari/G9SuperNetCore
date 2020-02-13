@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using G9LogManagement.Enums;
 using G9LogManagement.Structures;
 using UnityEngine;
@@ -48,11 +49,6 @@ public class G9Logging4Unity : MonoBehaviour
         LogType.Error, // 3 => for error
         LogType.Exception // 4 => for exception
     };
-
-    /// <summary>
-    ///     Thread lock for console logging
-    /// </summary>
-    private static readonly object _consoleLoggingLock = new object();
 
     /// <summary>
     ///     Queue for save log and show
@@ -357,17 +353,25 @@ public class G9Logging4Unity : MonoBehaviour
 
     private void ConsoleLogging(G9LogItem logItem)
     {
-        lock (_consoleLoggingLock)
+        // Set Log type number
+        var logTypeNumber = (byte)logItem.LogType;
+
+        try
         {
-            // Set Log type number
-            var logTypeNumber = (byte) logItem.LogType;
+            // Ignore if null
+            if (string.IsNullOrEmpty(logItem.Body)) return;
 
             // Show console log
             Debug.LogFormat(_unityLogTypes[logTypeNumber],
                 LogOption.NoStacktrace,
                 null,
-                $"<color=#{0:X2}{loggingColors[logTypeNumber].g:X2}{loggingColors[logTypeNumber].b:X2}> | ### Log Type: {logItem.LogType} ### | \nDate & Time: {logItem.LogDateTime:yyyy/MM/ss HH:mm:ss.fff}\nIdentity: {logItem.Identity}\tTitle: {logItem.Title}\nBody: {logItem.Body}\nPath: {logItem.FileName}\nMethod: {logItem.MethodBase}\tLine: {logItem.LineNumber}\n</color>"
+                $"<color=#{0:X2}{loggingColors[logTypeNumber].g:X2}{loggingColors[logTypeNumber].b:X2}> | ### Log Type: {logItem.LogType} ### | \nDate & Time: {logItem.LogDateTime:yyyy/MM/ss HH:mm:ss.fff}\nIdentity: {logItem.Identity}\tTitle: {logItem.Title}\nBody: {new Regex("[^a-zA-Z0-9 -]").Replace(logItem.Body, string.Empty)}\nPath: {logItem.FileName}\nMethod: {logItem.MethodBase}\tLine: {logItem.LineNumber}\n</color>"
             );
+        }
+        catch (Exception ex)
+        {
+            // Ignore
+            Debug.LogWarning(ex.StackTrace);
         }
     }
 

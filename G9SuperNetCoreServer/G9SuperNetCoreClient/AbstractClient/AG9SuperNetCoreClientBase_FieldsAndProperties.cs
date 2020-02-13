@@ -11,6 +11,7 @@ using G9SuperNetCoreClient.Helper;
 
 namespace G9SuperNetCoreClient.AbstractClient
 {
+    // ReSharper disable once InconsistentNaming
     public abstract partial class AG9SuperNetCoreClientBase<TAccount, TSession>
         where TAccount : AClientAccount<TSession>, new()
         where TSession : AClientSession, new()

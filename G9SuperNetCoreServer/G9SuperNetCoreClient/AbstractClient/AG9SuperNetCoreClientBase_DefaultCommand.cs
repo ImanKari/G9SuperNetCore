@@ -172,7 +172,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                 if (_logging.CheckLoggingIsActive(LogsType.EVENT))
                     _logging.LogEvent(
                         $"{LogMessage.AuthorizationSuccess}\n{account.Session.GetSessionInfo()}",
-                        G9LogIdentity.AUTHORIZATION_FAIL, LogMessage.FailedOperation);
+                        G9LogIdentity.AUTHORIZATION_SUCCESS, LogMessage.SuccessfulOperation);
             }
             catch (Exception ex)
             {

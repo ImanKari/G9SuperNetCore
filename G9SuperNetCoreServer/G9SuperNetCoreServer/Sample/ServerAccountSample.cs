@@ -10,7 +10,9 @@ namespace G9SuperNetCoreServer.Sample
     {
         public override void OnSessionClosed(DisconnectReason reason)
         {
-            Console.WriteLine($"{LogMessage.OnSessionClose}\n{LogMessage.CloseReason}: {reason.ToString()}");
+            Console.WriteLine(
+                $"\n###################### [{DateTime.Now:yyyy-mm-dd HH:MM:ss}] | {LogMessage.OnSessionClose} ######################\n{LogMessage.CloseReason}: {reason.ToString()}\n{Session.GetSessionInfo()}\n\n");
+
         }
     }
 }

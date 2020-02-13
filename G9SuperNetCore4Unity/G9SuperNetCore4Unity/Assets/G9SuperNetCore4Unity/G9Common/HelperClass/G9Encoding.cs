@@ -57,8 +57,8 @@ namespace G9Common.HelperClass
 #if NETSTANDARD2_0
                 case EncodingTypes.Default:
                     EncodingType = Encoding.Default;
-#endif
                     break;
+#endif
                 case EncodingTypes.UTF_32:
                     EncodingType = Encoding.UTF32;
                     break;

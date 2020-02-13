@@ -1,17 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using UnityEditor;
 using UnityEngine;
 
+/// <inheritdoc />
 [CustomEditor(typeof(G9SuperNetCoreClient4Unity))]
+// ReSharper disable once CheckNamespace
 public class G9SuperNetCoreClient4UnityEditor : Editor
 {
     private G9SuperNetCoreClient4Unity _clientTarget;
 
     private void OnEnable()
     {
-        _clientTarget = (target as G9SuperNetCoreClient4Unity);
+        _clientTarget = target as G9SuperNetCoreClient4Unity;
     }
 
     public override void OnInspectorGUI()
@@ -32,10 +32,12 @@ public class G9SuperNetCoreClient4UnityEditor : Editor
                 MessageType.Info);
         else
             EditorGUILayout.HelpBox("Disable auto connected for client.", MessageType.Warning);
+
         #endregion
 
         #region IpAddress
-        string ipAddress = _clientTarget.ServerIpAddress?.ToString();
+
+        var ipAddress = _clientTarget.ServerIpAddress?.ToString();
         ipAddress = EditorGUILayout.TextField("Server Ip Address", ipAddress);
         if (string.IsNullOrEmpty(ipAddress))
         {
@@ -48,7 +50,10 @@ public class G9SuperNetCoreClient4UnityEditor : Editor
             _clientTarget.Validation = false;
         }
         else
+        {
             EditorGUILayout.HelpBox("The IP address format is correct.", MessageType.None);
+        }
+
         #endregion
 
         #region Port
@@ -78,7 +83,7 @@ public class G9SuperNetCoreClient4UnityEditor : Editor
             EditorGUILayout.HelpBox("Enable ssl connection for client.\nConnected with ssl to server.",
                 MessageType.Info);
 
-            GUIStyle myTextAreaStyle = new GUIStyle(EditorStyles.textArea);
+            var myTextAreaStyle = new GUIStyle(EditorStyles.textArea);
             myTextAreaStyle.wordWrap = true;
             myTextAreaStyle.fixedHeight = 69;
             _clientTarget.PrivateKey = EditorGUILayout.TextArea(_clientTarget.PrivateKey, myTextAreaStyle);
@@ -91,13 +96,15 @@ public class G9SuperNetCoreClient4UnityEditor : Editor
             }
             else
             {
-                EditorGUILayout.HelpBox($"Private is empty or null exception.", MessageType.Error);
+                EditorGUILayout.HelpBox("Private is empty or null exception.", MessageType.Error);
                 _clientTarget.Validation = false;
             }
-
         }
         else
+        {
             EditorGUILayout.HelpBox("Disable ssl connection for client.", MessageType.Warning);
+        }
+
         #endregion
     }
 }

@@ -7,6 +7,7 @@ using G9SuperNetCoreServer.Core;
 
 namespace G9SuperNetCoreServer.AbstractServer
 {
+    // ReSharper disable once InconsistentNaming
     public abstract partial class AG9SuperNetCoreServerBase<TAccount, TSession>
         where TAccount : AServerAccount<TSession>, new()
         where TSession : AServerSession, new()

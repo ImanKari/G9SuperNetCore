@@ -89,6 +89,13 @@ namespace G9SuperNetCoreServer.Core
         private readonly Action<TAccount> _onSessionReceiveRequestOverTheLimitInSecond;
 
         /// <summary>
+        ///     <para>Management disconnect client</para>
+        ///     <para>TAccount: Connected account</para>
+        ///     <para>DisconnectReason: Reason of disconnect</para>
+        /// </summary>
+        private readonly Action<TAccount, DisconnectReason> _onDisconnectedHandler;
+
+        /// <summary>
         ///     Used for encrypt and decrypt with certificates
         /// </summary>
         public readonly G9EncryptAndDecryptDataWithCertificate EncryptAndDecryptDataWithCertificate;
@@ -125,8 +132,9 @@ namespace G9SuperNetCoreServer.Core
             Action<uint, string, object, Guid?, bool, bool> sendCommandByName,
             Action<uint, string, object, Guid?, bool, bool> sendCommandByNameAsync,
             Action<TAccount> onSessionReceiveRequestOverTheLimitInSecond,
-            Action<G9SendAndReceivePacket, TAccount> onUnhandledCommand, IG9Logging customLogging = null,
-            G9SslCertificate sslCertificate = null)
+            Action<G9SendAndReceivePacket, TAccount> onUnhandledCommand,
+            Action<TAccount, DisconnectReason> onDisconnectedHandler,
+            IG9Logging customLogging = null, G9SslCertificate sslCertificate = null)
         {
             // Set sorted dictionary collection
             _accountCollection =
@@ -147,6 +155,7 @@ namespace G9SuperNetCoreServer.Core
             _sendCommandByName = sendCommandByName;
             _sendCommandByNameAsync = sendCommandByNameAsync;
             _onSessionReceiveRequestOverTheLimitInSecond = onSessionReceiveRequestOverTheLimitInSecond;
+            _onDisconnectedHandler = onDisconnectedHandler;
 
             // Set configuration
             Configuration = superNetCoreConfig;
@@ -415,6 +424,7 @@ namespace G9SuperNetCoreServer.Core
             G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler> account,
             bool autoDisposeAndRemove = true)
         {
+            // Check socket is connected
             var valid1 = account.SessionSocket.Poll(1000, SelectMode.SelectRead);
             var valid2 = account.SessionSocket.Available == 0;
             if (!valid1 || !valid2)
@@ -422,8 +432,9 @@ namespace G9SuperNetCoreServer.Core
                 return true;
             }
 
+            // If enable auto dispose => 
             if (autoDisposeAndRemove)
-                DisconnectAndCloseSession(account.Account, DisconnectReason.DisconnectedFromClient);
+                _onDisconnectedHandler?.Invoke(account.Account, DisconnectReason.DisconnectedFromClient);
             return false;
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using G9Common.Enums;
 using G9Common.HelperClass;
@@ -14,6 +15,7 @@ using G9SuperNetCoreClient.Enums;
 
 namespace G9SuperNetCoreClient.AbstractClient
 {
+    // ReSharper disable once InconsistentNaming
     public abstract partial class AG9SuperNetCoreClientBase<TAccount, TSession>
         where TAccount : AClientAccount<TSession>, new()
         where TSession : AClientSession, new()
@@ -216,7 +218,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
                     // Try to send
-                    Send(_clientSocket, packets[i])?.WaitOne();
+                    Send(_clientSocket, packets[i])?.WaitOne(3999);
             }
             catch (Exception ex)
             {
@@ -274,7 +276,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
                     // Try to send
-                    Send(_clientSocket, packets[i]);
+                    Send(_clientSocket, packets[i]).WaitOne(3999);
             }
             catch (Exception ex)
             {
@@ -306,12 +308,13 @@ namespace G9SuperNetCoreClient.AbstractClient
         ///     <para>If set true, check command send type</para>
         ///     <para>If func send data type not equal with command send type throw exception</para>
         /// </param>
+        /// <param name="isAuthorization">Specified send for authorization</param>
 
         #region SendCommandByNameAsyncWithCustomPacketDataType
 
         private void SendCommandByNameAsyncWithCustomPacketDataType(string commandName, object commandData,
             G9PacketDataType packetDataType, Guid? customRequestId = null,
-            bool checkCommandExists = true, bool checkCommandSendType = true)
+            bool checkCommandExists = true, bool checkCommandSendType = true, bool isAuthorization = false)
         {
             try
             {
@@ -334,7 +337,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
                     // Try to send
-                    Send(_clientSocket, packets[i]);
+                    Send(_clientSocket, packets[i]).WaitOne(3999);
             }
             catch (Exception ex)
             {
@@ -394,7 +397,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
                     // Try to send
-                    Send(_clientSocket, packets[i])?.WaitOne();
+                    Send(_clientSocket, packets[i])?.WaitOne(3999);
             }
             catch (Exception ex)
             {

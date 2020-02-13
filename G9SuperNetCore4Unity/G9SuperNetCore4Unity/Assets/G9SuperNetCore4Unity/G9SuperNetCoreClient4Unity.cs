@@ -13,9 +13,8 @@ using UnityEngine;
 // ReSharper disable once CheckNamespace
 public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
 {
-
     /// <summary>
-    /// Specified version of Super Net Core 4 Unity
+    ///     Specified version of Super Net Core 4 Unity
     /// </summary>
     public const string Version = "2.0.0.0";
 
@@ -125,5 +124,4 @@ public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
     #endregion
 
     #endregion Methods
-
 }

@@ -17,8 +17,10 @@ using G9SuperNetCoreClient.Enums;
 using G9SuperNetCoreClient.Helper;
 using G9SuperNetCoreClient.Logging;
 
+// ReSharper disable once CheckNamespace
 namespace G9SuperNetCoreClient.AbstractClient
 {
+    // ReSharper disable once InconsistentNaming
     public abstract partial class AG9SuperNetCoreClientBase<TAccount, TSession>
         where TAccount : AClientAccount<TSession>, new()
         where TSession : AClientSession, new()
@@ -74,7 +76,6 @@ namespace G9SuperNetCoreClient.AbstractClient
                     // Set session encoding
                     Session_GetSessionEncoding = () => Configuration.EncodingAndDecoding
                 }, 0, IPAddress.Any);
-            var account = new TAccount();
             _mainAccountUtilities.Account.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(
                 _mainAccountUtilities.AccountHandler = new G9ClientAccountHandler(), session);
 
@@ -114,16 +115,15 @@ namespace G9SuperNetCoreClient.AbstractClient
 
 
             // Set private key
-            if (!string.IsNullOrEmpty(privateKeyForSslConnection))
-            {
-                _privateKey = privateKeyForSslConnection;
-                // Set client unique identity
-                _clientIdentity = string.IsNullOrEmpty(clientUniqueIdentity)
-                    ? _clientIdentity = Guid.NewGuid().ToString("N")
-                    : _clientIdentity = clientUniqueIdentity.Length < 16
-                        ? clientUniqueIdentity + Guid.NewGuid().ToString("N")
-                        : clientUniqueIdentity;
-            }
+            if (string.IsNullOrEmpty(privateKeyForSslConnection)) return;
+            // Set private key
+            _privateKey = privateKeyForSslConnection;
+            // Set client unique identity
+            _clientIdentity = string.IsNullOrEmpty(clientUniqueIdentity)
+                ? _clientIdentity = Guid.NewGuid().ToString("N")
+                : _clientIdentity = clientUniqueIdentity.Length < 16
+                    ? clientUniqueIdentity + Guid.NewGuid().ToString("N")
+                    : clientUniqueIdentity;
         }
 
         #region Constructor Overloads
@@ -192,7 +192,7 @@ namespace G9SuperNetCoreClient.AbstractClient
             try
             {
                 // Retrieve the socket from the state object.  
-                _clientSocket = (Socket) asyncResult.AsyncState;
+                _clientSocket = (Socket)asyncResult.AsyncState;
 
                 // Complete the connection.  
                 _clientSocket.EndConnect(asyncResult);
@@ -220,7 +220,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                     string.IsNullOrEmpty(_privateKey)
                         ? new byte[0]
                         : Configuration.EncodingAndDecoding.EncodingType.GetBytes(_clientIdentity),
-                    G9PacketDataType.Authorization);
+                    G9PacketDataType.Authorization, isAuthorization: true);
             }
             catch (Exception ex)
             {
@@ -282,10 +282,10 @@ namespace G9SuperNetCoreClient.AbstractClient
             try
             {
                 // Retrieve the socket from the state object.  
-                var client = (Socket) asyncResult.AsyncState;
+                var client = (Socket)asyncResult.AsyncState;
 
                 // Complete sending the data to the remote device.  
-                var bytesSent = (ushort) client.EndSend(asyncResult);
+                var bytesSent = (ushort)client.EndSend(asyncResult);
 
                 // Signal that all bytes have been sent.  
                 _sendDone.Set();

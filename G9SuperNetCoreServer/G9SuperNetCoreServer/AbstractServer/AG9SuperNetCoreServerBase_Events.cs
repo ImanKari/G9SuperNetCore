@@ -178,7 +178,7 @@ namespace G9SuperNetCoreServer.AbstractServer
         /// <param name="account">Connected account</param>
         /// <param name="disconnectReason">Reason of disconnect</param>
 
-        #region OnConnectedHandler
+        #region OnDisconnectedHandler
 
         private void OnDisconnectedHandler(TAccount account, DisconnectReason disconnectReason)
         {

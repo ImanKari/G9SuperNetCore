@@ -1,4 +1,6 @@
-﻿namespace G9Common.Abstract
+﻿using G9Common.Resource;
+
+namespace G9Common.Abstract
 {
     public abstract class AAccount
     {
