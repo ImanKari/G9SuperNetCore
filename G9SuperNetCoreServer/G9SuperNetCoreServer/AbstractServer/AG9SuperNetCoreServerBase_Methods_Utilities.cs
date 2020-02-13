@@ -110,7 +110,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 try
                 {
                     return _core.SelectAccountUtilities(s =>
-                        s.Select(x => x.Account.Session).OrderBy(z => z.SessionTotalSendBytes)
+                        s.Values.Select(x => x.Account.Session).OrderBy(z => z.SessionTotalSendBytes)
                             .ThenBy(z => z.SessionTotalReceiveBytes).Take(takeCount)).Select(
                         s => new G9SessionReport
                         {
@@ -147,14 +147,16 @@ namespace G9SuperNetCoreServer.AbstractServer
                 try
                 {
                     return _core.SelectAccountUtilities(s =>
-                        s.Select(x => x.Account.Session).OrderBy(z => z.SessionStartDateTime).Take(takeCount)).Select(
-                        s => new G9SessionReport
-                        {
-                            SessionId = s.SessionId,
-                            TotalReceive = s.SessionTotalReceiveBytes,
-                            TotalSend = s.SessionTotalReceiveBytes,
-                            StartTime = s.SessionStartDateTime
-                        }).ToArray();
+                            s.Values.Select(x => x.Account.Session).OrderBy(z => z.SessionStartDateTime)
+                                .Take(takeCount))
+                        .Select(
+                            s => new G9SessionReport
+                            {
+                                SessionId = s.SessionId,
+                                TotalReceive = s.SessionTotalReceiveBytes,
+                                TotalSend = s.SessionTotalReceiveBytes,
+                                StartTime = s.SessionStartDateTime
+                            }).ToArray();
                 }
                 catch (Exception ex)
                 {
@@ -197,72 +199,76 @@ namespace G9SuperNetCoreServer.AbstractServer
                     {
                         TypeOfCompare.Contain => _core
                             .SelectAccountUtilities(s => s.Where(g =>
-                                g.Account.GetType()
+                                g.Value.Account.GetType()
                                     .GetProperty(propertyName)
-                                    ?.GetValue(g.Account, null)
+                                    ?.GetValue(g.Value.Account, null)
                                     ?.ToString()
                                     .Contains(value.ToString()) ?? false))
                             .Take(takeCount)
                             .Select(s => new G9SessionReport
                             {
-                                SessionId = s.Account.Session.SessionId,
-                                TotalReceive = s.Account.Session.SessionTotalReceiveBytes,
-                                TotalSend = s.Account.Session.SessionTotalReceiveBytes,
-                                StartTime = s.Account.Session.SessionStartDateTime
+                                SessionId = s.Value.Account.Session.SessionId,
+                                TotalReceive = s.Value.Account.Session.SessionTotalReceiveBytes,
+                                TotalSend = s.Value.Account.Session.SessionTotalReceiveBytes,
+                                StartTime = s.Value.Account.Session.SessionStartDateTime
                             })
                             .ToArray(),
                         TypeOfCompare.Equal => _core
                             .SelectAccountUtilities(s => s.Where(g =>
-                                g.Account.GetType().GetProperty(propertyName)?.GetValue(g.Account, null) == value))
+                                g.Value.Account.GetType().GetProperty(propertyName)?.GetValue(g.Value.Account, null) ==
+                                value))
                             .Take(takeCount)
                             .Select(s => new G9SessionReport
                             {
-                                SessionId = s.Account.Session.SessionId,
-                                TotalReceive = s.Account.Session.SessionTotalReceiveBytes,
-                                TotalSend = s.Account.Session.SessionTotalReceiveBytes,
-                                StartTime = s.Account.Session.SessionStartDateTime
+                                SessionId = s.Value.Account.Session.SessionId,
+                                TotalReceive = s.Value.Account.Session.SessionTotalReceiveBytes,
+                                TotalSend = s.Value.Account.Session.SessionTotalReceiveBytes,
+                                StartTime = s.Value.Account.Session.SessionStartDateTime
                             })
                             .ToArray(),
                         TypeOfCompare.NotEqual => _core
                             .SelectAccountUtilities(s => s.Where(g =>
-                                g.Account.GetType().GetProperty(propertyName)?.GetValue(g.Account, null) != value))
+                                g.Value.Account.GetType().GetProperty(propertyName)?.GetValue(g.Value.Account, null) !=
+                                value))
                             .Take(takeCount)
                             .Select(s => new G9SessionReport
                             {
-                                SessionId = s.Account.Session.SessionId,
-                                TotalReceive = s.Account.Session.SessionTotalReceiveBytes,
-                                TotalSend = s.Account.Session.SessionTotalReceiveBytes,
-                                StartTime = s.Account.Session.SessionStartDateTime
+                                SessionId = s.Value.Account.Session.SessionId,
+                                TotalReceive = s.Value.Account.Session.SessionTotalReceiveBytes,
+                                TotalSend = s.Value.Account.Session.SessionTotalReceiveBytes,
+                                StartTime = s.Value.Account.Session.SessionStartDateTime
                             })
                             .ToArray(),
                         TypeOfCompare.Greater => _core
                             .SelectAccountUtilities(s => s.Where(g =>
                                 decimal.TryParse(
-                                    g.Account.GetType().GetProperty(propertyName)?.GetValue(g.Account, null).ToString(),
+                                    g.Value.Account.GetType().GetProperty(propertyName)?.GetValue(g.Value.Account, null)
+                                        .ToString(),
                                     out var data) && decimal.TryParse(value.ToString(), out var valueResult) &&
                                 data > valueResult))
                             .Take(takeCount)
                             .Select(s => new G9SessionReport
                             {
-                                SessionId = s.Account.Session.SessionId,
-                                TotalReceive = s.Account.Session.SessionTotalReceiveBytes,
-                                TotalSend = s.Account.Session.SessionTotalReceiveBytes,
-                                StartTime = s.Account.Session.SessionStartDateTime
+                                SessionId = s.Value.Account.Session.SessionId,
+                                TotalReceive = s.Value.Account.Session.SessionTotalReceiveBytes,
+                                TotalSend = s.Value.Account.Session.SessionTotalReceiveBytes,
+                                StartTime = s.Value.Account.Session.SessionStartDateTime
                             })
                             .ToArray(),
                         TypeOfCompare.Less => _core
                             .SelectAccountUtilities(s => s.Where(g =>
                                 decimal.TryParse(
-                                    g.Account.GetType().GetProperty(propertyName)?.GetValue(g.Account, null).ToString(),
+                                    g.Value.Account.GetType().GetProperty(propertyName)?.GetValue(g.Value.Account, null)
+                                        .ToString(),
                                     out var data) && decimal.TryParse(value.ToString(), out var valueResult) &&
                                 data < valueResult))
                             .Take(takeCount)
                             .Select(s => new G9SessionReport
                             {
-                                SessionId = s.Account.Session.SessionId,
-                                TotalReceive = s.Account.Session.SessionTotalReceiveBytes,
-                                TotalSend = s.Account.Session.SessionTotalReceiveBytes,
-                                StartTime = s.Account.Session.SessionStartDateTime
+                                SessionId = s.Value.Account.Session.SessionId,
+                                TotalReceive = s.Value.Account.Session.SessionTotalReceiveBytes,
+                                TotalSend = s.Value.Account.Session.SessionTotalReceiveBytes,
+                                StartTime = s.Value.Account.Session.SessionStartDateTime
                             })
                             .ToArray(),
                         _ => throw new InvalidEnumArgumentException(nameof(typeOfCompare), (int) typeOfCompare,
@@ -274,80 +280,80 @@ namespace G9SuperNetCoreServer.AbstractServer
                         case TypeOfCompare.Contain:
                             return _core
                                 .SelectAccountUtilities(s => s.Where(g =>
-                                    g.Account.GetType()
+                                    g.Value.Account.GetType()
                                         .GetProperty(propertyName)
-                                        ?.GetValue(g.Account, null)
+                                        ?.GetValue(g.Value.Account, null)
                                         ?.ToString()
                                         .Contains(value.ToString()) ?? false))
                                 .Take(takeCount)
                                 .Select(s => new G9SessionReport
                                 {
-                                    SessionId = s.Account.Session.SessionId,
-                                    TotalReceive = s.Account.Session.SessionTotalReceiveBytes,
-                                    TotalSend = s.Account.Session.SessionTotalReceiveBytes,
-                                    StartTime = s.Account.Session.SessionStartDateTime
+                                    SessionId = s.Value.Account.Session.SessionId,
+                                    TotalReceive = s.Value.Account.Session.SessionTotalReceiveBytes,
+                                    TotalSend = s.Value.Account.Session.SessionTotalReceiveBytes,
+                                    StartTime = s.Value.Account.Session.SessionStartDateTime
                                 })
                                 .ToArray();
                         case TypeOfCompare.Equal:
                             return _core
                                 .SelectAccountUtilities(s => s.Where(g =>
-                                    g.Account.GetType().GetProperty(propertyName)?.GetValue(g.Account, null) == value))
+                                    g.Value.Account.GetType().GetProperty(propertyName)?.GetValue(g.Value.Account, null) == value))
                                 .Take(takeCount)
                                 .Select(s => new G9SessionReport
                                 {
-                                    SessionId = s.Account.Session.SessionId,
-                                    TotalReceive = s.Account.Session.SessionTotalReceiveBytes,
-                                    TotalSend = s.Account.Session.SessionTotalReceiveBytes,
-                                    StartTime = s.Account.Session.SessionStartDateTime
+                                    SessionId = s.Value.Account.Session.SessionId,
+                                    TotalReceive = s.Value.Account.Session.SessionTotalReceiveBytes,
+                                    TotalSend = s.Value.Account.Session.SessionTotalReceiveBytes,
+                                    StartTime = s.Value.Account.Session.SessionStartDateTime
                                 })
                                 .ToArray();
                         case TypeOfCompare.NotEqual:
                             return _core
                                 .SelectAccountUtilities(s => s.Where(g =>
-                                    g.Account.GetType().GetProperty(propertyName)?.GetValue(g.Account, null) != value))
+                                    g.Value.Account.GetType().GetProperty(propertyName)?.GetValue(g.Value.Account, null) != value))
                                 .Take(takeCount)
                                 .Select(s => new G9SessionReport
                                 {
-                                    SessionId = s.Account.Session.SessionId,
-                                    TotalReceive = s.Account.Session.SessionTotalReceiveBytes,
-                                    TotalSend = s.Account.Session.SessionTotalReceiveBytes,
-                                    StartTime = s.Account.Session.SessionStartDateTime
+                                    SessionId = s.Value.Account.Session.SessionId,
+                                    TotalReceive = s.Value.Account.Session.SessionTotalReceiveBytes,
+                                    TotalSend = s.Value.Account.Session.SessionTotalReceiveBytes,
+                                    StartTime = s.Value.Account.Session.SessionStartDateTime
                                 })
                                 .ToArray();
                         case TypeOfCompare.Greater:
                             return _core
                                 .SelectAccountUtilities(s => s.Where(g =>
                                     decimal.TryParse(
-                                        g.Account.GetType()
+                                        g.Value.Account.GetType()
                                             .GetProperty(propertyName)
-                                            ?.GetValue(g.Account, null)
+                                            ?.GetValue(g.Value.Account, null)
                                             .ToString(), out var data) &&
                                     decimal.TryParse(value.ToString(), out var valueResult) && data > valueResult))
                                 .Take(takeCount)
                                 .Select(s => new G9SessionReport
                                 {
-                                    SessionId = s.Account.Session.SessionId,
-                                    TotalReceive = s.Account.Session.SessionTotalReceiveBytes,
-                                    TotalSend = s.Account.Session.SessionTotalReceiveBytes,
-                                    StartTime = s.Account.Session.SessionStartDateTime
+                                    SessionId = s.Value.Account.Session.SessionId,
+                                    TotalReceive = s.Value.Account.Session.SessionTotalReceiveBytes,
+                                    TotalSend = s.Value.Account.Session.SessionTotalReceiveBytes,
+                                    StartTime = s.Value.Account.Session.SessionStartDateTime
                                 })
                                 .ToArray();
                         case TypeOfCompare.Less:
                             return _core
                                 .SelectAccountUtilities(s => s.Where(g =>
                                     decimal.TryParse(
-                                        g.Account.GetType()
+                                        g.Value.Account.GetType()
                                             .GetProperty(propertyName)
-                                            ?.GetValue(g.Account, null)
+                                            ?.GetValue(g.Value.Account, null)
                                             .ToString(), out var data) &&
                                     decimal.TryParse(value.ToString(), out var valueResult) && data < valueResult))
                                 .Take(takeCount)
                                 .Select(s => new G9SessionReport
                                 {
-                                    SessionId = s.Account.Session.SessionId,
-                                    TotalReceive = s.Account.Session.SessionTotalReceiveBytes,
-                                    TotalSend = s.Account.Session.SessionTotalReceiveBytes,
-                                    StartTime = s.Account.Session.SessionStartDateTime
+                                    SessionId = s.Value.Account.Session.SessionId,
+                                    TotalReceive = s.Value.Account.Session.SessionTotalReceiveBytes,
+                                    TotalSend = s.Value.Account.Session.SessionTotalReceiveBytes,
+                                    StartTime = s.Value.Account.Session.SessionStartDateTime
                                 })
                                 .ToArray();
                         default:

@@ -106,7 +106,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                             _mainSocketListener);
 
                         // Wait until a connection is made before continuing.  
-                        _listenerAcceptManualResetEvent.WaitOne();
+                        _listenerAcceptManualResetEvent.WaitOne(10000);
                     }
                     catch (Exception ex)
                     {
@@ -356,7 +356,7 @@ namespace G9SuperNetCoreServer.AbstractServer
 
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
-                    Send(accountUtilities.SessionSocket, accountUtilities.Account, packets[i]).WaitOne(1000);
+                    Send(accountUtilities.SessionSocket, accountUtilities.Account, packets[i]).WaitOne(10000);
             }
             catch (Exception ex)
             {
@@ -415,7 +415,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
                     // Try to send
-                    Send(accountUtilities.SessionSocket, accountUtilities.Account, packets[i]);
+                    Send(accountUtilities.SessionSocket, accountUtilities.Account, packets[i]).WaitOne(10000);
             }
             catch (Exception ex)
             {
@@ -537,11 +537,8 @@ namespace G9SuperNetCoreServer.AbstractServer
 
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
-                {
-                    Thread.Sleep(169);
                     // Try to send
-                    Send(accountUtilities.SessionSocket, accountUtilities.Account, packets[i]).WaitOne(1000);
-                }
+                    Send(accountUtilities.SessionSocket, accountUtilities.Account, packets[i]).WaitOne(10000);
             }
             catch (Exception ex)
             {
@@ -599,7 +596,7 @@ namespace G9SuperNetCoreServer.AbstractServer
                     var i1 = i;
                     _core.ScrollingAllAccountUtilities(socketConnection =>
                         Send(socketConnection.SessionSocket, socketConnection.Account, packets[i1])
-                            .WaitOne(1000));
+                            .WaitOne(10000));
                 }
             }
             catch (Exception ex)

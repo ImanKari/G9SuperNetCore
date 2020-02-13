@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Net.Sockets;
-using System.Security;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using G9Common.CommandHandler;
 using G9Common.HelperClass;
@@ -59,25 +57,25 @@ namespace G9SuperNetCoreClient.AbstractClient
         private Socket _clientSocket;
 
         /// <summary>
+        ///     Specified packet size
+        ///     Diff between ssl mode and normal mode
+        /// </summary>
+        private ushort _packetSize;
+
+        /// <summary>
         ///     State object handle client task
         /// </summary>
         private G9SuperNetCoreStateObjectClient _stateObject;
 
         /// <summary>
-        ///     Access to main account
-        /// </summary>
-        public TAccount MainAccount => _mainAccountUtilities.Account;
-
-        /// <summary>
-        /// Specified client connected date time
+        ///     Specified client connected date time
         /// </summary>
         public DateTime ClientConnectedDateTime;
 
         /// <summary>
-        ///     Specified packet size
-        ///     Diff between ssl mode and normal mode
+        ///     Access to main account
         /// </summary>
-        private ushort _packetSize;
+        public TAccount MainAccount => _mainAccountUtilities.Account;
 
         #region Send And Receive Bytes
 
@@ -117,12 +115,12 @@ namespace G9SuperNetCoreClient.AbstractClient
         public bool EnableSslConnection { private set; get; }
 
         /// <summary>
-        /// Field for save private key ssl connection certificate
+        ///     Field for save private key ssl connection certificate
         /// </summary>
         private readonly string _privateKey;
 
         /// <summary>
-        /// Field for save client unique identity string
+        ///     Field for save client unique identity string
         /// </summary>
         private readonly string _clientIdentity;
 

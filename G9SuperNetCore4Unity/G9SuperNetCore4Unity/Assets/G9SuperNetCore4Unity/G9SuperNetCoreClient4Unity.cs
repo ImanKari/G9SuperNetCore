@@ -116,12 +116,10 @@ public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
 
     private void OnApplicationQuit()
     {
-        if (G9SuperNetCoreClient != null)
-        {
-            G9SuperNetCoreClient.Disconnect().Wait(369);
-            G9SuperNetCoreClient = null;
-            Thread.Sleep(3639);
-        }
+        if (G9SuperNetCoreClient == null) return;
+        G9SuperNetCoreClient.Disconnect().Wait(369);
+        G9SuperNetCoreClient = null;
+        Thread.Sleep(3639);
     }
 
     #endregion

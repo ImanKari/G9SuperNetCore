@@ -374,10 +374,15 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 8031081218464619565, guid: 64e0aaed1ebdd314b89b7d15d66e3493,
+    - target: {fileID: 8031081218464619554, guid: 64e0aaed1ebdd314b89b7d15d66e3493,
         type: 3}
-      propertyPath: m_Name
-      value: G9SuperNetCoreClient4Unity
+      propertyPath: IsEnableInformationLogging
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8031081218464619554, guid: 64e0aaed1ebdd314b89b7d15d66e3493,
+        type: 3}
+      propertyPath: IsEnableEventLogging
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8031081218464619555, guid: 64e0aaed1ebdd314b89b7d15d66e3493,
         type: 3}
@@ -433,6 +438,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8031081218464619565, guid: 64e0aaed1ebdd314b89b7d15d66e3493,
+        type: 3}
+      propertyPath: m_Name
+      value: G9SuperNetCoreClient4Unity
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 64e0aaed1ebdd314b89b7d15d66e3493, type: 3}

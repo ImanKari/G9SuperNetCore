@@ -55,8 +55,8 @@ namespace G9Common.Abstract
         /// <summary>
         ///     Collection for save and access multi packages
         /// </summary>
-        public readonly Dictionary<Guid, G9PacketSplitHandler> MultiPacketCollection =
-            new Dictionary<Guid, G9PacketSplitHandler>();
+        public readonly SortedDictionary<Guid, G9PacketSplitHandler> MultiPacketCollection =
+            new SortedDictionary<Guid, G9PacketSplitHandler>();
 
         #endregion
     }

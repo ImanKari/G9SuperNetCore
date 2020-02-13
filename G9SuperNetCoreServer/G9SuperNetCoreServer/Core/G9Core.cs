@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
 using G9Common.CommandHandler;
 using G9Common.HelperClass;
 using G9Common.Interface;
@@ -35,7 +35,8 @@ namespace G9SuperNetCoreServer.Core
         ///     index: session id
         ///     Val: account utilities
         /// </summary>
-        private readonly G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>[]
+        private readonly SortedDictionary<uint,
+                G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>>
             _accountCollection;
 
         /// <summary>
@@ -127,10 +128,10 @@ namespace G9SuperNetCoreServer.Core
             Action<G9SendAndReceivePacket, TAccount> onUnhandledCommand, IG9Logging customLogging = null,
             G9SslCertificate sslCertificate = null)
         {
-            // TODO: change fixed array to change sizable array
-            // Set array
+            // Set sorted dictionary collection
             _accountCollection =
-                new G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>[100000];
+                new SortedDictionary<uint, G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>
+                >();
 
             // Set logging system
             Logging = customLogging ?? new G9LoggingServer();
@@ -238,7 +239,7 @@ namespace G9SuperNetCoreServer.Core
 
             // Dispose and remove
             _accountCollection[account.Session.SessionId]?.SessionSocket.Dispose();
-            _accountCollection[account.Session.SessionId] = null;
+            _accountCollection.Remove(account.Session.SessionId);
             // Gc collect
             GC.Collect();
         }
@@ -268,7 +269,7 @@ namespace G9SuperNetCoreServer.Core
 
             // Dispose and remove
             _accountCollection[sessionId]?.SessionSocket.Dispose();
-            _accountCollection[sessionId] = null;
+            _accountCollection.Remove(sessionId);
             // Gc collect
             GC.Collect();
         }
@@ -287,7 +288,7 @@ namespace G9SuperNetCoreServer.Core
 
         public void ClearAllAccountsAndSessions(DisconnectReason disconnectReason)
         {
-            for (var i = 0; i < _accountCollection.Length; i++)
+            for (uint i = 0; i < _accountCollection.Count; i++)
             {
                 // Run on session closed in account
                 try
@@ -302,7 +303,7 @@ namespace G9SuperNetCoreServer.Core
                 // Dispose session socket
                 _accountCollection[i]?.SessionSocket.Dispose();
                 // Remove all
-                _accountCollection[i] = null;
+                _accountCollection.Remove(i);
             }
 
             // Gc collect
@@ -344,8 +345,6 @@ namespace G9SuperNetCoreServer.Core
                                     .Account),
                             // Set session encoding
                             Session_GetSessionEncoding = () => Configuration.EncodingAndDecoding
-
-
                         }, _sessionIdentityCounter,
                     ((IPEndPoint) acceptedSocket.RemoteEndPoint).Address);
 
@@ -397,9 +396,35 @@ namespace G9SuperNetCoreServer.Core
         public void ScrollingAllAccountUtilities(
             Action<G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>> scrollingSocketAction)
         {
-            for (var i = 0; i < _accountCollection.Length; i++)
-                if (_accountCollection[i] != null)
-                    scrollingSocketAction?.Invoke(_accountCollection[i]);
+            foreach (var account in _accountCollection.Values.Where(account => IsSocketConnected(account)))
+                scrollingSocketAction?.Invoke(account);
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Check socket is connected
+        /// </summary>
+        /// <param name="account">Access to G9AccountUtilities account data</param>
+        /// <param name="autoDisposeAndRemove">If true auto dispose socket and remove client if connection is closed</param>
+        /// <returns>Return true if connected</returns>
+
+        #region IsSocketConnected
+
+        private bool IsSocketConnected(
+            G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler> account,
+            bool autoDisposeAndRemove = true)
+        {
+            var valid1 = account.SessionSocket.Poll(1000, SelectMode.SelectRead);
+            var valid2 = account.SessionSocket.Available == 0;
+            if (!valid1 || !valid2)
+            {
+                return true;
+            }
+
+            if (autoDisposeAndRemove)
+                DisconnectAndCloseSession(account.Account, DisconnectReason.DisconnectedFromClient);
+            return false;
         }
 
         #endregion
@@ -412,7 +437,7 @@ namespace G9SuperNetCoreServer.Core
         #region SelectAccountUtilities
 
         public IEnumerable<TResult> SelectAccountUtilities<TResult>(
-            Func<IList<G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>>,
+            Func<IDictionary<uint, G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>>,
                 IEnumerable<TResult>> predicate)
         {
             return predicate?.Invoke(_accountCollection);
@@ -424,16 +449,19 @@ namespace G9SuperNetCoreServer.Core
         ///     Get account utilities
         /// </summary>
         /// <param name="sessionId">Session id for socket</param>
-        /// <returns>Socket of session id</returns>
+        /// <returns>Return account if exist</returns>
 
         #region GetSocketBySessionId
 
         public G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>
             GetAccountUtilitiesBySessionId(uint sessionId)
         {
-            if (sessionId != 0 && sessionId < _accountCollection.Length)
-                return _accountCollection[sessionId];
-            return null;
+            // Check exist account
+            var account = _accountCollection.FirstOrDefault(s => s.Key == sessionId).Value;
+            if (account == null) return null;
+
+            // Check connected then return
+            return IsSocketConnected(account) ? account : null;
         }
 
         #endregion
