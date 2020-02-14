@@ -12,18 +12,21 @@ namespace G9SuperNetCoreClient.AbstractClient
         #region Start Methods
 
         /// <summary>
-        ///     Handler send and receive in frame for client
+        ///     Handler send, receive and events in frame for client
         /// </summary>
 
-        #region HandleSendReceiveInFrame
+        #region HandleSendReceiveAndEventsInFrame
 
-        protected void HandleSendReceiveInFrame()
+        protected void HandleSendReceiveAndEventsInFrame()
         {
             while (ReceiveAction.Any())
                 ReceiveAction.Dequeue()(true);
 
             while (SendAction.Any())
                 SendAction.Dequeue()(true);
+
+            while (EventsQueue.Any())
+                EventsQueue.Dequeue()();
         }
 
         #endregion
@@ -43,6 +46,11 @@ namespace G9SuperNetCoreClient.AbstractClient
         ///     <para>bool => If true wait action execute finish (Sync)</para>
         /// </summary>
         public static readonly Queue<Action<bool>> SendAction = new Queue<Action<bool>>();
+
+        /// <summary>
+        ///     <para>Queue for save events action</para>
+        /// </summary>
+        public static readonly Queue<Action> EventsQueue = new Queue<Action>();
 
         #endregion End Fields And Properties
     }

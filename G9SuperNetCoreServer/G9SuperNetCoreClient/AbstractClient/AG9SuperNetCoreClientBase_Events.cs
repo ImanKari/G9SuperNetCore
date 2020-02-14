@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using G9Common.Delegates;
 using G9Common.LogIdentity;
 using G9Common.Packet;
@@ -50,6 +51,13 @@ namespace G9SuperNetCoreClient.AbstractClient
         public event G9Delegates<TAccount, ClientStopReason, ClientErrorReason, DisconnectReason>.Disconnected
             OnDisconnected;
 
+        /// <summary>
+        /// <para>Event reconnect</para>
+        /// <para>Call when client disconnected and try for reconnect.</para>
+        /// </summary>
+        public event G9Delegates<TAccount, ClientStopReason, ClientErrorReason, DisconnectReason>.Reconnecting
+            OnReconnect;
+
         #endregion
 
         #region Methods
@@ -59,13 +67,18 @@ namespace G9SuperNetCoreClient.AbstractClient
         /// </summary>
         /// <param name="exceptionError">Exception of error</param>
         /// <param name="errorReason">Reason of error</param>
+        /// <param name="tryForReconnect">If true try for reconnect to server</param>
 
         #region OnErrorHandler
 
-        private void OnErrorHandler(Exception exceptionError, ClientErrorReason errorReason)
+        private void OnErrorHandler(Exception exceptionError, ClientErrorReason errorReason, bool tryForReconnect = false)
         {
             // run event
             OnError?.Invoke(exceptionError, errorReason);
+
+            // Try for reconnect
+            if (tryForReconnect)
+                OnReconnectHandler(_mainAccountUtilities.Account);
         }
 
         #endregion
@@ -130,14 +143,41 @@ namespace G9SuperNetCoreClient.AbstractClient
             {
                 // Run on session close in account
                 MainAccount?.OnSessionClosed(disconnectReason);
+                // Run event
+                OnDisconnected?.Invoke(account, disconnectReason);
+                // Disconnected
+                Disconnect().Wait(3999);
             }
             catch
             {
                 // Ignore
             }
 
-            // Run event
-            OnDisconnected?.Invoke(account, disconnectReason);
+            OnReconnectHandler(account);
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Management reconnect
+        /// </summary>
+        /// <param name="account">Connected account</param>
+
+        #region OnReconnectHandler
+
+        private void OnReconnectHandler(TAccount account)
+        {
+            // If enable auto reconnect and try count greater than zero - try for reconnect
+            if (!Configuration.AutoReconnect || _reconnectTryCount <= 0) return;
+            _reconnectTryCount--;
+            // the duration between try to reconnect
+            Thread.Sleep(Configuration.ReconnectDuration);
+
+            // Call reconnect event
+            OnReconnect?.Invoke(account);
+
+            // Reconnect again
+            StartConnection().Wait(3999);
         }
 
         #endregion

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8031081218464619555}
   - component: {fileID: 8031081218464619564}
   - component: {fileID: 8031081218464619554}
+  - component: {fileID: 1343730141823950795}
   m_Layer: 0
   m_Name: G9SuperNetCoreClient4Unity
   m_TagString: Untagged
@@ -45,7 +46,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Validation: 1
-  EnableAutoStartConnection: 1
   Port: 9639
   EnableSecureConnection: 1
   PrivateKey: 9ZdBx9VQ6D97XZwFlTjqR6QtL1hXZhkCIQCFTw1vlf9QO5ZdxnuqjfSeXj2A4hibPQdEiMu/mEgp2lIX5Tbvvskmz7ue7F1MYEWybe8kdq9ByLTQPBEuEMoiJxQr7Nqj
@@ -65,5 +65,18 @@ MonoBehaviour:
   IsEnableExceptionLogging: 1
   IsEnableErrorLogging: 1
   IsEnableWarningLogging: 1
-  IsEnableInformationLogging: 0
-  IsEnableEventLogging: 0
+  IsEnableInformationLogging: 1
+  IsEnableEventLogging: 1
+  TextForDebug: {fileID: 0}
+--- !u!114 &1343730141823950795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8031081218464619565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02f85d3dd1983944ea45531b1b5c6b63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

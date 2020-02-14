@@ -424,18 +424,29 @@ namespace G9SuperNetCoreServer.Core
             G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler> account,
             bool autoDisposeAndRemove = true)
         {
-            // Check socket is connected
-            var valid1 = account.SessionSocket.Poll(1000, SelectMode.SelectRead);
-            var valid2 = account.SessionSocket.Available == 0;
-            if (!valid1 || !valid2)
+            try
             {
-                return true;
-            }
+                // Check socket is connected
+                var valid1 = account.SessionSocket.Poll(1000, SelectMode.SelectRead);
+                var valid2 = account.SessionSocket.Available == 0;
+                if (!valid1 || !valid2)
+                {
+                    return true;
+                }
 
-            // If enable auto dispose => 
-            if (autoDisposeAndRemove)
-                _onDisconnectedHandler?.Invoke(account.Account, DisconnectReason.DisconnectedFromClient);
-            return false;
+                // If enable auto dispose => 
+                if (autoDisposeAndRemove)
+                    _onDisconnectedHandler?.Invoke(account.Account, DisconnectReason.DisconnectedFromClient);
+                return false;
+            }
+            catch
+            {
+                // Ignore
+                // If enable auto dispose => 
+                if (autoDisposeAndRemove)
+                    _onDisconnectedHandler?.Invoke(account.Account, DisconnectReason.DisconnectedFromClient);
+                return false;
+            }
         }
 
         #endregion

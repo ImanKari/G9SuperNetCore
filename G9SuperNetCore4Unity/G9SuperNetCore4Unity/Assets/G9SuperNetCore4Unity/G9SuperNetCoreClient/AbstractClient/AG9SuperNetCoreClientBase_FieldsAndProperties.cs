@@ -79,6 +79,11 @@ namespace G9SuperNetCoreClient.AbstractClient
         /// </summary>
         private ushort _packetSize;
 
+        /// <summary>
+        ///     Specify count for try reconnect
+        /// </summary>
+        private sbyte _reconnectTryCount;
+
         #region Send And Receive Bytes
 
         /// <summary>

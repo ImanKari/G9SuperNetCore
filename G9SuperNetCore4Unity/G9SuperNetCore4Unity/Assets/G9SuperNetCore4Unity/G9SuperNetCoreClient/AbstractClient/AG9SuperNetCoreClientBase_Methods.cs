@@ -55,9 +55,6 @@ namespace G9SuperNetCoreClient.AbstractClient
 
                     _connectDone.WaitOne();
 
-                    // Run event on connected handler
-                    OnConnectedHandler(_mainAccountUtilities.Account);
-
                     return true;
                 }
                 catch (Exception e)
@@ -68,7 +65,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                             LogMessage.FailedOperation);
 
                     // Run Event on error
-                    OnErrorHandler(e, ClientErrorReason.ClientConnectedError);
+                    OnErrorHandler(e, ClientErrorReason.ClientConnectedError, true);
 
                     return false;
                 }

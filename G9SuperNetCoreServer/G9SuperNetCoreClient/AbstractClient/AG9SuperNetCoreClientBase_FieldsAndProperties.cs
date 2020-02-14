@@ -78,6 +78,11 @@ namespace G9SuperNetCoreClient.AbstractClient
         /// </summary>
         public TAccount MainAccount => _mainAccountUtilities.Account;
 
+        /// <summary>
+        ///     Specify count for try reconnect
+        /// </summary>
+        private sbyte _reconnectTryCount;
+
         #region Send And Receive Bytes
 
         /// <summary>

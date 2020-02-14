@@ -8,6 +8,7 @@ using G9LogManagement.Structures;
 using UnityEngine;
 using UnityEngine.UI;
 
+[DefaultExecutionOrder(-899)]
 // ReSharper disable once CheckNamespace
 public class G9Logging4Unity : MonoBehaviour
 {
@@ -20,9 +21,9 @@ public class G9Logging4Unity : MonoBehaviour
     public bool IsEnableInformationLogging = false;
     public bool IsEnableEventLogging = false;
 
-    [Header("Text UI for debug log")]
+    [Header("InputField UI for debug log")]
     // Text ui for log debug
-    public Text TextForDebug;
+    public InputField TextForDebug;
 
     // Use for static methods
     private static bool StaticIsEnableExceptionLogging = true;

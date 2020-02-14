@@ -3,6 +3,7 @@ using G9SuperNetCoreClient.Client.Socket;
 using G9SuperNetCoreClient.Sample;
 using UnityEngine;
 
+[System.Serializable]
 public class G9SuperNetCoreClient4UnityInitializeSample : MonoBehaviour
 {
     /// <summary>

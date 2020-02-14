@@ -63,6 +63,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\G9LogAndEventsHandler\G9EventHandler.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Abstract\AAccount.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Abstract\AG9Command.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Abstract\AG9SuperNetCoreStateObjectBase.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Packet\PacketSplitHandler.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\PacketManagement\G9PacketManagement.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Resource\LogMessage.cs" />
+    <Compile Include="Assets\G9SuperNetCore4Unity\G9Events4Unity\G9Events4Unity.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Logging4Unity\G9Logging4Unity.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Logging4Unity\G9LogItem.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient\Abstract\AClientAccount.cs" />

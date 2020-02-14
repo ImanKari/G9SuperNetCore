@@ -9,7 +9,8 @@ using G9SuperNetCoreClient.Client.Socket;
 using G9SuperNetCoreClient.Config;
 using UnityEngine;
 
-[DefaultExecutionOrder(-999)]
+[Serializable]
+[DefaultExecutionOrder(-799)]
 // ReSharper disable once CheckNamespace
 public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
 {
@@ -73,6 +74,11 @@ public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
 
     private static string _uniqueIdentity;
 
+    /// <summary>
+    ///     Access to events handler
+    /// </summary>
+    public static G9Events4Unity AccessToG9Events4Unity;
+
     #endregion Fields And Properties
 
     #region Methods
@@ -86,12 +92,28 @@ public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
     // ReSharper disable once UnusedMember.Local
     private void Awake()
     {
+        // Set settings
         _validation = Validation;
         _serverIpAddress = ServerIpAddress;
         _port = Port;
         _enableSecureConnection = EnableSecureConnection;
         _privateKey = PrivateKey;
         _uniqueIdentity = UniqueIdentity;
+
+        // Set events object
+        AccessToG9Events4Unity = GetComponent<G9Events4Unity>();
+    }
+
+    #endregion
+
+    /// <summary>
+    ///     Start is called before the first frame update
+    /// </summary>
+
+    #region Start
+
+    private void Start()
+    {
     }
 
     #endregion
@@ -130,22 +152,64 @@ public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
         DisconnectServerMethod = () =>
             (_g9SuperNetCoreClient as G9SuperNetCoreSocketClient<TAccount, TSession>)?.Disconnect();
 
+        // Set event handler
+        InitializeEvents((G9SuperNetCoreSocketClient<TAccount, TSession>) _g9SuperNetCoreClient);
+
         return (G9SuperNetCoreSocketClient<TAccount, TSession>) _g9SuperNetCoreClient;
     }
 
     #endregion
 
     /// <summary>
-    ///     Handle send and receive in fixed update
+    ///     Initialize events after initialize client
+    /// </summary>
+    /// <typeparam name="TAccount">Specified type of account</typeparam>
+    /// <typeparam name="TSession">Specified type of session</typeparam>
+    /// <param name="superNetCoreSocketClient">Instance of client</param>
+
+    #region InitializeEvents
+
+    private static void InitializeEvents<TAccount, TSession>(
+        G9SuperNetCoreSocketClient<TAccount, TSession> superNetCoreSocketClient)
+        where TAccount : AClientAccount<TSession>, new()
+        where TSession : AClientSession, new()
+    {
+        // On connected
+        ((G9SuperNetCoreSocketClient<TAccount, TSession>) _g9SuperNetCoreClient).OnConnected += account =>
+            EventsQueue.Enqueue(() => AccessToG9Events4Unity.OnConnectedHandler?.Invoke(account));
+
+
+        // On disconnect
+        ((G9SuperNetCoreSocketClient<TAccount, TSession>) _g9SuperNetCoreClient).OnDisconnected += (account, reason) =>
+            EventsQueue.Enqueue(() => AccessToG9Events4Unity.OnDisconnectedHandler?.Invoke(account, reason));
+
+        // On error
+        ((G9SuperNetCoreSocketClient<TAccount, TSession>) _g9SuperNetCoreClient).OnError += (error, reason) =>
+            EventsQueue.Enqueue(() => AccessToG9Events4Unity.OnErrorHandler?.Invoke(error, reason));
+
+        // On reconnect
+        ((G9SuperNetCoreSocketClient<TAccount, TSession>) _g9SuperNetCoreClient).OnReconnect += account =>
+            EventsQueue.Enqueue(() => AccessToG9Events4Unity.OnReconnectHandler?.Invoke(account));
+
+        // On unhandled command
+        ((G9SuperNetCoreSocketClient<TAccount, TSession>) _g9SuperNetCoreClient).OnUnhandledCommand +=
+            (packet, account) =>
+                EventsQueue.Enqueue(() => AccessToG9Events4Unity.OnUnhandledCommand?.Invoke(packet, account));
+    }
+
+    #endregion
+
+    /// <summary>
+    ///     Handle send, receive and events in update
     /// </summary>
 
-    #region FixedUpdate
+    #region Update
 
     // ReSharper disable once UnusedMember.Local
-    private void FixedUpdate()
+    private void Update()
     {
         // Handle send receive in frame
-        HandleSendReceiveInFrame();
+        HandleSendReceiveAndEventsInFrame();
     }
 
     #endregion

@@ -7,6 +7,20 @@ namespace G9SuperNetCoreClient.Config
 {
     public class G9ClientConfig : AG9BaseConfig
     {
+        /// <summary>
+        ///     Specified if client disconnected need try for reconnect
+        /// </summary>
+        public bool AutoReconnect = true;
+
+        /// <summary>
+        ///     Specify the duration between try to reconnect
+        /// </summary>
+        public ushort ReconnectDuration = 1369;
+
+        /// <summary>
+        ///     Specify count for try reconnect
+        /// </summary>
+        public sbyte ReconnectTryCount = 3;
 
         /// <summary>
         ///     Constructor
@@ -28,10 +42,10 @@ namespace G9SuperNetCoreClient.Config
         ///     Specify type of encoding and decoding
         ///     If set null adjusted default value => UTF-8
         /// </param>
-        public G9ClientConfig(IPAddress oIpAddress, ushort oPortNumber, SocketMode oMode, byte oCommandSize = 1, byte oBodySize = 8, G9Encoding oEncodingAndDecoding = null)
+        public G9ClientConfig(IPAddress oIpAddress, ushort oPortNumber, SocketMode oMode, byte oCommandSize = 1,
+            byte oBodySize = 8, G9Encoding oEncodingAndDecoding = null)
             : base(oIpAddress, oPortNumber, oMode, oCommandSize, oBodySize, oEncodingAndDecoding)
         {
-
         }
     }
 }

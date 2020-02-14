@@ -53,7 +53,13 @@ namespace G9Common.Delegates
         /// <summary>
         ///     Delegate for Request Over The Limit
         /// </summary>
-        /// <param name="account"></param>
+        /// <param name="account">Specified account</param>
         public delegate void RequestOverTheLimit(TAccount account);
+
+        /// <summary>
+        ///     Delegate for reconnecting
+        /// </summary>
+        /// <param name="account">Specified account</param>
+        public delegate void Reconnecting(TAccount account);
     }
 }

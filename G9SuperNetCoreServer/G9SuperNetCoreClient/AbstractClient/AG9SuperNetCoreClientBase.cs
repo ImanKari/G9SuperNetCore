@@ -114,6 +114,8 @@ namespace G9SuperNetCoreClient.AbstractClient
             _commandHandler.AddCustomCommand<byte[]>(nameof(G9ReservedCommandName.G9Authorization),
                 AuthorizationReceiveHandler, null);
 
+            // Set reconnect try count - use when client disconnected
+            _reconnectTryCount = Configuration.ReconnectTryCount;
 
             // Set private key
             if (string.IsNullOrEmpty(privateKeyForSslConnection)) return;
@@ -216,6 +218,9 @@ namespace G9SuperNetCoreClient.AbstractClient
                 // Listen for receive
                 Receive(_clientSocket);
 
+                // Set reconnect try count - use when client disconnected
+                _reconnectTryCount = Configuration.ReconnectTryCount;
+
                 // Call authorization
                 SendCommandByNameAsyncWithCustomPacketDataType(nameof(G9ReservedCommandName.G9Authorization),
                     string.IsNullOrEmpty(_privateKey)
@@ -229,7 +234,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                     _logging.LogException(ex, LogMessage.FailClinetConnection, G9LogIdentity.CLIENT_CONNECTED,
                         LogMessage.FailedOperation);
                 // Run event on connected error
-                OnErrorHandler(ex, ClientErrorReason.ClientConnectedError);
+                OnErrorHandler(ex, ClientErrorReason.ClientConnectedError, true);
             }
         }
 
