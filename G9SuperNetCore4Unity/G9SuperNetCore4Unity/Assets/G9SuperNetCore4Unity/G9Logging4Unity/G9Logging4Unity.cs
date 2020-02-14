@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using G9LogManagement.Enums;
 using G9LogManagement.Structures;
 using UnityEngine;
+using UnityEngine.UI;
 
 // ReSharper disable once CheckNamespace
 public class G9Logging4Unity : MonoBehaviour
@@ -18,6 +19,10 @@ public class G9Logging4Unity : MonoBehaviour
     public bool IsEnableWarningLogging = true;
     public bool IsEnableInformationLogging = false;
     public bool IsEnableEventLogging = false;
+
+    [Header("Text UI for debug log")]
+    // Text ui for log debug
+    public Text TextForDebug;
 
     // Use for static methods
     private static bool StaticIsEnableExceptionLogging = true;
@@ -361,11 +366,21 @@ public class G9Logging4Unity : MonoBehaviour
             // Ignore if null
             if (string.IsNullOrEmpty(logItem.Body)) return;
 
+            // Set log data
+            var log = $"[### Log Type: {logItem.LogType} ###]\nDate & Time: {logItem.LogDateTime:yyyy/MM/ss HH:mm:ss.fff}\nIdentity: {logItem.Identity}\tTitle: {logItem.Title}\nBody: {new Regex("[^a-zA-Z0-9 -]").Replace(logItem.Body, string.Empty)}\nPath: {logItem.FileName}\nMethod: {logItem.MethodBase}\tLine: {logItem.LineNumber}\n\n";
+
+            // Set debug ui log if exists
+            if (TextForDebug != null)
+            {
+                var newLog = log + TextForDebug.text;
+                TextForDebug.text = newLog.Substring(0, Mathf.Clamp(newLog.Length, 0, 6000));
+            }
+
             // Show console log
             Debug.LogFormat(_unityLogTypes[logTypeNumber],
                 LogOption.NoStacktrace,
                 null,
-                $"<color=#{0:X2}{loggingColors[logTypeNumber].g:X2}{loggingColors[logTypeNumber].b:X2}> | ### Log Type: {logItem.LogType} ### | \nDate & Time: {logItem.LogDateTime:yyyy/MM/ss HH:mm:ss.fff}\nIdentity: {logItem.Identity}\tTitle: {logItem.Title}\nBody: {new Regex("[^a-zA-Z0-9 -]").Replace(logItem.Body, string.Empty)}\nPath: {logItem.FileName}\nMethod: {logItem.MethodBase}\tLine: {logItem.LineNumber}\n</color>"
+                $"<color=#{0:X2}{loggingColors[logTypeNumber].g:X2}{loggingColors[logTypeNumber].b:X2}>{log}</color>"
             );
         }
         catch (Exception ex)

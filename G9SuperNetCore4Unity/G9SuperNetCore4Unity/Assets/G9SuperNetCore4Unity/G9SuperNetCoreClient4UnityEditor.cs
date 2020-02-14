@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿#if UNITY_EDITOR
+using System.Net;
 using UnityEditor;
 using UnityEngine;
 
@@ -21,19 +22,6 @@ public class G9SuperNetCoreClient4UnityEditor : Editor
         EditorGUILayout.HelpBox(
             $"Version G9SuperNetCoreClient4Unity: {G9SuperNetCoreClient4Unity.Version}",
             MessageType.Info, true);
-
-        #region Enable auto connected
-
-        _clientTarget.EnableAutoStartConnection =
-            EditorGUILayout.Toggle("Auto Connected", _clientTarget.EnableAutoStartConnection);
-        if (_clientTarget.EnableAutoStartConnection)
-            EditorGUILayout.HelpBox(
-                "Enable auto connected for client.\nConnected automatic to server in first time after start game.",
-                MessageType.Info);
-        else
-            EditorGUILayout.HelpBox("Disable auto connected for client.", MessageType.Warning);
-
-        #endregion
 
         #region IpAddress
 
@@ -108,3 +96,4 @@ public class G9SuperNetCoreClient4UnityEditor : Editor
         #endregion
     }
 }
+#endif

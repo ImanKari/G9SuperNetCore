@@ -36,6 +36,8 @@
 
   <PropertyGroup>
     <NuspecFile>G9SuperNetCoreClient.nuspec</NuspecFile>
+    <AssemblyVersion>2.1.0.1</AssemblyVersion>
+    <FileVersion>2.1.0.1</FileVersion>
   </PropertyGroup>
 
 </Project>
