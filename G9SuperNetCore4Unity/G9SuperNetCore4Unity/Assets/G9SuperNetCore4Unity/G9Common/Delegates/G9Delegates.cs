@@ -14,11 +14,36 @@ namespace G9Common.Delegates
         where TDisconnectReason : struct, IConvertible
     {
         /// <summary>
+        ///     Delegate for connected
+        /// </summary>
+        /// <param name="account">Connected account</param>
+        public delegate void Connected(TAccount account);
+
+        /// <summary>
+        ///     Delegate for disconnected
+        /// </summary>
+        /// <param name="stopReason">Reason of disconnected</param>
+        public delegate void Disconnected(TAccount account, TDisconnectReason stopReason);
+
+        /// <summary>
         ///     Delegate for error
         /// </summary>
         /// <param name="exceptionError">Exception of error</param>
         /// <param name="stopReason">Reason of error</param>
         public delegate void Error(Exception exceptionError, TErrorReason stopReason);
+
+        /// <summary>
+        ///     Delegate for reconnecting
+        /// </summary>
+        /// <param name="account">Specified account</param>
+        /// <param name="reconnectTryNumber">Specified try reconnect number</param>
+        public delegate void Reconnecting(TAccount account, sbyte reconnectTryNumber);
+
+        /// <summary>
+        ///     Delegate for Request Over The Limit
+        /// </summary>
+        /// <param name="account">Specified account</param>
+        public delegate void RequestOverTheLimit(TAccount account);
 
         /// <summary>
         ///     Delegate for start
@@ -32,34 +57,15 @@ namespace G9Common.Delegates
         public delegate void Stop(TStopReason stopReason);
 
         /// <summary>
+        ///     Delegate for unable to connect
+        /// </summary>
+        public delegate void UnableToConnect();
+
+        /// <summary>
         ///     Delegate for Unhandled commands
         /// </summary>
         /// <param name="packet">Received packet data</param>
         /// <param name="account">account send command</param>
         public delegate void Unhandled(G9SendAndReceivePacket packet, TAccount account);
-
-        /// <summary>
-        ///     Delegate for connected
-        /// </summary>
-        /// <param name="account">Connected account</param>
-        public delegate void Connected(TAccount account);
-
-        /// <summary>
-        ///     Delegate for disconnected
-        /// </summary>
-        /// <param name="stopReason">Reason of disconnected</param>
-        public delegate void Disconnected(TAccount account, TDisconnectReason stopReason);
-
-        /// <summary>
-        ///     Delegate for Request Over The Limit
-        /// </summary>
-        /// <param name="account">Specified account</param>
-        public delegate void RequestOverTheLimit(TAccount account);
-
-        /// <summary>
-        ///     Delegate for reconnecting
-        /// </summary>
-        /// <param name="account">Specified account</param>
-        public delegate void Reconnecting(TAccount account);
     }
 }

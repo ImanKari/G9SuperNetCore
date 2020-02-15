@@ -7,10 +7,12 @@ using G9Common.HelperClass;
 using G9Common.JsonHelper;
 using G9Common.LogIdentity;
 using G9Common.Packet;
+using G9Common.PacketManagement;
 using G9Common.Resource;
 using G9LogManagement.Enums;
 using G9SuperNetCoreClient.Abstract;
 using G9SuperNetCoreClient.Enums;
+using G9SuperNetCoreClient.Helper;
 
 // ReSharper disable once CheckNamespace
 namespace G9SuperNetCoreClient.AbstractClient
@@ -31,16 +33,19 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         public async Task<bool> StartConnection()
         {
-            return await Task.Run(() =>
+            return await Task.Run(async () =>
             {
                 // Set log
-                if (_logging.CheckLoggingIsActive(LogsType.EXCEPTION))
+                if (_logging.CheckLoggingIsActive(LogsType.EVENT))
                     _logging.LogEvent(LogMessage.StartClientConnection, G9LogIdentity.START_CLIENT_CONNECTION,
                         LogMessage.SuccessfulOperation);
 
                 // Connect to a remote device.  
                 try
                 {
+                    // Disconnect if server is connected
+                    await Disconnect();
+
                     // Establish the remote endpoint for the socket.  
                     var remoteEndPoint = new IPEndPoint(Configuration.IpAddress, Configuration.PortNumber);
 
@@ -88,17 +93,8 @@ namespace G9SuperNetCoreClient.AbstractClient
                 // Connect to a remote device.  
                 try
                 {
-                    if (_clientSocket is null)
-                    {
-                        // Set log
-                        if (_logging.CheckLoggingIsActive(LogsType.ERROR))
-                            _logging.LogError(LogMessage.CantStopStoppedServer,
-                                G9LogIdentity.STOP_SERVER, LogMessage.FailedOperation);
-                        // Run event
-                        OnErrorHandler(new Exception(LogMessage.CantStopStoppedServer),
-                            ClientErrorReason.ClientDisconnectedAndReceiveRequestForDisconnect);
-                        return false;
-                    }
+                    // If client is null => it's disconnect => return true
+                    if (_clientSocket is null) return true;
 
                     // Close, Disconnect and dispose
                     _clientSocket.Dispose();
@@ -110,7 +106,10 @@ namespace G9SuperNetCoreClient.AbstractClient
                             LogMessage.SuccessfulOperation);
 
                     // Run event on disconnect
-                    OnDisconnectedHandler(_mainAccountUtilities.Account, DisconnectReason.DisconnectedByProgram);
+                    OnDisconnectedHandler(_mainAccountUtilities.Account, DisconnectReason.DisconnectedByProgram, false);
+
+                    // Clear total client data for reset
+                    ResetAndClearClientData();
 
                     return true;
                 }
@@ -118,7 +117,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                 {
                     // Set log
                     if (_logging.CheckLoggingIsActive(LogsType.EXCEPTION))
-                        _logging.LogException(e, LogMessage.FailClinetConnection, G9LogIdentity.START_CLIENT_CONNECTION,
+                        _logging.LogException(e, LogMessage.CantStopStoppedServer, G9LogIdentity.STOP_CLIENT_CONNECTION,
                             LogMessage.FailedOperation);
 
                     // Run Event on error
@@ -127,6 +126,56 @@ namespace G9SuperNetCoreClient.AbstractClient
                     return false;
                 }
             });
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Used for reset and clear total data and ready for restart
+        /// </summary>
+
+        #region ResetAndClearClientData
+
+        private void ResetAndClearClientData()
+        {
+            // Initialize main account utilities
+            _mainAccountUtilities =
+                new G9AccountUtilities<TAccount, G9ClientAccountHandler, G9ClientSessionHandler>
+                {
+                    Account = new TAccount()
+                };
+
+            // Initialize account and session
+            var session = new TSession();
+            session.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(_mainAccountUtilities.SessionHandler =
+                new G9ClientSessionHandler
+                {
+                    // Set send command sync
+                    Session_SendCommandByName = SendCommandByName,
+                    // Set send command async
+                    Session_SendCommandByNameAsync = SendCommandByNameAsync,
+                    // Set session encoding
+                    Session_GetSessionEncoding = () => Configuration.EncodingAndDecoding
+                }, 0, IPAddress.Any);
+            _mainAccountUtilities.Account.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(
+                _mainAccountUtilities.AccountHandler = new G9ClientAccountHandler(), session);
+
+            // Initialize packet management
+            _packetManagement = new G9PacketManagement(Configuration.CommandSize, Configuration.BodySize,
+                Configuration.EncodingAndDecoding, _logging);
+
+            // Set packet size
+            _packetSize = _packetManagement.MaximumPacketSize;
+
+            // Initialize state object
+            _stateObject =
+                new G9SuperNetCoreStateObjectClient(_packetSize, _mainAccountUtilities.Account.Session.SessionId);
+
+            // Reset send receive bytes counter
+            TotalSendBytes = TotalReceiveBytes = TotalSendPacket = TotalReceivePacket = 0;
+
+            // Remove dead space
+            GC.Collect();
         }
 
         #endregion

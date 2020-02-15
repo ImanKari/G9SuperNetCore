@@ -25,16 +25,22 @@ public class G9EventHandler : MonoBehaviour
         ShowEventLogs($"OnError: Client Error.\nError reason: {reason}\n{ex.StackTrace}");
     }
 
-    public void OnReconnect(object account)
+    public void OnReconnect(object account, sbyte tryReconnectNumber)
     {
         ShowEventLogs(
-            $"OnReconnect: Client Try for reconnect.\n{(account as AAccount)?.SessionSendCommand.GetSessionInfo()}");
+            $"OnReconnect: Client Try for reconnect, Number of try {tryReconnectNumber}.\n{(account as AAccount)?.SessionSendCommand.GetSessionInfo()}");
     }
 
     public void OnUnhandledCommand(G9SendAndReceivePacket packet, object account)
     {
         ShowEventLogs(
             $"OnUnhandledCommand: Client receive unhandled command.\nCommand name: {packet.Command}\nPacket type: {packet.PacketType}\nPacket data type: {packet.PacketDataType}\n{(account as AAccount)?.SessionSendCommand.GetSessionInfo()}");
+    }
+
+    public void OnUnableToConnect()
+    {
+        ShowEventLogs(
+            $"OnUnableToConnect: Client unable to connect!");
     }
 
     private void ShowEventLogs(string message)

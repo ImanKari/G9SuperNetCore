@@ -54,16 +54,16 @@ namespace G9SuperNetCoreClient.AbstractClient
             // Set logging system
             _logging = customLogging ?? new G9LoggingClient();
 
+            // Set configuration
+            Configuration = clientConfig;
+
             // Initialize main account utilities
             _mainAccountUtilities =
                 new G9AccountUtilities<TAccount, G9ClientAccountHandler, G9ClientSessionHandler>
                 {
                     Account = new TAccount()
                 };
-
-            // Set configuration
-            Configuration = clientConfig;
-
+            
             // Initialize account and session
             var session = new TSession();
             session.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(_mainAccountUtilities.SessionHandler =

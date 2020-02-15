@@ -188,13 +188,20 @@ public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
             EventsQueue.Enqueue(() => AccessToG9Events4Unity.OnErrorHandler?.Invoke(error, reason));
 
         // On reconnect
-        ((G9SuperNetCoreSocketClient<TAccount, TSession>) _g9SuperNetCoreClient).OnReconnect += account =>
-            EventsQueue.Enqueue(() => AccessToG9Events4Unity.OnReconnectHandler?.Invoke(account));
+        ((G9SuperNetCoreSocketClient<TAccount, TSession>) _g9SuperNetCoreClient).OnReconnect +=
+            (account, tryReconnectNumber) =>
+                EventsQueue.Enqueue(
+                    () => AccessToG9Events4Unity.OnReconnectHandler?.Invoke(account, tryReconnectNumber));
 
         // On unhandled command
         ((G9SuperNetCoreSocketClient<TAccount, TSession>) _g9SuperNetCoreClient).OnUnhandledCommand +=
             (packet, account) =>
                 EventsQueue.Enqueue(() => AccessToG9Events4Unity.OnUnhandledCommand?.Invoke(packet, account));
+
+        // On unable to connect
+        ((G9SuperNetCoreSocketClient<TAccount, TSession>)_g9SuperNetCoreClient).OnUnableToConnect +=
+            () =>
+                EventsQueue.Enqueue(() => AccessToG9Events4Unity.OnUnableToConnect?.Invoke());
     }
 
     #endregion

@@ -396,6 +396,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1343730141823950795, guid: 64e0aaed1ebdd314b89b7d15d66e3493,
         type: 3}
+      propertyPath: OnUnableToConnect.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1343730141823950795, guid: 64e0aaed1ebdd314b89b7d15d66e3493,
+        type: 3}
       propertyPath: OnUnhandledCommand.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
       value: 0
       objectReference: {fileID: 0}
@@ -542,6 +547,31 @@ PrefabInstance:
     - target: {fileID: 1343730141823950795, guid: 64e0aaed1ebdd314b89b7d15d66e3493,
         type: 3}
       propertyPath: OnReconnectHandler.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 1343730141823950795, guid: 64e0aaed1ebdd314b89b7d15d66e3493,
+        type: 3}
+      propertyPath: OnUnableToConnect.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1343730141823950795, guid: 64e0aaed1ebdd314b89b7d15d66e3493,
+        type: 3}
+      propertyPath: OnUnableToConnect.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1343730141823950795, guid: 64e0aaed1ebdd314b89b7d15d66e3493,
+        type: 3}
+      propertyPath: OnUnableToConnect.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1803808771}
+    - target: {fileID: 1343730141823950795, guid: 64e0aaed1ebdd314b89b7d15d66e3493,
+        type: 3}
+      propertyPath: OnUnableToConnect.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnUnableToConnect
+      objectReference: {fileID: 0}
+    - target: {fileID: 1343730141823950795, guid: 64e0aaed1ebdd314b89b7d15d66e3493,
+        type: 3}
+      propertyPath: OnUnableToConnect.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 8031081218464619554, guid: 64e0aaed1ebdd314b89b7d15d66e3493,

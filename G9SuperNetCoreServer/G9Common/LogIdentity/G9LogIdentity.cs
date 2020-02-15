@@ -170,6 +170,11 @@
         public const string START_CLIENT_CONNECTION = "START_CLIENT_CONNECTION";
 
         /// <summary>
+        ///     Log Identity => On stop client connection
+        /// </summary>
+        public const string STOP_CLIENT_CONNECTION = "STOP_CLIENT_CONNECTION";
+
+        /// <summary>
         ///     Log Identity => On client connected to server
         /// </summary>
         public const string CLIENT_CONNECTED = "CLIENT_CONNECTED";

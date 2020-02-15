@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Net.Sockets;
-using System.Security;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using G9Common.CommandHandler;
 using G9Common.HelperClass;
@@ -33,17 +31,6 @@ namespace G9SuperNetCoreClient.AbstractClient
         private readonly IG9Logging _logging;
 
         /// <summary>
-        ///     Field used for save and access to account utilities
-        /// </summary>
-        private readonly G9AccountUtilities<TAccount, G9ClientAccountHandler, G9ClientSessionHandler>
-            _mainAccountUtilities;
-
-        /// <summary>
-        ///     Access to packet management
-        /// </summary>
-        private readonly G9PacketManagement _packetManagement;
-
-        /// <summary>
         ///     ManualResetEvent instances signal completion.
         /// </summary>
         private readonly ManualResetEvent _sendDone = new ManualResetEvent(false);
@@ -59,19 +46,15 @@ namespace G9SuperNetCoreClient.AbstractClient
         private Socket _clientSocket;
 
         /// <summary>
-        ///     State object handle client task
+        ///     Field used for save and access to account utilities
         /// </summary>
-        private G9SuperNetCoreStateObjectClient _stateObject;
+        private G9AccountUtilities<TAccount, G9ClientAccountHandler, G9ClientSessionHandler>
+            _mainAccountUtilities;
 
         /// <summary>
-        ///     Access to main account
+        ///     Access to packet management
         /// </summary>
-        public TAccount MainAccount => _mainAccountUtilities.Account;
-
-        /// <summary>
-        /// Specified client connected date time
-        /// </summary>
-        public DateTime ClientConnectedDateTime;
+        private G9PacketManagement _packetManagement;
 
         /// <summary>
         ///     Specified packet size
@@ -83,6 +66,21 @@ namespace G9SuperNetCoreClient.AbstractClient
         ///     Specify count for try reconnect
         /// </summary>
         private sbyte _reconnectTryCount;
+
+        /// <summary>
+        ///     State object handle client task
+        /// </summary>
+        private G9SuperNetCoreStateObjectClient _stateObject;
+
+        /// <summary>
+        ///     Specified client connected date time
+        /// </summary>
+        public DateTime ClientConnectedDateTime;
+
+        /// <summary>
+        ///     Access to main account
+        /// </summary>
+        public TAccount MainAccount => _mainAccountUtilities.Account;
 
         #region Send And Receive Bytes
 
@@ -122,12 +120,12 @@ namespace G9SuperNetCoreClient.AbstractClient
         public bool EnableSslConnection { private set; get; }
 
         /// <summary>
-        /// Field for save private key ssl connection certificate
+        ///     Field for save private key ssl connection certificate
         /// </summary>
         private readonly string _privateKey;
 
         /// <summary>
-        /// Field for save client unique identity string
+        ///     Field for save client unique identity string
         /// </summary>
         private readonly string _clientIdentity;
 

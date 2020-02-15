@@ -32,17 +32,6 @@ namespace G9SuperNetCoreClient.AbstractClient
         private readonly IG9Logging _logging;
 
         /// <summary>
-        ///     Field used for save and access to account utilities
-        /// </summary>
-        private readonly G9AccountUtilities<TAccount, G9ClientAccountHandler, G9ClientSessionHandler>
-            _mainAccountUtilities;
-
-        /// <summary>
-        ///     Access to packet management
-        /// </summary>
-        private readonly G9PacketManagement _packetManagement;
-
-        /// <summary>
         ///     ManualResetEvent instances signal completion.
         /// </summary>
         private readonly ManualResetEvent _sendDone = new ManualResetEvent(false);
@@ -58,10 +47,26 @@ namespace G9SuperNetCoreClient.AbstractClient
         private Socket _clientSocket;
 
         /// <summary>
+        ///     Field used for save and access to account utilities
+        /// </summary>
+        private G9AccountUtilities<TAccount, G9ClientAccountHandler, G9ClientSessionHandler>
+            _mainAccountUtilities;
+
+        /// <summary>
+        ///     Access to packet management
+        /// </summary>
+        private G9PacketManagement _packetManagement;
+
+        /// <summary>
         ///     Specified packet size
         ///     Diff between ssl mode and normal mode
         /// </summary>
         private ushort _packetSize;
+
+        /// <summary>
+        ///     Specify count for try reconnect
+        /// </summary>
+        private sbyte _reconnectTryCount;
 
         /// <summary>
         ///     State object handle client task
@@ -77,11 +82,6 @@ namespace G9SuperNetCoreClient.AbstractClient
         ///     Access to main account
         /// </summary>
         public TAccount MainAccount => _mainAccountUtilities.Account;
-
-        /// <summary>
-        ///     Specify count for try reconnect
-        /// </summary>
-        private sbyte _reconnectTryCount;
 
         #region Send And Receive Bytes
 

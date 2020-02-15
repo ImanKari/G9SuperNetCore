@@ -29,22 +29,37 @@ public class G9Events4Unity : MonoBehaviour
     public ReconnectHandler OnReconnectHandler;
 
     /// <summary>
+    ///     Management Unable to connect
+    /// </summary>
+    public UnityEvent OnUnableToConnect;
+
+    /// <summary>
     ///     Management Unhandled commands
     /// </summary>
     public UnhandledCommand OnUnhandledCommand;
 }
 
 [Serializable]
-public class ConnectedHandler : UnityEvent<object> { }
+public class ConnectedHandler : UnityEvent<object>
+{
+}
 
 [Serializable]
-public class DisconnectedHandler : UnityEvent<object, DisconnectReason> { }
+public class DisconnectedHandler : UnityEvent<object, DisconnectReason>
+{
+}
 
 [Serializable]
-public class ErrorHandler : UnityEvent<Exception, ClientErrorReason> { }
+public class ErrorHandler : UnityEvent<Exception, ClientErrorReason>
+{
+}
 
 [Serializable]
-public class ReconnectHandler : UnityEvent<object> { }
+public class ReconnectHandler : UnityEvent<object, sbyte>
+{
+}
 
 [Serializable]
-public class UnhandledCommand : UnityEvent<G9SendAndReceivePacket, object> { }
+public class UnhandledCommand : UnityEvent<G9SendAndReceivePacket, object>
+{
+}

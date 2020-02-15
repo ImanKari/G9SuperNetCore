@@ -15,7 +15,7 @@ namespace G9SuperNetCoreClient.Config
         /// <summary>
         ///     Specify the duration between try to reconnect
         /// </summary>
-        public ushort ReconnectDuration = 1369;
+        public ushort ReconnectDuration = 3639;
 
         /// <summary>
         ///     Specify count for try reconnect
