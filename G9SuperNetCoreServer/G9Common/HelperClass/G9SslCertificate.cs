@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD2_1 || NETCOREAPP3_0
+﻿#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
 using System.Globalization;
 using System.Net;
 using System.Security.Cryptography;
@@ -76,7 +76,7 @@ namespace G9Common.HelperClass
 
         #endregion
 
-#if NETSTANDARD2_1 || NETCOREAPP3_0
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
         /// <summary>
         ///     <para>Constructor</para>
         ///     <para>Initialize requirement</para>

@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD2_1 || NETCOREAPP3_0
+﻿#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
 using System;
 #endif
 using System.ComponentModel;
@@ -32,7 +32,7 @@ namespace G9Common.HelperClass
 
         public G9Encoding(EncodingTypes typeOfEncoding)
         {
-#if NETSTANDARD2_1 || NETCOREAPP3_0
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
             EncodingType = typeOfEncoding switch
             {
                 EncodingTypes.ASCII => Encoding.ASCII,
@@ -106,7 +106,7 @@ namespace G9Common.HelperClass
 
         #endregion
 
-#if NETSTANDARD2_1 || NETCOREAPP3_0
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
 
         /// <summary>
         /// Easy access to get string

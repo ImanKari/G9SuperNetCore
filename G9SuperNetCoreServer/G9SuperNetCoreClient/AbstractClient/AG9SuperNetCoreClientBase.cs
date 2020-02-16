@@ -407,7 +407,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                 {
                     _stateObject.MultiPacketCollection[receivePacket.RequestId]
                         .AddPacket(
-#if NETSTANDARD2_1 || NETCOREAPP3_0
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
                                     receivePacket.Body.Span[0], receivePacket.Body.ToArray()
 #else
                             receivePacket.Body[0], receivePacket.Body
@@ -428,7 +428,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                 else
                 {
                     if (
-#if NETSTANDARD2_1 || NETCOREAPP3_0
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
                                     receivePacket.Body.Span[0]
 #else
                         receivePacket.Body[0]
@@ -437,7 +437,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                     {
                         _stateObject.MultiPacketCollection.Add(receivePacket.RequestId,
                             new G9PacketSplitHandler(receivePacket.RequestId,
-#if NETSTANDARD2_1 || NETCOREAPP3_0
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
                                     receivePacket.Body.Span[1]
 #else
                                 receivePacket.Body[1]
@@ -445,7 +445,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                             ));
                         _stateObject.MultiPacketCollection[receivePacket.RequestId]
                             .AddPacket(0,
-#if NETSTANDARD2_1 || NETCOREAPP3_0
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
                                     receivePacket.Body.ToArray()
 #else
                                 receivePacket.Body
@@ -480,7 +480,7 @@ namespace G9SuperNetCoreClient.AbstractClient
         #region Send
 
         private WaitHandle Send(Socket clientSocket,
-#if NETSTANDARD2_1 || NETCOREAPP3_0
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
             ReadOnlySpan<byte>
 #else
             byte[]
@@ -503,7 +503,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                     !_mainAccountUtilities.Account.Session.IsAuthorization &&
                     data[1] == (byte) G9PacketDataType.Authorization
                         ?
-#if NETSTANDARD2_1 || NETCOREAPP3_0
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
                      data.ToArray()
 #else
                         data
@@ -511,14 +511,14 @@ namespace G9SuperNetCoreClient.AbstractClient
                         // check enable or disable ssl connection for encrypt
                         : EnableSslConnection
                             ? _encryptAndDecryptDataWithCertificate.EncryptDataByCertificate(
-#if NETSTANDARD2_1 || NETCOREAPP3_0
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
                      data.ToArray()
 #else
                                 data
 #endif
                                 , 0)
                             :
-#if NETSTANDARD2_1 || NETCOREAPP3_0
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
                      data.ToArray()
 #else
                             data

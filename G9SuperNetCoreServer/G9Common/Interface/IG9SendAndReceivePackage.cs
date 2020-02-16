@@ -26,7 +26,7 @@ namespace G9Common.Interface
         /// <summary>
         ///     Body of command
         /// </summary>
-#if NETSTANDARD2_1 || NETCOREAPP3_0
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
         ReadOnlyMemory<byte> Body { get; }
 #else
         byte[] Body { get; }

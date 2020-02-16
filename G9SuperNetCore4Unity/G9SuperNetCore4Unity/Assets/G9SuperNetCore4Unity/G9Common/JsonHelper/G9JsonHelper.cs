@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD2_1 || NETCOREAPP3_0
+﻿#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
 using System;
 #endif
 using G9Common.HelperClass;
@@ -43,7 +43,7 @@ namespace G9Common.JsonHelper
 
         #endregion
 
-#if NETSTANDARD2_1 || NETCOREAPP3_0
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
         /// <summary>
         ///     Convert ReadOnlyMemory byte to type
         /// </summary>
