@@ -1,6 +1,8 @@
 ScriptsOnlyBuild:
   usedScripts:
     Assembly-CSharp.dll:
+    - G9EventHandler
+    - G9Events4Unity
     - G9Logging4Unity
     - G9SuperNetCoreClient4Unity
     - G9SuperNetCoreClient4UnityInitializeSample
@@ -19,6 +21,7 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.CanvasScaler
     - UnityEngine.UI.GraphicRaycaster
     - UnityEngine.UI.Image
+    - UnityEngine.UI.InputField
     - UnityEngine.UI.Text
   sceneClasses:
     Assets/Scenes/G9SuperNetCore4Unity.unity:
@@ -49,13 +52,19 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 10316}
     - Class: 114
+      Script: {instanceID: 10922}
+    - Class: 114
       Script: {instanceID: 11218}
     - Class: 114
       Script: {instanceID: 11314}
     - Class: 114
-      Script: {instanceID: 11612}
+      Script: {instanceID: 11332}
     - Class: 114
-      Script: {instanceID: 11654}
+      Script: {instanceID: 11554}
+    - Class: 114
+      Script: {instanceID: 11616}
+    - Class: 114
+      Script: {instanceID: 11658}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -397,10 +406,16 @@ ScriptsOnlyBuild:
     className: BeforeAfterTestCommandState
   - hash:
       serializedVersion: 2
-      Hash: d99823bc84594e58323e52cd59908559
+      Hash: 315821f9d9cb5317e31f9a7d797c24de
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: G9Logging4Unity
+  - hash:
+      serializedVersion: 2
+      Hash: 12e82dc935bc18b4d3b3ffcafed9c095
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: G9Events4Unity
   - hash:
       serializedVersion: 2
       Hash: c3d3430df9e3ea95e3e3d587961390fb
@@ -437,6 +452,12 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.EventSystems
     className: BaseInput
+  - hash:
+      serializedVersion: 2
+      Hash: 3bca7bd4d096e5bf4f231b60302f99bd
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: G9EventHandler
   - hash:
       serializedVersion: 2
       Hash: caa533b001ae39b864ba8425019e2268
