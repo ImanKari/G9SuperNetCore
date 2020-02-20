@@ -155,6 +155,8 @@ namespace G9SuperNetCoreClient.AbstractClient
                 MainAccount?.OnSessionClosed(disconnectReason);
                 // Run event
                 OnDisconnected?.Invoke(account, disconnectReason);
+                // Disconnect if server is connected
+                Disconnect().Wait(3999);
             }
             catch
             {

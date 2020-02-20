@@ -50,8 +50,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                     var remoteEndPoint = new IPEndPoint(Configuration.IpAddress, Configuration.PortNumber);
 
                     // Create a TCP/IP socket.  
-                    var client = new Socket(Configuration.IpAddress.AddressFamily,
-                        SocketType.Stream, ProtocolType.Tcp);
+                    var client = new Socket(Configuration.IpAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
 
                     // Connect to the remote endpoint.  

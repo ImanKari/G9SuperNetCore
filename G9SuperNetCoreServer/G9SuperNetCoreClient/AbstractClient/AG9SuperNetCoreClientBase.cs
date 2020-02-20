@@ -349,10 +349,11 @@ namespace G9SuperNetCoreClient.AbstractClient
                 if (_stateObject != null)
                     Array.Clear(_stateObject.Buffer, 0, _stateObject.Buffer.Length);
 
-                if (ex is SocketException exception && (exception.ErrorCode == 10054 || exception.ErrorCode == 10060))
+                if (!_mainAccountUtilities.Account.Session.IsAuthorization || ex is SocketException exception && (exception.ErrorCode == 10054 || exception.ErrorCode == 10060))
                 {
-                    //Error 10060: 'An existing connection was forcibly closed by the remote host'
+                    // Error 10060: 'An existing connection was forcibly closed by the remote host'
                     // A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+                    // If IsAuthorization is false and receive exception => call disconnect
                     // Run event disconnect
                     OnDisconnectedHandler(_mainAccountUtilities.Account, DisconnectReason.DisconnectedFromServer);
                 }
