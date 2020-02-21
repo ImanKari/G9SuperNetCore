@@ -25,14 +25,13 @@ public class G9SuperNetCoreClient4UnityEditor : Editor
 
         #region IpAddress
 
-        var ipAddress = _clientTarget.ServerIpAddress?.ToString();
-        ipAddress = EditorGUILayout.TextField("Server Ip Address", ipAddress);
-        if (string.IsNullOrEmpty(ipAddress))
+        _clientTarget.ServerIpAddress = EditorGUILayout.TextField("Server Ip Address", _clientTarget.ServerIpAddress);
+        if (string.IsNullOrEmpty(_clientTarget.ServerIpAddress))
         {
             EditorGUILayout.HelpBox("Please enter the ip address", MessageType.Error);
             _clientTarget.Validation = false;
         }
-        else if (!IPAddress.TryParse(ipAddress, out _clientTarget.ServerIpAddress))
+        else if (!IPAddress.TryParse(_clientTarget.ServerIpAddress, out _))
         {
             EditorGUILayout.HelpBox("Invalid ip address!", MessageType.Error);
             _clientTarget.Validation = false;

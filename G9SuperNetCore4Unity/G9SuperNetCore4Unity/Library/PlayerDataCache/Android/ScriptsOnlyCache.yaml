@@ -148,7 +148,7 @@ ScriptsOnlyBuild:
     className: TouchInputModule
   - hash:
       serializedVersion: 2
-      Hash: 9304b52a3e01d3bf79680f3a9b1a04a5
+      Hash: 19964e19324a1eb24d7104e15bd9c6cf
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: G9SuperNetCoreClient4Unity
@@ -406,7 +406,7 @@ ScriptsOnlyBuild:
     className: BeforeAfterTestCommandState
   - hash:
       serializedVersion: 2
-      Hash: 315821f9d9cb5317e31f9a7d797c24de
+      Hash: 383b780564f9d176b689e99de1e1c84d
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: G9Logging4Unity

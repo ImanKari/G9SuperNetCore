@@ -195,22 +195,10 @@ namespace G9SuperNetCoreClient.AbstractClient
             try
             {
                 // Retrieve the socket from the state object.  
-                _clientSocket = (Socket) asyncResult.AsyncState;
+                _clientSocket = (Socket)asyncResult.AsyncState;
 
                 // Complete the connection.  
                 _clientSocket.EndConnect(asyncResult);
-
-                // Signal that the connection has been made.  
-                _connectDone.Set();
-
-                // Set log
-                if (_logging.CheckLoggingIsActive(LogsType.EVENT))
-                {
-                    var ipEndPoint = _clientSocket.RemoteEndPoint as IPEndPoint;
-                    _logging.LogEvent(
-                        $"{LogMessage.SuccessClientConnection}\n{LogMessage.IpAddress}: {ipEndPoint?.Address}\n{LogMessage.Port}: {ipEndPoint?.Port}",
-                        G9LogIdentity.CLIENT_CONNECTED, LogMessage.SuccessfulOperation);
-                }
 
                 // Run event on connected
                 OnConnectedHandler(_mainAccountUtilities.Account);
@@ -218,15 +206,35 @@ namespace G9SuperNetCoreClient.AbstractClient
                 // Listen for receive
                 Receive(_clientSocket);
 
-                // Set reconnect try count - use when client disconnected
-                _reconnectTryCount = Configuration.ReconnectTryCount;
+                if (IsSocketConnected(_clientSocket))
+                {
 
-                // Call authorization
-                SendCommandByNameAsyncWithCustomPacketDataType(nameof(G9ReservedCommandName.G9Authorization),
-                    string.IsNullOrEmpty(_privateKey)
-                        ? new byte[0]
-                        : Configuration.EncodingAndDecoding.EncodingType.GetBytes(_clientIdentity),
-                    G9PacketDataType.Authorization, isAuthorization: true);
+                    // Set log
+                    if (_logging.CheckLoggingIsActive(LogsType.EVENT))
+                    {
+                        var ipEndPoint = _clientSocket.RemoteEndPoint as IPEndPoint;
+                        _logging.LogEvent(
+                            $"{LogMessage.SuccessClientConnection}\n{LogMessage.IpAddress}: {ipEndPoint?.Address}\n{LogMessage.Port}: {ipEndPoint?.Port}",
+                            G9LogIdentity.CLIENT_CONNECTED, LogMessage.SuccessfulOperation);
+                    }
+
+                    // Set reconnect try count - use when client disconnected
+                    _reconnectTryCount = Configuration.ReconnectTryCount;
+
+                    // Signal that the connection has been made.  
+                    _connectDone.Set();
+
+                    // Call authorization
+                    SendCommandByNameAsyncWithCustomPacketDataType(nameof(G9ReservedCommandName.G9Authorization),
+                        string.IsNullOrEmpty(_privateKey)
+                            ? new byte[0]
+                            : Configuration.EncodingAndDecoding.EncodingType.GetBytes(_clientIdentity),
+                        G9PacketDataType.Authorization, isAuthorization: true);
+                }
+                else
+                {
+                    throw new Exception("Client can't connect to server!");
+                }
             }
             catch (Exception ex)
             {
@@ -234,7 +242,33 @@ namespace G9SuperNetCoreClient.AbstractClient
                     _logging.LogException(ex, LogMessage.FailClinetConnection, G9LogIdentity.CLIENT_CONNECTED,
                         LogMessage.FailedOperation);
                 // Run event on connected error
-                OnErrorHandler(ex, ClientErrorReason.ClientConnectedError, true);
+                OnErrorHandler(ex, ClientErrorReason.ClientConnectedError);
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Check socket is connected
+        /// </summary>
+        /// <param name="socketForCheck">Socket for check connected</param>
+        /// <returns>Return true if connected</returns>
+
+        #region IsSocketConnected
+
+        private bool IsSocketConnected(Socket socketForCheck)
+        {
+            try
+            {
+                // Check socket is connected
+                return socketForCheck != null && !(socketForCheck.Poll(1000, SelectMode.SelectRead) &&
+                                                   socketForCheck.Available == 0 ||
+                                                   !socketForCheck.Connected);
+            }
+            catch
+            {
+                // Ignore
+                return false;
             }
         }
 

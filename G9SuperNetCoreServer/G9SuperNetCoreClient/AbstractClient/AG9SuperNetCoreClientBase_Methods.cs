@@ -57,8 +57,11 @@ namespace G9SuperNetCoreClient.AbstractClient
                     client.BeginConnect(remoteEndPoint,
                         ConnectCallback, client);
 
-                    _connectDone.WaitOne();
+                    // Wait for check connection
+                    if (!_connectDone.WaitOne(9999))
+                        throw new Exception("Client Can't connect to server");
 
+                    // Connection success
                     return true;
                 }
                 catch (Exception e)
@@ -69,7 +72,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                             LogMessage.FailedOperation);
 
                     // Run Event on error
-                    OnErrorHandler(e, ClientErrorReason.ClientConnectedError, true);
+                    OnErrorHandler(e, ClientErrorReason.ClientConnectedError);
 
                     return false;
                 }
@@ -137,6 +140,12 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         private void ResetAndClearClientData()
         {
+            // Reset flag for class unable to connect
+            _unableToConnectFlag = false;
+
+            // Reset flag for check connection
+            _connectDone.Reset();
+
             // Initialize main account utilities
             _mainAccountUtilities =
                 new G9AccountUtilities<TAccount, G9ClientAccountHandler, G9ClientSessionHandler>

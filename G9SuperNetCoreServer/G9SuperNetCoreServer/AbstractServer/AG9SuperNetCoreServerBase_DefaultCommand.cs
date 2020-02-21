@@ -119,6 +119,13 @@ namespace G9SuperNetCoreServer.AbstractServer
                         _core.Logging.LogEvent(
                             $"{LogMessage.AuthorizationSuccess}\n{account.Session.GetSessionInfo()}",
                             G9LogIdentity.AUTHORIZATION_SUCCESS, LogMessage.SuccessfulOperation);
+
+                    // Send auth is success for client
+                    SendCommandByNameWithCustomPacketDataType(account.Session.SessionId,
+                        nameof(G9ReservedCommandName.G9Authorization),
+                        new[] {(byte) DisconnectReason.AuthorizationIsSuccess},
+                        G9PacketDataType.Authorization, requestId);
+
                 }
             }
             // Receive 1 byte => Authorization answer from client

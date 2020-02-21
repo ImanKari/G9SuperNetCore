@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using G9LogManagement.Enums;
 using G9SuperNetCoreClient.Abstract;
 using G9SuperNetCoreClient.Enums;
 using G9SuperNetCoreClient.Helper;
+using Debug = UnityEngine.Debug;
 
 // ReSharper disable once CheckNamespace
 namespace G9SuperNetCoreClient.AbstractClient
@@ -52,13 +54,15 @@ namespace G9SuperNetCoreClient.AbstractClient
                     // Create a TCP/IP socket.  
                     var client = new Socket(Configuration.IpAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-
                     // Connect to the remote endpoint.  
                     client.BeginConnect(remoteEndPoint,
                         ConnectCallback, client);
 
-                    _connectDone.WaitOne();
+                    // Wait for check connection
+                    if (!_connectDone.WaitOne(9999))
+                        throw new Exception("Client Can't connect to server");
 
+                    // Connection success
                     return true;
                 }
                 catch (Exception e)
@@ -69,7 +73,7 @@ namespace G9SuperNetCoreClient.AbstractClient
                             LogMessage.FailedOperation);
 
                     // Run Event on error
-                    OnErrorHandler(e, ClientErrorReason.ClientConnectedError, true);
+                    OnErrorHandler(e, ClientErrorReason.ClientConnectedError);
 
                     return false;
                 }
@@ -137,6 +141,12 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         private void ResetAndClearClientData()
         {
+            // Reset flag for class unable to connect
+            _unableToConnectFlag = false;
+
+            // Reset flag for check connection
+            _connectDone.Reset();
+
             // Initialize main account utilities
             _mainAccountUtilities =
                 new G9AccountUtilities<TAccount, G9ClientAccountHandler, G9ClientSessionHandler>

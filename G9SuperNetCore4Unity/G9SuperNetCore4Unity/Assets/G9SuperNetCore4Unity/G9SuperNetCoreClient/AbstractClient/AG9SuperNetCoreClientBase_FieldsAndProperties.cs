@@ -82,6 +82,17 @@ namespace G9SuperNetCoreClient.AbstractClient
         /// </summary>
         public TAccount MainAccount => _mainAccountUtilities.Account;
 
+        /// <summary>
+        ///     <para>Specified reconnect is enable or no</para>
+        ///     <para>If is enable reject other reconnect request</para>
+        /// </summary>
+        private bool _reconnectModeEnable;
+
+        /// <summary>
+        ///     <para>If is enable reject other request for call OnUnableToConnectHandler</para>
+        /// </summary>
+        private bool _unableToConnectFlag;
+
         #region Send And Receive Bytes
 
         /// <summary>

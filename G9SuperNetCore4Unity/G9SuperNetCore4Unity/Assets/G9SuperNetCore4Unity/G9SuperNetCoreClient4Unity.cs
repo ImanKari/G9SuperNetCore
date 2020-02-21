@@ -2,6 +2,7 @@
 using System.Net;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using G9Common.Enums;
 using G9SuperNetCoreClient.Abstract;
 using G9SuperNetCoreClient.AbstractClient;
@@ -20,6 +21,11 @@ public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
     public const string Version = "2.1.0.1";
 
     #region Fields And Properties
+
+    /// <summary>
+    ///     Specified game is playing or no
+    /// </summary>
+    public static bool GameIsPlaying { private set; get; }
 
     /// <summary>
     ///     Specified Client object
@@ -41,16 +47,16 @@ public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
     /// <summary>
     ///     Field for save server ip address
     /// </summary>
-    public IPAddress ServerIpAddress = IPAddress.Parse("192.168.1.103");
+    public string ServerIpAddress = "192.168.1.103";
 
-    private static IPAddress _serverIpAddress;
+    private static string _serverIpAddress;
 
     /// <summary>
     ///     Specified port
     /// </summary>
-    [Range(10, ushort.MaxValue)] public ushort Port = 9639;
+    [Range(10, ushort.MaxValue)] public ushort Port;
 
-    private static ushort _port = 9639;
+    private static ushort _port;
 
     /// <summary>
     ///     Specified ssl connection is enable
@@ -127,35 +133,40 @@ public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
 
     #region Initialize
 
-    public static G9SuperNetCoreSocketClient<TAccount, TSession> Initialize<TAccount, TSession>()
+    public static async Task<G9SuperNetCoreSocketClient<TAccount, TSession>> Initialize<TAccount, TSession>()
         where TAccount : AClientAccount<TSession>, new()
         where TSession : AClientSession, new()
     {
-        // Check validation
-        if (!_validation)
-            throw new Exception("Invalid config exception. Please check G9NetCoreClient configuration!");
+        return await Task.Run(() =>
+        {
+            // Check validation
+            if (!_validation)
+                throw new Exception("Invalid config exception. Please check G9NetCoreClient configuration!");
 
-        // Check client initialized
-        if (_g9SuperNetCoreClient != null)
-            throw new Exception("Client initialize just one time!");
+            // Check client initialized
+            if (_g9SuperNetCoreClient != null)
+                throw new Exception("Client initialize just one time!");
 
-        // Initialize
-        _g9SuperNetCoreClient = _enableSecureConnection
-            ? new G9SuperNetCoreSocketClient<TAccount, TSession>(
-                new G9ClientConfig(_serverIpAddress, _port, SocketMode.Tcp), Assembly.GetExecutingAssembly(),
-                _privateKey,
-                _uniqueIdentity)
-            : new G9SuperNetCoreSocketClient<TAccount, TSession>(
-                new G9ClientConfig(_serverIpAddress, _port, SocketMode.Tcp), Assembly.GetExecutingAssembly());
+            // Initialize
+            _g9SuperNetCoreClient = _enableSecureConnection
+                ? new G9SuperNetCoreSocketClient<TAccount, TSession>(
+                    new G9ClientConfig(IPAddress.Parse(_serverIpAddress), _port, SocketMode.Tcp),
+                    Assembly.GetExecutingAssembly(),
+                    _privateKey,
+                    _uniqueIdentity)
+                : new G9SuperNetCoreSocketClient<TAccount, TSession>(
+                    new G9ClientConfig(IPAddress.Parse(_serverIpAddress), _port, SocketMode.Tcp),
+                    Assembly.GetExecutingAssembly());
 
-        // Set disconnect action
-        DisconnectServerMethod = () =>
-            (_g9SuperNetCoreClient as G9SuperNetCoreSocketClient<TAccount, TSession>)?.Disconnect();
+            // Set disconnect action
+            DisconnectServerMethod = () =>
+                (_g9SuperNetCoreClient as G9SuperNetCoreSocketClient<TAccount, TSession>)?.Disconnect();
 
-        // Set event handler
-        InitializeEvents((G9SuperNetCoreSocketClient<TAccount, TSession>) _g9SuperNetCoreClient);
+            // Set event handler
+            InitializeEvents((G9SuperNetCoreSocketClient<TAccount, TSession>) _g9SuperNetCoreClient);
 
-        return (G9SuperNetCoreSocketClient<TAccount, TSession>) _g9SuperNetCoreClient;
+            return (G9SuperNetCoreSocketClient<TAccount, TSession>) _g9SuperNetCoreClient;
+        });
     }
 
     #endregion
@@ -175,31 +186,31 @@ public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
         where TSession : AClientSession, new()
     {
         // On connected
-        ((G9SuperNetCoreSocketClient<TAccount, TSession>) _g9SuperNetCoreClient).OnConnected += account =>
+        superNetCoreSocketClient.OnConnected += account =>
             EventsQueue.Enqueue(() => AccessToG9Events4Unity.OnConnectedHandler?.Invoke(account));
 
 
         // On disconnect
-        ((G9SuperNetCoreSocketClient<TAccount, TSession>) _g9SuperNetCoreClient).OnDisconnected += (account, reason) =>
+        superNetCoreSocketClient.OnDisconnected += (account, reason) =>
             EventsQueue.Enqueue(() => AccessToG9Events4Unity.OnDisconnectedHandler?.Invoke(account, reason));
 
         // On error
-        ((G9SuperNetCoreSocketClient<TAccount, TSession>) _g9SuperNetCoreClient).OnError += (error, reason) =>
+        superNetCoreSocketClient.OnError += (error, reason) =>
             EventsQueue.Enqueue(() => AccessToG9Events4Unity.OnErrorHandler?.Invoke(error, reason));
 
         // On reconnect
-        ((G9SuperNetCoreSocketClient<TAccount, TSession>) _g9SuperNetCoreClient).OnReconnect +=
+        superNetCoreSocketClient.OnReconnect +=
             (account, tryReconnectNumber) =>
                 EventsQueue.Enqueue(
                     () => AccessToG9Events4Unity.OnReconnectHandler?.Invoke(account, tryReconnectNumber));
 
         // On unhandled command
-        ((G9SuperNetCoreSocketClient<TAccount, TSession>) _g9SuperNetCoreClient).OnUnhandledCommand +=
+        superNetCoreSocketClient.OnUnhandledCommand +=
             (packet, account) =>
                 EventsQueue.Enqueue(() => AccessToG9Events4Unity.OnUnhandledCommand?.Invoke(packet, account));
 
         // On unable to connect
-        ((G9SuperNetCoreSocketClient<TAccount, TSession>)_g9SuperNetCoreClient).OnUnableToConnect +=
+        superNetCoreSocketClient.OnUnableToConnect +=
             () =>
                 EventsQueue.Enqueue(() => AccessToG9Events4Unity.OnUnableToConnect?.Invoke());
     }
@@ -215,6 +226,8 @@ public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
     // ReSharper disable once UnusedMember.Local
     private void Update()
     {
+        // Set game is playing
+        GameIsPlaying = Application.isPlaying;
         // Handle send receive in frame
         HandleSendReceiveAndEventsInFrame();
     }
@@ -230,6 +243,7 @@ public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
     // ReSharper disable once UnusedMember.Local
     private void OnApplicationQuit()
     {
+        GameIsPlaying = false;
         if (_g9SuperNetCoreClient == null) return;
         _g9SuperNetCoreClient.GetType().GetMethod("Disconnect")?.Invoke(_g9SuperNetCoreClient, null);
         _g9SuperNetCoreClient = null;

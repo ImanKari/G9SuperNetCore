@@ -27,10 +27,12 @@ public class G9SuperNetCoreClient4UnityInitializeSample : MonoBehaviour
     {
         // Run in background
         Application.runInBackground = true;
+        // Screen set NeverSleep
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
         // Make the game run as fast as possible
         Application.targetFrameRate = 60;
-        // Initialize cluent
-        G9SuperNetCoreClient = G9SuperNetCoreClient4Unity.Initialize<ClientAccountSample, ClientSessionSample>();
+        // Initialize client
+        G9SuperNetCoreClient = await G9SuperNetCoreClient4Unity.Initialize<ClientAccountSample, ClientSessionSample>();
         await G9SuperNetCoreClient.StartConnection();
     }
 

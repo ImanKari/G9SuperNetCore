@@ -7,6 +7,7 @@ using UnityEngine;
 // ReSharper disable once CheckNamespace
 namespace G9SuperNetCoreClient.AbstractClient
 {
+    [Serializable]
     public class G9SuperNetCoreClient4UnityHelper : MonoBehaviour
     {
         #region Start Methods

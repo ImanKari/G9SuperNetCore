@@ -7,6 +7,7 @@ using G9Common.Resource;
 using G9LogManagement.Enums;
 using G9SuperNetCoreClient.Abstract;
 using G9SuperNetCoreClient.Enums;
+using UnityEngine;
 
 namespace G9SuperNetCoreClient.AbstractClient
 {
@@ -80,7 +81,7 @@ namespace G9SuperNetCoreClient.AbstractClient
         #region OnErrorHandler
 
         private void OnErrorHandler(Exception exceptionError, ClientErrorReason errorReason,
-            bool tryForReconnect = false)
+            bool tryForReconnect = true)
         {
             // run event
             OnError?.Invoke(exceptionError, errorReason);
@@ -144,7 +145,8 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         #region OnDisconnectedHandler
 
-        private void OnDisconnectedHandler(TAccount account, DisconnectReason disconnectReason, bool tryForReconnect = true)
+        private void OnDisconnectedHandler(TAccount account, DisconnectReason disconnectReason,
+            bool tryForReconnect = true)
         {
             // Set is connected
             IsConnected = false;
@@ -155,16 +157,24 @@ namespace G9SuperNetCoreClient.AbstractClient
                 MainAccount?.OnSessionClosed(disconnectReason);
                 // Run event
                 OnDisconnected?.Invoke(account, disconnectReason);
-                // Disconnect if server is connected
-                Disconnect().Wait(3999);
+                if (tryForReconnect
+#if UNITY_2018_1_OR_NEWER
+                    && G9SuperNetCoreClient4Unity.GameIsPlaying
+#endif
+                    )
+                    // Reconnect
+                    OnReconnectHandler(account);
+                else
+                    // Disconnect if server is connected
+                    Disconnect().Wait(3999);
             }
-            catch
+            catch(Exception ex)
             {
                 // Ignore
+                if (_logging.CheckLoggingIsActive(LogsType.EXCEPTION))
+                    _logging.LogException(ex, $"Receive exception in {nameof(OnDisconnectedHandler)}",
+                        nameof(OnDisconnectedHandler), nameof(OnDisconnectedHandler));
             }
-
-            if (tryForReconnect)
-                OnReconnectHandler(account);
         }
 
         #endregion
@@ -179,26 +189,61 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         private void OnReconnectHandler(TAccount account)
         {
-            // If enable auto reconnect and try count greater than zero - try for reconnect
-            // If try count equal zero or auto reconnect is disable
-            if (!Configuration.AutoReconnect || _reconnectTryCount <= 0)
+            var forceReconnect = false;
+            while (true)
             {
-                OnUnableToConnectHandler();
-            }
-            // else try for reconnect
-            else
-            {
-                // the duration between try to reconnect
-                Thread.Sleep(Configuration.ReconnectDuration);
+                // If enable auto reconnect and try count greater than zero - try for reconnect
+                // If try count equal zero or auto reconnect is disable
+                if (!Configuration.AutoReconnect || _reconnectTryCount <= 0)
+                {
+                    // Check flag use unable to connect is false
+                    if (!_unableToConnectFlag)
+                    {
+                        _unableToConnectFlag = true;
+                        _reconnectModeEnable = false;
+                        OnUnableToConnectHandler();
+                    }
+                    break;
+                }
+                
+                // else try for reconnect
+                // If reconnect enable And forceReconnect is false  => reject reconnect request
+                if (_reconnectModeEnable && !forceReconnect)
+                    break;
+
+                // If game playing is false (For unity) => reject reconnect request
+#if UNITY_2018_1_OR_NEWER
+                if (!G9SuperNetCoreClient4Unity.GameIsPlaying)
+                    break;
+#endif
+
+                // Set reconnect mode true
+                _reconnectModeEnable = true;
 
                 // Call reconnect event
                 OnReconnect?.Invoke(account, _reconnectTryCount);
+
+                // Check first time or no => set delay for try reconnect
+                if (Configuration.ReconnectTryCount == _reconnectTryCount)
+                    // if first time => 30% of duration for try to reconnect
+                    Thread.Sleep((ushort) (Configuration.ReconnectDuration * 0.3));
+                else
+                    // In other time => full duration for try to reconnect
+                    Thread.Sleep(Configuration.ReconnectDuration);
 
                 // Minus try reconnect
                 _reconnectTryCount--;
 
                 // Reconnect again
-                StartConnection().Wait(3999);
+                var restart = StartConnection();
+
+                if (restart.Wait(Configuration.ReconnectDuration) && restart.Result)
+                {
+                    _reconnectModeEnable = false;
+                    break;
+                }
+
+                forceReconnect = true;
             }
         }
 

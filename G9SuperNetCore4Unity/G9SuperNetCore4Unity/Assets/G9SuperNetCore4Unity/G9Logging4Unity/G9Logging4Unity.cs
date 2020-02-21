@@ -26,14 +26,14 @@ public class G9Logging4Unity : MonoBehaviour
     public InputField TextForDebug;
 
     // Use for static methods
-    private static bool StaticIsEnableExceptionLogging = true;
-    private static bool StaticIsEnableErrorLogging = true;
-    private static bool StaticIsEnableWarningLogging = true;
-    private static bool StaticIsEnableInformationLogging;
-    private static bool StaticIsEnableEventLogging;
+    private static bool _staticIsEnableExceptionLogging = true;
+    private static bool _staticIsEnableErrorLogging = true;
+    private static bool _staticIsEnableWarningLogging = true;
+    private static bool _staticIsEnableInformationLogging = true;
+    private static bool _staticIsEnableEventLogging = true;
 
     // Logging colors
-    private static readonly Color32[] loggingColors =
+    private static readonly Color32[] LoggingColors =
     {
         // Green
         new Color32(53, 170, 53, 1),
@@ -47,7 +47,7 @@ public class G9Logging4Unity : MonoBehaviour
         new Color32(239, 25, 25, 1)
     };
 
-    private static readonly LogType[] _unityLogTypes =
+    private static readonly LogType[] UnityLogTypes =
     {
         LogType.Log, // 0 => for event
         LogType.Log, // 1 => for information
@@ -59,7 +59,18 @@ public class G9Logging4Unity : MonoBehaviour
     /// <summary>
     ///     Queue for save log and show
     /// </summary>
-    private static readonly Queue<G9LogItem> _logQueueForShow = new Queue<G9LogItem>();
+    private static readonly Queue<G9LogItem> LogQueueForShow = new Queue<G9LogItem>();
+
+    /// <summary>
+    ///     <para>The number of logs is too high, not all of them can be displayed.</para>
+    ///     <para>Specified number if log for ignore</para>
+    /// </summary>
+    public byte NumberOfLogIgnore = 99;
+
+    /// <summary>
+    ///     <para>When core print logs, this field save count of logs receive in print time.</para>
+    /// </summary>
+    private static int _numberOfIgnoreInPrintTime = -1;
 
     #endregion End Fields And Properties
 
@@ -86,13 +97,14 @@ public class G9Logging4Unity : MonoBehaviour
 
     #region Start
 
+    // ReSharper disable once UnusedMember.Local
     private void Start()
     {
-        StaticIsEnableExceptionLogging = IsEnableExceptionLogging;
-        StaticIsEnableErrorLogging = IsEnableErrorLogging;
-        StaticIsEnableWarningLogging = IsEnableWarningLogging;
-        StaticIsEnableInformationLogging = IsEnableInformationLogging;
-        StaticIsEnableEventLogging = IsEnableEventLogging;
+        _staticIsEnableExceptionLogging = IsEnableExceptionLogging;
+        _staticIsEnableErrorLogging = IsEnableErrorLogging;
+        _staticIsEnableWarningLogging = IsEnableWarningLogging;
+        _staticIsEnableInformationLogging = IsEnableInformationLogging;
+        _staticIsEnableEventLogging = IsEnableEventLogging;
     }
 
     #endregion
@@ -103,16 +115,50 @@ public class G9Logging4Unity : MonoBehaviour
 
     #region Update
 
+    // ReSharper disable once UnusedMember.Local
     private void Update()
     {
-        StaticIsEnableExceptionLogging = IsEnableExceptionLogging;
-        StaticIsEnableErrorLogging = IsEnableErrorLogging;
-        StaticIsEnableWarningLogging = IsEnableWarningLogging;
-        StaticIsEnableInformationLogging = IsEnableInformationLogging;
-        StaticIsEnableEventLogging = IsEnableEventLogging;
+        _staticIsEnableExceptionLogging = IsEnableExceptionLogging;
+        _staticIsEnableErrorLogging = IsEnableErrorLogging;
+        _staticIsEnableWarningLogging = IsEnableWarningLogging;
+        _staticIsEnableInformationLogging = IsEnableInformationLogging;
+        _staticIsEnableEventLogging = IsEnableEventLogging;
 
-        if (_logQueueForShow.Any())
-            ConsoleLogging(_logQueueForShow.Dequeue());
+        if (LogQueueForShow.Any() && LogQueueForShow.Count > NumberOfLogIgnore)
+        {
+            // Enable ignore log and save count
+            _numberOfIgnoreInPrintTime = 0;
+
+            // Save current log count
+            var currentLogCount = LogQueueForShow.Count;
+
+            // Remove logs
+            ConsoleLogging(LogQueueForShow.Dequeue());
+
+            // Clear other logs
+            LogQueueForShow.Clear();
+
+            // Save log item for count of ignore
+            var logForCountOfIgnore = new G9LogItem(LogsType.WARN, "IGNORE-LOG", "IGNORE-LOG",
+                "The number of logs is too high, not all of them can be displayed.\n" +
+                $"Ignore {currentLogCount + _numberOfIgnoreInPrintTime} +  Logs! ",
+                nameof(G9Logging4Unity),
+                $"{nameof(G9Logging4Unity)}.{nameof(Update)}", "0", DateTime.Now);
+
+            // Reset ignore log
+            _numberOfIgnoreInPrintTime = -1;
+
+            // Print log ignore
+            ConsoleLogging(logForCountOfIgnore);
+        }
+        else
+        {
+            if (!LogQueueForShow.Any()) return;
+            var countOfLogs = LogQueueForShow.Count;
+            // Print logs
+            while (countOfLogs-- > 0)
+                ConsoleLogging(LogQueueForShow.Dequeue());
+        }
     }
 
     #endregion
@@ -140,10 +186,17 @@ public class G9Logging4Unity : MonoBehaviour
         int customLineNumber = 0)
     {
         // Check enable => if disable return;
-        if (!StaticIsEnableExceptionLogging) return;
+        if (!_staticIsEnableExceptionLogging) return;
+
+        // Check if ignore not equal -1 => plus ignore item in print time.
+        if (_numberOfIgnoreInPrintTime != -1)
+        {
+            _numberOfIgnoreInPrintTime++;
+            return;
+        }
 
         // Show Log
-        _logQueueForShow.Enqueue(new G9LogItem(LogsType.EXCEPTION, identity, title, ExceptionErrorGenerate(ex, message),
+        LogQueueForShow.Enqueue(new G9LogItem(LogsType.EXCEPTION, identity, title, ExceptionErrorGenerate(ex, message),
             customCallerPath, customCallerName,
             customLineNumber.ToString(), DateTime.Now));
     }
@@ -168,10 +221,17 @@ public class G9Logging4Unity : MonoBehaviour
         int customLineNumber = 0)
     {
         // Check enable => if disable return;
-        if (!StaticIsEnableErrorLogging) return;
+        if (!_staticIsEnableErrorLogging) return;
+
+        // Check if ignore not equal -1 => plus ignore item in print time.
+        if (_numberOfIgnoreInPrintTime != -1)
+        {
+            _numberOfIgnoreInPrintTime++;
+            return;
+        }
 
         // Show Log
-        _logQueueForShow.Enqueue(new G9LogItem(LogsType.ERROR, identity, title, message, customCallerPath,
+        LogQueueForShow.Enqueue(new G9LogItem(LogsType.ERROR, identity, title, message, customCallerPath,
             customCallerName,
             customLineNumber.ToString(), DateTime.Now));
     }
@@ -196,10 +256,17 @@ public class G9Logging4Unity : MonoBehaviour
         int customLineNumber = 0)
     {
         // Check enable => if disable return;
-        if (!StaticIsEnableWarningLogging) return;
+        if (!_staticIsEnableWarningLogging) return;
+
+        // Check if ignore not equal -1 => plus ignore item in print time.
+        if (_numberOfIgnoreInPrintTime != -1)
+        {
+            _numberOfIgnoreInPrintTime++;
+            return;
+        }
 
         // Show Log
-        _logQueueForShow.Enqueue(new G9LogItem(LogsType.WARN, identity, title, message, customCallerPath,
+        LogQueueForShow.Enqueue(new G9LogItem(LogsType.WARN, identity, title, message, customCallerPath,
             customCallerName,
             customLineNumber.ToString(), DateTime.Now));
     }
@@ -224,10 +291,17 @@ public class G9Logging4Unity : MonoBehaviour
         int customLineNumber = 0)
     {
         // Check enable => if disable return;
-        if (!StaticIsEnableInformationLogging) return;
+        if (!_staticIsEnableInformationLogging) return;
+
+        // Check if ignore not equal -1 => plus ignore item in print time.
+        if (_numberOfIgnoreInPrintTime != -1)
+        {
+            _numberOfIgnoreInPrintTime++;
+            return;
+        }
 
         // Show Log
-        _logQueueForShow.Enqueue(new G9LogItem(LogsType.INFO, identity, title, message, customCallerPath,
+        LogQueueForShow.Enqueue(new G9LogItem(LogsType.INFO, identity, title, message, customCallerPath,
             customCallerName,
             customLineNumber.ToString(), DateTime.Now));
     }
@@ -252,10 +326,17 @@ public class G9Logging4Unity : MonoBehaviour
         int customLineNumber = 0)
     {
         // Check enable => if disable return;
-        if (!StaticIsEnableEventLogging) return;
+        if (!_staticIsEnableEventLogging) return;
+
+        // Check if ignore not equal -1 => plus ignore item in print time.
+        if (_numberOfIgnoreInPrintTime != -1)
+        {
+            _numberOfIgnoreInPrintTime++;
+            return;
+        }
 
         // Show Log
-        _logQueueForShow.Enqueue(new G9LogItem(LogsType.EVENT, identity, title, message, customCallerPath,
+        LogQueueForShow.Enqueue(new G9LogItem(LogsType.EVENT, identity, title, message, customCallerPath,
             customCallerName,
             customLineNumber.ToString(), DateTime.Now));
     }
@@ -276,15 +357,15 @@ public class G9Logging4Unity : MonoBehaviour
         switch (type)
         {
             case LogsType.EVENT:
-                return StaticIsEnableEventLogging;
+                return _staticIsEnableEventLogging;
             case LogsType.INFO:
-                return StaticIsEnableInformationLogging;
+                return _staticIsEnableInformationLogging;
             case LogsType.WARN:
-                return StaticIsEnableWarningLogging;
+                return _staticIsEnableWarningLogging;
             case LogsType.ERROR:
-                return StaticIsEnableErrorLogging;
+                return _staticIsEnableErrorLogging;
             case LogsType.EXCEPTION:
-                return StaticIsEnableExceptionLogging;
+                return _staticIsEnableExceptionLogging;
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
@@ -305,15 +386,15 @@ public class G9Logging4Unity : MonoBehaviour
         switch (type)
         {
             case LogsType.EVENT:
-                return StaticIsEnableEventLogging;
+                return _staticIsEnableEventLogging;
             case LogsType.INFO:
-                return StaticIsEnableInformationLogging;
+                return _staticIsEnableInformationLogging;
             case LogsType.WARN:
-                return StaticIsEnableWarningLogging;
+                return _staticIsEnableWarningLogging;
             case LogsType.ERROR:
-                return StaticIsEnableErrorLogging;
+                return _staticIsEnableErrorLogging;
             case LogsType.EXCEPTION:
-                return StaticIsEnableExceptionLogging;
+                return _staticIsEnableExceptionLogging;
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
@@ -334,15 +415,15 @@ public class G9Logging4Unity : MonoBehaviour
         switch (type)
         {
             case LogsType.EVENT:
-                return StaticIsEnableEventLogging;
+                return _staticIsEnableEventLogging;
             case LogsType.INFO:
-                return StaticIsEnableInformationLogging;
+                return _staticIsEnableInformationLogging;
             case LogsType.WARN:
-                return StaticIsEnableWarningLogging;
+                return _staticIsEnableWarningLogging;
             case LogsType.ERROR:
-                return StaticIsEnableErrorLogging;
+                return _staticIsEnableErrorLogging;
             case LogsType.EXCEPTION:
-                return StaticIsEnableExceptionLogging;
+                return _staticIsEnableExceptionLogging;
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
@@ -360,7 +441,7 @@ public class G9Logging4Unity : MonoBehaviour
     private void ConsoleLogging(G9LogItem logItem)
     {
         // Set Log type number
-        var logTypeNumber = (byte)logItem.LogType;
+        var logTypeNumber = (byte) logItem.LogType;
 
         try
         {
@@ -368,7 +449,8 @@ public class G9Logging4Unity : MonoBehaviour
             if (string.IsNullOrEmpty(logItem.Body)) return;
 
             // Set log data
-            var log = $"[### Log Type: {logItem.LogType} ###]\nDate & Time: {logItem.LogDateTime:yyyy/MM/ss HH:mm:ss.fff}\nIdentity: {logItem.Identity}\tTitle: {logItem.Title}\nBody: {new Regex("[^a-zA-Z0-9 -]").Replace(logItem.Body, string.Empty)}\nPath: {logItem.FileName}\nMethod: {logItem.MethodBase}\tLine: {logItem.LineNumber}\n\n";
+            var log =
+                $"[### Log Type: {logItem.LogType} ###]\nDate & Time: {logItem.LogDateTime:yyyy/MM/ss HH:mm:ss.fff}\nIdentity: {logItem.Identity}\tTitle: {logItem.Title}\nBody: {new Regex("[^a-zA-Z0-9 -]").Replace(logItem.Body, string.Empty)}\nPath: {logItem.FileName}\nMethod: {logItem.MethodBase}\tLine: {logItem.LineNumber}\n\n";
 
             // Set debug ui log if exists
             if (TextForDebug != null)
@@ -378,10 +460,10 @@ public class G9Logging4Unity : MonoBehaviour
             }
 
             // Show console log
-            Debug.LogFormat(_unityLogTypes[logTypeNumber],
+            Debug.LogFormat(UnityLogTypes[logTypeNumber],
                 LogOption.NoStacktrace,
                 null,
-                $"<color=#{0:X2}{loggingColors[logTypeNumber].g:X2}{loggingColors[logTypeNumber].b:X2}>{log}</color>"
+                $"<color=#{0:X2}{LoggingColors[logTypeNumber].g:X2}{LoggingColors[logTypeNumber].b:X2}>{log}</color>"
             );
         }
         catch (Exception ex)

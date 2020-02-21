@@ -10,6 +10,7 @@ using G9Common.Interface;
 using G9Common.LogIdentity;
 using G9Common.Packet;
 using G9Common.Resource;
+using G9LogManagement;
 using G9LogManagement.Enums;
 using G9SuperNetCoreServer.Abstarct;
 using G9SuperNetCoreServer.Config;
@@ -236,9 +237,9 @@ namespace G9SuperNetCoreServer.Core
 
         public void DisconnectAndCloseSession(TAccount account, DisconnectReason disconnectReason)
         {
-            // Run on session closed in account
             try
             {
+                // Run on session closed in account
                 _accountCollection[account.Session.SessionId]?.Account.OnSessionClosed(disconnectReason);
             }
             catch
@@ -246,9 +247,21 @@ namespace G9SuperNetCoreServer.Core
                 // Ignore
             }
 
-            // Dispose and remove
-            _accountCollection[account.Session.SessionId]?.SessionSocket.Dispose();
+            try
+            {
+                // Dispose and remove
+                _accountCollection[account.Session.SessionId]?.SessionSocket.Dispose();
+            }
+            catch (Exception ex)
+            {
+                if (Logging.CheckLoggingIsActive(LogsType.EXCEPTION))
+                    ex.G9LogException_Default("Exception when dispose socket", nameof(DisconnectAndCloseSession),
+                        LogMessage.FailedOperation);
+            }
+
+            // Remove account
             _accountCollection.Remove(account.Session.SessionId);
+
             // Gc collect
             GC.Collect();
         }
@@ -427,12 +440,10 @@ namespace G9SuperNetCoreServer.Core
             try
             {
                 // Check socket is connected
-                var valid1 = account.SessionSocket.Poll(1000, SelectMode.SelectRead);
-                var valid2 = account.SessionSocket.Available == 0;
-                if (!valid1 || !valid2)
-                {
+                if (account.SessionSocket != null && !(account.SessionSocket.Poll(1000, SelectMode.SelectRead) &&
+                                                       account.SessionSocket.Available == 0 ||
+                                                       !account.SessionSocket.Connected))
                     return true;
-                }
 
                 // If enable auto dispose => 
                 if (autoDisposeAndRemove)
