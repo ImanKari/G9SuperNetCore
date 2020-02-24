@@ -18,7 +18,7 @@ public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
     /// <summary>
     ///     Specified version of Super Net Core 4 Unity
     /// </summary>
-    public const string Version = "2.1.0.1";
+    public const string Version = "2.2.1.1";
 
     #region Fields And Properties
 
