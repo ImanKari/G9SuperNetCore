@@ -47,10 +47,6 @@ namespace G9Common.Abstract
         ///     Constructor
         ///     Initialize default requirement and set command name
         /// </summary>
-        /// <param name="commandName">
-        ///     Set command name.
-        ///     if command name is null, command Name = class name
-        /// </param>
 
         #region AG9CommandWithSendReceiveData
 
@@ -73,41 +69,49 @@ namespace G9Common.Abstract
         // Use programmatically
         public void InitializeRequirement(object accessToCommandDataType)
         {
-            if (!_initializeCommand)
-            {
-                ((Action<string, CommandDataType<TAccount>>) accessToCommandDataType)?.Invoke(
-                    CommandName, new CommandDataType<TAccount>(
-                        // Access to method "ReceiveCommand" in command
-                        (data, account, requestId) =>
+            if (_initializeCommand) return;
+
+            ((Action<string, CommandDataType<TAccount>>) accessToCommandDataType)?.Invoke(
+                CommandName, new CommandDataType<TAccount>(
+                    // Access to method "ReceiveCommand" in command
+                    (data, account, requestId, callBack) =>
+                    {
+                        try
                         {
-                            try
+                            // Ready data
+                            var receiveData = data.FromJson<TReceiveType>(account.SessionSendCommand.SessionEncoding);
+
+                            // Func for send
+                            void SendCommandBack(TSendType answerData, CommandSendType sendType)
                             {
-                                ReceiveCommand(data.FromJson<TReceiveType>(account.SessionSendCommand.SessionEncoding),
-                                    account, requestId,
-                                    (answerData, sendType) =>
-                                    {
-                                        if (sendType == CommandSendType.Asynchronous)
-                                            account.SessionSendCommand.SendCommandByNameAsync(CommandName, answerData,
-                                                requestId);
-                                        else
-                                            account.SessionSendCommand.SendCommandByName(CommandName, answerData,
-                                                requestId);
-                                    });
+                                if (sendType == CommandSendType.Asynchronous)
+                                    account.SessionSendCommand.SendCommandByNameAsync(CommandName, answerData,
+                                        requestId);
+                                else
+                                    account.SessionSendCommand.SendCommandByName(CommandName, answerData, requestId);
                             }
-                            catch (Exception ex)
-                            {
-                                OnError(ex, account);
-                            }
-                        },
-                        // Access to method "OnError" in command
-                        OnError,
-                        // Specified receive type
-                        typeof(TReceiveType),
-                        // Specified send type
-                        typeof(TSendType)
-                    ));
-                _initializeCommand = true;
-            }
+
+                            // Call receive command
+                            ReceiveCommand(receiveData, account, requestId, SendCommandBack);
+
+                            // if register call back for command run it
+                            callBack?.Invoke(receiveData, account, requestId,
+                                (Action<object, CommandSendType>)
+                                (object) (Action<TSendType, CommandSendType>) SendCommandBack);
+                        }
+                        catch (Exception ex)
+                        {
+                            OnError(ex, account);
+                        }
+                    },
+                    // Access to method "OnError" in command
+                    OnError,
+                    // Specified receive type
+                    typeof(TReceiveType),
+                    // Specified send type
+                    typeof(TSendType)
+                ));
+            _initializeCommand = true;
         }
 
         #endregion

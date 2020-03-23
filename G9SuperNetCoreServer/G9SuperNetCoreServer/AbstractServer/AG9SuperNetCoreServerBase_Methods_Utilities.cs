@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using G9Common.Resource;
+using G9Common.ServerClient;
 using G9LogManagement.Enums;
 using G9SuperNetCoreServer.Abstarct;
 using G9SuperNetCoreServer.Enums;
@@ -12,7 +13,7 @@ using G9SuperSocketNetCoreServer.Class.Struct;
 
 namespace G9SuperNetCoreServer.AbstractServer
 {
-    public abstract partial class AG9SuperNetCoreServerBase<TAccount, TSession>
+    public abstract partial class AG9SuperNetCoreServerBase<TAccount, TSession> : AG9ServerClientCommon<TAccount>
         where TAccount : AServerAccount<TSession>, new()
         where TSession : AServerSession, new()
     {

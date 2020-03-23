@@ -32,14 +32,14 @@ namespace G9SuperNetNUnitTest
         public void InitializeServer()
         {
             Server = new G9SuperNetCoreSocketServer<ServerAccountSample, ServerSessionSample>(
-                new G9ServerConfig("Test Server", IPAddress.Any, 9639, SocketMode.Tcp), Assembly.GetExecutingAssembly());
+                new G9ServerConfig("Test Server", IPAddress.Any, 9639, SocketMode.Tcp));
         }
 
         [Test, Order(2)]
         public void InitializeClient()
         {
             Client = new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>(
-                new G9ClientConfig(IPAddress.Parse("127.0.0.1"), 9639, SocketMode.Tcp), Assembly.GetExecutingAssembly());
+                new G9ClientConfig(IPAddress.Parse("127.0.0.1"), 9639, SocketMode.Tcp));
         }
 
         [Test, Order(3)]

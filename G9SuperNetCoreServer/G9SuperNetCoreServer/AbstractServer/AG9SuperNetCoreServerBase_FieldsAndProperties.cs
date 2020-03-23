@@ -2,13 +2,14 @@
 using System.Net.Sockets;
 using System.Threading;
 using G9Common.PacketManagement;
+using G9Common.ServerClient;
 using G9SuperNetCoreServer.Abstarct;
 using G9SuperNetCoreServer.Core;
 
 namespace G9SuperNetCoreServer.AbstractServer
 {
     // ReSharper disable once InconsistentNaming
-    public abstract partial class AG9SuperNetCoreServerBase<TAccount, TSession>
+    public abstract partial class AG9SuperNetCoreServerBase<TAccount, TSession> : AG9ServerClientCommon<TAccount>
         where TAccount : AServerAccount<TSession>, new()
         where TSession : AServerSession, new()
     {

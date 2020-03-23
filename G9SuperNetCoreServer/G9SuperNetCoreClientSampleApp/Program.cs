@@ -49,10 +49,12 @@ namespace G9SuperNetCoreClientSampleApp
             const string privateKey =
                 "9ZdBx9VQ6D97XZwFlTjqR6QtL1hXZhkCIQCFTw1vlf9QO5ZdxnuqjfSeXj2A4hibPQdEiMu/mEgp2lIX5Tbvvskmz7ue7F1MYEWybe8kdq9ByLTQPBEuEMoiJxQr7Nqj";
 
+            var clientUniqueId = $"Client-{Guid.NewGuid():P}";
+
             var client1 =
                 new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>(
                     new G9ClientConfig(IPAddress.Parse(ipAddress), intPort, SocketMode.Tcp),
-                    Assembly.GetExecutingAssembly(), privateKey, Guid.NewGuid().ToString("P"));
+                    privateKeyForSslConnection: privateKey, clientUniqueIdentity: clientUniqueId);
 
             //G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>[] clients = new G9SuperNetCoreSocketClient<ClientAccountSample, ClientSessionSample>[9999];
 

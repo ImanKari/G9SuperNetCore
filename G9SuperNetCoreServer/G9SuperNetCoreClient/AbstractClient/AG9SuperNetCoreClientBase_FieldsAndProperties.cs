@@ -5,6 +5,7 @@ using G9Common.CommandHandler;
 using G9Common.HelperClass;
 using G9Common.Interface;
 using G9Common.PacketManagement;
+using G9Common.ServerClient;
 using G9SuperNetCoreClient.Abstract;
 using G9SuperNetCoreClient.Config;
 using G9SuperNetCoreClient.Helper;
@@ -12,7 +13,7 @@ using G9SuperNetCoreClient.Helper;
 namespace G9SuperNetCoreClient.AbstractClient
 {
     // ReSharper disable once InconsistentNaming
-    public abstract partial class AG9SuperNetCoreClientBase<TAccount, TSession>
+    public abstract partial class AG9SuperNetCoreClientBase<TAccount, TSession> : AG9ServerClientCommon<TAccount>
         where TAccount : AClientAccount<TSession>, new()
         where TSession : AClientSession, new()
     {

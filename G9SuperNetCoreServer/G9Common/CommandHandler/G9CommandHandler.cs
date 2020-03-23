@@ -27,9 +27,9 @@ namespace G9Common.CommandHandler
         #region Fields And Properties
 
         /// <summary>
-        ///     Field save assembly of commands
+        ///     Field save assemblies of commands
         /// </summary>
-        private readonly Assembly _commandAssembly;
+        private readonly Assembly[] _commandAssembly;
 
         /// <summary>
         ///     Access to logging
@@ -44,12 +44,13 @@ namespace G9Common.CommandHandler
         /// <summary>
         ///     Save instance of commands
         /// </summary>
+        // ReSharper disable once CollectionNeverQueried.Local
         private readonly SortedDictionary<string, object> _instanceCommandCollection;
 
         /// <summary>
         ///     Specified command size
         /// </summary>
-        public readonly int _commandSize;
+        public readonly int CommandSize;
 
         /// <summary>
         ///     Save event on unhandled command
@@ -64,7 +65,7 @@ namespace G9Common.CommandHandler
         ///     Constructor
         ///     Initialize requirement
         /// </summary>
-        /// <param name="commandAssembly">Specified command assembly (find command in specified assembly)</param>
+        /// <param name="commandAssemblies">Specified command assemblies (find command in specified assembly)</param>
         /// <param name="logging">Specified custom logging system</param>
         /// <param name="oCommandSize">
         ///     Specify max command size
@@ -75,14 +76,14 @@ namespace G9Common.CommandHandler
 
         #region G9CommandHandler
 
-        public G9CommandHandler(Assembly commandAssembly, IG9Logging logging, int oCommandSize,
+        public G9CommandHandler(Assembly[] commandAssemblies, IG9Logging logging, int oCommandSize,
             Action<G9SendAndReceivePacket, TAccount> onUnhandledCommand)
         {
             // Set assembly of commands
-            _commandAssembly = commandAssembly ?? throw new ArgumentNullException(nameof(commandAssembly));
+            _commandAssembly = commandAssemblies ?? throw new ArgumentNullException(nameof(commandAssemblies));
 
             // Set command size
-            _commandSize = oCommandSize * 16;
+            CommandSize = oCommandSize * 16;
 
             // Set logging
             _logging = logging;
@@ -112,7 +113,7 @@ namespace G9Common.CommandHandler
 
         public void G9CallHandler(G9SendAndReceivePacket request, TAccount account, bool waitForFinish = false)
         {
-            var progressPacket = Task.Run(() =>
+            Action callCommand = () =>
             {
                 CommandDataType<TAccount> command = null;
                 try
@@ -139,7 +140,8 @@ namespace G9Common.CommandHandler
                             LogMessage.SuccessfulOperation);
 
                     // Execute command with information
-                    command.AccessToMethodReceiveCommand(request.Body, account, request.RequestId);
+                    command.AccessToMethodReceiveCommand(request.Body, account, request.RequestId,
+                        command.ExecuteRegisterCallBack);
                 }
                 catch (Exception ex)
                 {
@@ -151,10 +153,12 @@ namespace G9Common.CommandHandler
                     // If not null call OnError in this command
                     command?.AccessToMethodOnErrorInCommand?.Invoke(ex, account);
                 }
-            });
+            };
 
             if (waitForFinish)
-                progressPacket.Wait();
+                callCommand.Invoke();
+            else
+                Task.Run(callCommand);
         }
 
         #endregion
@@ -175,11 +179,11 @@ namespace G9Common.CommandHandler
                 _commandAssembly).Where(s => s.IsAbstract == false).ToList();
 
             // Instance action for add command data type
-            Action<string, CommandDataType<TAccount>> addCommandDataType = (commandName, commandDataType) =>
+            void AddCommandDataType(string commandName, CommandDataType<TAccount> commandDataType)
             {
-                _accessToCommandDataTypeCollection.Add(commandName.GenerateStandardCommandName(_commandSize),
+                _accessToCommandDataTypeCollection.Add(commandName.GenerateStandardCommandName(CommandSize),
                     commandDataType);
-            };
+            }
 
             derivedTypes.ForEach(oType =>
             {
@@ -191,12 +195,13 @@ namespace G9Common.CommandHandler
                 {
                     // Create instance and get method initialize
                     var instance = Activator.CreateInstance(oType);
-                    _instanceCommandCollection.Add(oType.Name.GenerateStandardCommandName(_commandSize),
+                    _instanceCommandCollection.Add(oType.Name.GenerateStandardCommandName(CommandSize),
                         instance);
                     var method = oType.GetMethod("InitializeRequirement");
 
                     // Initialize command and add to server
-                    method?.Invoke(instance, new object[] {addCommandDataType});
+                    method?.Invoke(instance,
+                        new object[] {(Action<string, CommandDataType<TAccount>>) AddCommandDataType});
 
                     if (_logging.CheckLoggingIsActive(LogsType.INFO))
                         _logging.LogInformation(
@@ -318,31 +323,38 @@ namespace G9Common.CommandHandler
             Action<Exception, TAccount> errorHandler)
         {
             _accessToCommandDataTypeCollection.Add(
-                commandName.GenerateStandardCommandName(_commandSize),
+                commandName.GenerateStandardCommandName(CommandSize),
                 new CommandDataType<TAccount>(
                     // Access to method "ResponseService" in command
-                    (data, account, requestId) =>
+                    (data, account, requestId, callBack) =>
                     {
                         try
                         {
-                            receiveHandler(data.FromJson<TReceiveType>(account.SessionSendCommand.SessionEncoding),
-                                account,
-                                requestId,
-                                (type, command) =>
+                            // Ready data
+                            var receiveData = data.FromJson<TReceiveType>(account.SessionSendCommand.SessionEncoding);
+
+                            // Func for send
+                            void SendCommandBack(TSendType answerData, CommandSendType sendType)
+                            {
+                                try
                                 {
-                                    try
-                                    {
-                                        if (command == CommandSendType.Asynchronous)
-                                            account.SessionSendCommand.SendCommandByNameAsync(commandName, type,
-                                                requestId);
-                                        else
-                                            account.SessionSendCommand.SendCommandByName(commandName, type, requestId);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        errorHandler?.Invoke(ex, account);
-                                    }
-                                });
+                                    if (sendType == CommandSendType.Asynchronous)
+                                        account.SessionSendCommand.SendCommandByNameAsync(commandName, answerData,
+                                            requestId);
+                                    else
+                                        account.SessionSendCommand.SendCommandByName(commandName, answerData,
+                                            requestId);
+                                }
+                                catch (Exception ex)
+                                {
+                                    errorHandler?.Invoke(ex, account);
+                                }
+                            }
+
+                            receiveHandler(receiveData, account, requestId, SendCommandBack);
+
+                            callBack?.Invoke(receiveData, account, requestId, (Action<object, CommandSendType>)
+                                (object) (Action<TSendType, CommandSendType>) SendCommandBack);
                         }
                         catch (Exception ex)
                         {
@@ -374,7 +386,7 @@ namespace G9Common.CommandHandler
         public bool CheckCommandExist(string commandName)
         {
             return _accessToCommandDataTypeCollection.ContainsKey(
-                commandName.GenerateStandardCommandName(_commandSize));
+                commandName.GenerateStandardCommandName(CommandSize));
         }
 
         #endregion
@@ -390,7 +402,50 @@ namespace G9Common.CommandHandler
         public Type GetCommandSendType(string commandName)
         {
             return _accessToCommandDataTypeCollection[
-                commandName.GenerateStandardCommandName(_commandSize)]?.CommandSendType;
+                commandName.GenerateStandardCommandName(CommandSize)]?.CommandSendType;
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Add extra call back for command
+        /// </summary>
+        /// <typeparam name="TReceive">Specified receive item</typeparam>
+        /// <typeparam name="TSendType">Specified send item</typeparam>
+        /// <param name="commandName">Specified game name</param>
+        /// <param name="actionCallBack">Specified action call back</param>
+        /// <param name="callBackExecutePeriod">Specified type of period for call back</param>
+
+        #region AddCallBackForCommand
+
+        public void AddCallBackForCommand<TReceive, TSendType>(string commandName, Action<TReceive, TAccount, Guid,
+            Action<TSendType, CommandSendType>> actionCallBack, EnumCallBackExecutePeriod callBackExecutePeriod)
+        {
+            // If command not exist return
+            if (!CheckCommandExist(commandName))
+                throw new Exception("Command not found!");
+
+            // Func for call back
+            void ActionCallBackForCommand(object data, TAccount account, Guid id,
+                Action<object, CommandSendType> sendAnswerWithReceiveRequestId)
+            {
+                var command = _accessToCommandDataTypeCollection[commandName.GenerateStandardCommandName(CommandSize)];
+
+                if (callBackExecutePeriod == EnumCallBackExecutePeriod.JustOnce)
+                    command.RemoveRegisterCallback(ActionCallBackForCommand);
+
+                actionCallBack?.Invoke((TReceive) data, account, id, (answerData, sendType) =>
+                {
+                    if (sendType == CommandSendType.Asynchronous)
+                        account.SessionSendCommand.SendCommandByNameAsync(commandName, answerData, id);
+                    else
+                        account.SessionSendCommand.SendCommandByName(commandName, answerData, id);
+                });
+            }
+
+            // Add call back
+            _accessToCommandDataTypeCollection[commandName.GenerateStandardCommandName(CommandSize)]
+                .AddRegisterCallback(ActionCallBackForCommand);
         }
 
         #endregion

@@ -47,8 +47,8 @@ namespace G9SuperNetCoreServerSampleApp
 #endif
 
             var server = new G9SuperNetCoreSocketServer<ServerAccountSample, ServerSessionSample>(
-                new G9ServerConfig("Test Server", IPAddress.Any, 9639, SocketMode.Tcp), Assembly.GetExecutingAssembly(),
-                null, null);
+                new G9ServerConfig("Test Server", IPAddress.Any, 9639, SocketMode.Tcp),
+                sslCertificate: sslCertificate);
 
 #pragma warning disable 4014
             server.Start();

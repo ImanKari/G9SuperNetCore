@@ -20,6 +20,7 @@ namespace G9SuperNetCoreServer.Abstarct
         /// <summary>
         ///     Access to handler
         /// </summary>
+        // ReSharper disable once NotAccessedField.Local
         private G9ServerAccountHandler _handler;
 
         #endregion

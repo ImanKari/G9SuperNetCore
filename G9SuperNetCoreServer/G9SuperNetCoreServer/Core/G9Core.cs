@@ -116,7 +116,7 @@ namespace G9SuperNetCoreServer.Core
         ///     Initialize Requirement
         /// </summary>
         /// <param name="superNetCoreConfig">Server config</param>
-        /// <param name="commandAssembly">Specified command assembly (find command in specified assembly)</param>
+        /// <param name="commandAssemblies">Specified command assemblies (find command in specified assembly)</param>
         /// <param name="sendCommandByName">Specify func send command by name</param>
         /// <param name="sendCommandByNameAsync">Specify func send command by name async</param>
         /// <param name="onSessionReceiveRequestOverTheLimitInSecond">
@@ -129,7 +129,7 @@ namespace G9SuperNetCoreServer.Core
 
         #region G9Core
 
-        public G9Core(G9ServerConfig superNetCoreConfig, Assembly commandAssembly,
+        public G9Core(G9ServerConfig superNetCoreConfig, Assembly[] commandAssemblies,
             Action<uint, string, object, Guid?, bool, bool> sendCommandByName,
             Action<uint, string, object, Guid?, bool, bool> sendCommandByNameAsync,
             Action<TAccount> onSessionReceiveRequestOverTheLimitInSecond,
@@ -162,7 +162,7 @@ namespace G9SuperNetCoreServer.Core
             Configuration = superNetCoreConfig;
 
             // Initialize command handler
-            CommandHandler = new G9CommandHandler<TAccount>(commandAssembly, Logging, Configuration.CommandSize,
+            CommandHandler = new G9CommandHandler<TAccount>(commandAssemblies, Logging, Configuration.CommandSize,
                 onUnhandledCommand);
         }
 

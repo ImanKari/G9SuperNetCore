@@ -10,6 +10,7 @@ using G9Common.LogIdentity;
 using G9Common.Packet;
 using G9Common.PacketManagement;
 using G9Common.Resource;
+using G9Common.ServerClient;
 using G9LogManagement.Enums;
 using G9SuperNetCoreServer.Abstarct;
 using G9SuperNetCoreServer.Config;
@@ -19,7 +20,8 @@ using G9SuperNetCoreServer.HelperClass;
 
 namespace G9SuperNetCoreServer.AbstractServer
 {
-    public abstract partial class AG9SuperNetCoreServerBase<TAccount, TSession>
+    // ReSharper disable once InconsistentNaming
+    public abstract partial class AG9SuperNetCoreServerBase<TAccount, TSession> : AG9ServerClientCommon<TAccount> 
         where TAccount : AServerAccount<TSession>, new()
         where TSession : AServerSession, new()
     {
@@ -30,17 +32,23 @@ namespace G9SuperNetCoreServer.AbstractServer
         ///     Initialize Requirement
         /// </summary>
         /// <param name="superNetCoreConfig">Server config</param>
-        /// <param name="commandAssembly">Specified command assembly (find command in specified assembly)</param>
+        /// <param name="commandAssemblies">Specified command assembly (find command in specified assembly)</param>
         /// <param name="customLogging">Specified custom logging system</param>
         /// <param name="sslCertificate">Specified object of G9SslCertificate for manage ssl connection</param>
 
         #region G9SuperNetCoreServerBase
 
-        protected AG9SuperNetCoreServerBase(G9ServerConfig superNetCoreConfig, Assembly commandAssembly,
+        protected AG9SuperNetCoreServerBase(G9ServerConfig superNetCoreConfig, Assembly[] commandAssemblies = null,
             IG9Logging customLogging = null, G9SslCertificate sslCertificate = null)
         {
+            // Set command handler call back
+            CommandHandlerCallback = _core.CommandHandler;
+
+            // Set assemblies
+            commandAssemblies ??= AppDomain.CurrentDomain.GetAssemblies();
+
             // Initialize core
-            _core = new G9Core<TAccount, TSession>(superNetCoreConfig, commandAssembly, SendCommandByName,
+            _core = new G9Core<TAccount, TSession>(superNetCoreConfig, commandAssemblies, SendCommandByName,
                 SendCommandByNameAsync, OnSessionReceiveRequestOverTheLimitInSecondHandler, OnUnhandledCommandHandler,
                 OnDisconnectedHandler,
                 customLogging, sslCertificate);
@@ -136,7 +144,6 @@ namespace G9SuperNetCoreServer.AbstractServer
 
         #endregion
 
-
         /// <summary>
         ///     Read call back
         ///     Handle receive data
@@ -158,6 +165,9 @@ namespace G9SuperNetCoreServer.AbstractServer
 
                 var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
 
+                // When account is null => return
+                if (accountUtilities is null) return;
+
                 // Read data from the client socket.   
                 var bytesRead = (ushort) state.WorkSocket.EndReceive(asyncResult);
 
@@ -167,10 +177,8 @@ namespace G9SuperNetCoreServer.AbstractServer
                     TotalReceiveBytes += bytesRead;
                     TotalReceivePacket++;
 
-                    G9SendAndReceivePacket receivePacket;
-
                     // Initialize receive packet
-                    HelperReceivePacket(out receivePacket, ref accountUtilities, ref state);
+                    HelperReceivePacket(out var receivePacket, ref accountUtilities, ref state);
 
                     // Plus receive bytes for session
                     accountUtilities.SessionHandler.Core_PlusSessionTotalReceiveBytes(bytesRead);
