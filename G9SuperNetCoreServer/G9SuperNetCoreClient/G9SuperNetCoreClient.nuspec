@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>G9SuperNetCoreClient</id>
-    <version>2.2.1.2</version>
+    <version>2.2.2.1</version>
     <authors>Iman Kari</authors>
     <owners>Iman Kari</owners>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
