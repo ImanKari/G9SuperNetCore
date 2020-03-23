@@ -41,9 +41,6 @@ namespace G9SuperNetCoreServer.AbstractServer
         protected AG9SuperNetCoreServerBase(G9ServerConfig superNetCoreConfig, Assembly[] commandAssemblies = null,
             IG9Logging customLogging = null, G9SslCertificate sslCertificate = null)
         {
-            // Set command handler call back
-            CommandHandlerCallback = _core.CommandHandler;
-
             // Set assemblies
             commandAssemblies ??= AppDomain.CurrentDomain.GetAssemblies();
 
@@ -52,6 +49,9 @@ namespace G9SuperNetCoreServer.AbstractServer
                 SendCommandByNameAsync, OnSessionReceiveRequestOverTheLimitInSecondHandler, OnUnhandledCommandHandler,
                 OnDisconnectedHandler,
                 customLogging, sslCertificate);
+
+            // Set command handler call back
+            CommandHandlerCallback = _core.CommandHandler;
 
             // ######################## Add default command ########################
             // G9 Echo Command

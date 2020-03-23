@@ -59,9 +59,6 @@ namespace G9SuperNetCoreClient.AbstractClient
             string privateKeyForSslConnection = null, string clientUniqueIdentity = null, Assembly[] commandAssemblies = null,
             TAccount customAccount = null, TSession customSession = null)
         {
-            // Set command call back
-            CommandHandlerCallback = _commandHandler;
-
             // Set command assemblies
             // ReSharper disable once ConvertToNullCoalescingCompoundAssignment
             commandAssemblies = commandAssemblies ?? AppDomain.CurrentDomain.GetAssemblies();
@@ -113,6 +110,9 @@ namespace G9SuperNetCoreClient.AbstractClient
             // Initialize command handler
             _commandHandler = new G9CommandHandler<TAccount>(commandAssemblies, _logging, Configuration.CommandSize,
                 OnUnhandledCommandHandler);
+
+            // Set command call back
+            CommandHandlerCallback = _commandHandler;
 
             // ######################## Add default command ########################
             // G9 Echo Command
