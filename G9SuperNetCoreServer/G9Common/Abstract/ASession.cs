@@ -84,6 +84,30 @@ namespace G9Common.Abstract
             bool checkCommandExists = true, bool checkCommandSendType = true) where TCommand : IG9CommandWithSend;
 
         /// <summary>
+        ///     Send command request by name
+        /// </summary>
+        /// <param name="account">Access to account</param>
+        /// <param name="commandName">Name of command</param>
+        /// <param name="commandData">Data for send</param>
+        /// <param name="customRequestId">Specify custom request id</param>
+        /// <param name="checkCommandExists">
+        ///     If true, check command exists
+        /// </param>
+        /// <param name="checkCommandSendType">
+        ///     If set true, check command send type
+        /// </param>
+        /// <returns>
+        ///     <para>If return true, send command is valid and sending is done</para>
+        ///     <para>if return false, send command is not valid and do not send</para>
+        /// </returns>
+        public virtual bool CheckValidationForSendCommand(AAccount account, string commandName, object commandData,
+            Guid? customRequestId, bool checkCommandExists, bool checkCommandSendType)
+        {
+            // Ignore valid if don't override
+            return true;
+        }
+
+        /// <summary>
         ///     Get session information
         /// </summary>
         /// <returns>String session information</returns>
@@ -96,6 +120,11 @@ namespace G9Common.Abstract
         #endregion
 
         #region Fields And Properties
+
+        /// <summary>
+        ///     Access to game account
+        /// </summary>
+        public AAccount AccessToAccount { protected set; get; }
 
         /// <summary>
         ///     Get unique Identity from session

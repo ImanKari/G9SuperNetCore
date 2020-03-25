@@ -366,7 +366,9 @@ namespace G9SuperNetCoreServer.Core
                                 _onSessionReceiveRequestOverTheLimitInSecond(GetAccountUtilitiesBySessionId(sessionId)
                                     .Account),
                             // Set session encoding
-                            Session_GetSessionEncoding = () => Configuration.EncodingAndDecoding
+                            Session_GetSessionEncoding = () => Configuration.EncodingAndDecoding,
+                            // Set account 
+                            Core_SetAccount = () => result.Account
                         }, _sessionIdentityCounter,
                     ((IPEndPoint) acceptedSocket.RemoteEndPoint).Address);
 

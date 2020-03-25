@@ -82,6 +82,9 @@ namespace G9SuperNetCoreClient.Abstract
 
             // Set session Encoding
             SessionEncoding = _sessionHandler.Session_GetSessionEncoding();
+
+            // Set account
+            AccessToAccount = _sessionHandler.Core_SetAccount();
         }
 
         #endregion
@@ -93,6 +96,10 @@ namespace G9SuperNetCoreClient.Abstract
         public override void SendCommandByNameAsync(string commandName, object commandData,
             Guid? customRequestId = null, bool checkCommandExists = true, bool checkCommandSendType = true)
         {
+            // Check validation
+            if (!CheckValidationForSendCommand(AccessToAccount, commandName, commandData, customRequestId,
+                checkCommandExists, checkCommandSendType)) return;
+
             _sessionHandler.Session_SendCommandByNameAsync(SessionId, commandName, commandData, customRequestId,
                 checkCommandExists, checkCommandSendType);
         }
@@ -106,6 +113,10 @@ namespace G9SuperNetCoreClient.Abstract
         public override void SendCommandByName(string commandName, object commandData, Guid? customRequestId = null,
             bool checkCommandExists = true, bool checkCommandSendType = true)
         {
+            // Check validation
+            if (!CheckValidationForSendCommand(AccessToAccount, commandName, commandData, customRequestId,
+                checkCommandExists, checkCommandSendType)) return;
+
             _sessionHandler.Session_SendCommandByName(SessionId, commandName, commandData, customRequestId,
                 checkCommandExists, checkCommandSendType);
         }
@@ -119,6 +130,10 @@ namespace G9SuperNetCoreClient.Abstract
         public override void SendCommandAsync<TCommand, TTypeSend>(TTypeSend commandData, Guid? customRequestId = null,
             bool checkCommandExists = true, bool checkCommandSendType = true)
         {
+            // Check validation
+            if (!CheckValidationForSendCommand(AccessToAccount, typeof(TCommand).Name, commandData, customRequestId,
+                checkCommandExists, checkCommandSendType)) return;
+
             _sessionHandler.Session_SendCommandByNameAsync(SessionId, typeof(TCommand).Name, commandData,
                 customRequestId, checkCommandExists, checkCommandSendType);
         }
@@ -132,12 +147,16 @@ namespace G9SuperNetCoreClient.Abstract
         public override void SendCommand<TCommand, TTypeSend>(TTypeSend commandData, Guid? customRequestId = null,
             bool checkCommandExists = true, bool checkCommandSendType = true)
         {
+            // Check validation
+            if (!CheckValidationForSendCommand(AccessToAccount, typeof(TCommand).Name, commandData, customRequestId,
+                checkCommandExists, checkCommandSendType)) return;
+
             _sessionHandler.Session_SendCommandByName(SessionId, typeof(TCommand).Name, commandData, customRequestId,
                 checkCommandExists, checkCommandSendType);
         }
 
         #endregion
-
+        
         #endregion
     }
 }

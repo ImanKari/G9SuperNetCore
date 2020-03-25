@@ -164,7 +164,9 @@ namespace G9SuperNetCoreClient.AbstractClient
                     // Set send command async
                     Session_SendCommandByNameAsync = SendCommandByNameAsync,
                     // Set session encoding
-                    Session_GetSessionEncoding = () => Configuration.EncodingAndDecoding
+                    Session_GetSessionEncoding = () => Configuration.EncodingAndDecoding,
+                    // Set account 
+                    Core_SetAccount = () => _mainAccountUtilities.Account
                 }, 0, IPAddress.Any);
             _mainAccountUtilities.Account.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(
                 _mainAccountUtilities.AccountHandler = new G9ClientAccountHandler(), session);
