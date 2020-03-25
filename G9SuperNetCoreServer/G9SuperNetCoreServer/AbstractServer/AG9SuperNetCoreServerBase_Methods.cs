@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 using System.Threading.Tasks;
 using G9Common.Enums;
 using G9Common.HelperClass;
@@ -291,9 +290,9 @@ namespace G9SuperNetCoreServer.AbstractServer
 #else
             var
 #endif
-            dataForSend = data is byte[]
-                ? (byte[]) data
-                : _core.Configuration.EncodingAndDecoding.EncodingType.GetBytes(data.ToJson());
+                dataForSend = data is byte[]
+                    ? (byte[]) data
+                    : _core.Configuration.EncodingAndDecoding.EncodingType.GetBytes(data.ToJson());
 
             // Initialize command - length = CommandSize
 #if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
@@ -301,9 +300,9 @@ namespace G9SuperNetCoreServer.AbstractServer
 #else
             var
 #endif
-            commandData =
-                _core.Configuration.EncodingAndDecoding.EncodingType.GetBytes(
-                    commandName.GenerateStandardCommandName(_packetManagement.CalculateCommandSize));
+                commandData =
+                    _core.Configuration.EncodingAndDecoding.EncodingType.GetBytes(
+                        commandName.GenerateStandardCommandName(_packetManagement.CalculateCommandSize));
 
             return _packetManagement.PackingRequestByData(commandData, dataForSend, packetDataType, customRequestId);
         }
@@ -345,15 +344,19 @@ namespace G9SuperNetCoreServer.AbstractServer
                     throw new Exception(
                         $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
 
+                // Get account utilities by session id
+                var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
+
+                // Check config for exist account => if true and not exist account return
+                if (_core.Configuration.IgnoreAccountIfNotExistInServer && accountUtilities == null)
+                    return;
+
                 // Ready data for send
                 var dataForSend = ReadyDataForSend(commandName, commandData, G9PacketDataType.StandardCommand,
                     customRequestId);
 
                 // Get total packets
                 var packets = dataForSend.GetPacketsArray();
-
-                // Get account utilities by session id
-                var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
 
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
@@ -403,15 +406,19 @@ namespace G9SuperNetCoreServer.AbstractServer
                     throw new Exception(
                         $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
 
+                // Get account utilities by session id
+                var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
+
+                // Check config for exist account => if true and not exist account return
+                if (_core.Configuration.IgnoreAccountIfNotExistInServer && accountUtilities == null)
+                    return;
+
                 // Ready data for send
                 var dataForSend = ReadyDataForSend(commandName, commandData, G9PacketDataType.StandardCommand,
                     customRequestId);
 
                 // Get total packets
                 var packets = dataForSend.GetPacketsArray();
-
-                // Get account utilities by session id
-                var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
 
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
@@ -466,14 +473,18 @@ namespace G9SuperNetCoreServer.AbstractServer
                     throw new Exception(
                         $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
 
+                // Get account utilities by session id
+                var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
+
+                // Check config for exist account => if true and not exist account return
+                if (_core.Configuration.IgnoreAccountIfNotExistInServer && accountUtilities == null)
+                    return;
+
                 // Ready data for send
                 var dataForSend = ReadyDataForSend(commandName, commandData, packetDataType, customRequestId);
 
                 // Get total packets
                 var packets = dataForSend.GetPacketsArray();
-
-                // Get account utilities by session id
-                var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
 
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)
@@ -527,14 +538,18 @@ namespace G9SuperNetCoreServer.AbstractServer
                     throw new Exception(
                         $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
 
+                // Get account utilities by session id
+                var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
+
+                // Check config for exist account => if true and not exist account return
+                if (_core.Configuration.IgnoreAccountIfNotExistInServer && accountUtilities == null)
+                    return;
+
                 // Ready data for send
                 var dataForSend = ReadyDataForSend(commandName, commandData, packetDataType, customRequestId);
 
                 // Get total packets
                 var packets = dataForSend.GetPacketsArray();
-
-                // Get account utilities by session id
-                var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
 
                 // Send total packets
                 for (var i = 0; i < dataForSend.TotalPackets; i++)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Threading.Tasks;
 using G9Common.Abstract;
 using G9Common.Enums;
@@ -353,8 +354,8 @@ namespace G9Common.CommandHandler
 
                             receiveHandler(receiveData, account, requestId, SendCommandBack);
 
-                            callBack?.Invoke(receiveData, account, requestId, (Action<object, CommandSendType>)
-                                (object) (Action<TSendType, CommandSendType>) SendCommandBack);
+                            callBack?.Invoke(receiveData, account, requestId,
+                                (o, type) => SendCommandBack((TSendType) o, type));
                         }
                         catch (Exception ex)
                         {
@@ -426,21 +427,17 @@ namespace G9Common.CommandHandler
                 throw new Exception("Command not found!");
 
             // Func for call back
-            void ActionCallBackForCommand(object data, TAccount account, Guid id,
+            EnumCallBackExecutePeriod ActionCallBackForCommand(object data, TAccount account, Guid id,
                 Action<object, CommandSendType> sendAnswerWithReceiveRequestId)
             {
-                var command = _accessToCommandDataTypeCollection[commandName.GenerateStandardCommandName(CommandSize)];
-
-                if (callBackExecutePeriod == EnumCallBackExecutePeriod.JustOnce)
-                    command.RemoveRegisterCallback(ActionCallBackForCommand);
-
-                actionCallBack?.Invoke((TReceive) data, account, id, (answerData, sendType) =>
+                actionCallBack?.Invoke((TReceive)data, account, id, (answerData, sendType) =>
                 {
                     if (sendType == CommandSendType.Asynchronous)
                         account.SessionSendCommand.SendCommandByNameAsync(commandName, answerData, id);
                     else
                         account.SessionSendCommand.SendCommandByName(commandName, answerData, id);
                 });
+                return callBackExecutePeriod;
             }
 
             // Add call back

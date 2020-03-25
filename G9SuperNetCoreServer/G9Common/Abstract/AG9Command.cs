@@ -96,8 +96,7 @@ namespace G9Common.Abstract
 
                             // if register call back for command run it
                             callBack?.Invoke(receiveData, account, requestId,
-                                (Action<object, CommandSendType>)
-                                (object) (Action<TSendType, CommandSendType>) SendCommandBack);
+                                (o, type) => SendCommandBack((TSendType) o, type));
                         }
                         catch (Exception ex)
                         {

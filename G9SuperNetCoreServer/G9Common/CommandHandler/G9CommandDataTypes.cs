@@ -32,9 +32,10 @@ namespace G9Common.CommandHandler
 #if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
             ReadOnlyMemory<byte>,
 #else
-                byte[],
+                    byte[],
 #endif
-                TAccount, Guid, Action<object, TAccount, Guid, Action<object, CommandSendType>>> accessToMethodReceiveCommand,
+                    TAccount, Guid, Action<object, TAccount, Guid, Action<object, CommandSendType>>>
+                accessToMethodReceiveCommand,
             Action<Exception, TAccount> accessToMethodOnErrorInCommand,
             Type commandReceiveType,
             Type commandSendType)
@@ -48,46 +49,41 @@ namespace G9Common.CommandHandler
         #endregion
 
         /// <summary>
-        /// Add extra call back for command
+        ///     Add extra call back for command
         /// </summary>
         /// <param name="callBack">Action call back</param>
+
         #region AddRegisterCallback
-        public void AddRegisterCallback(Action<object, TAccount, Guid, Action<object, CommandSendType>> callBack)
+
+        public void AddRegisterCallback(
+            Func<object, TAccount, Guid, Action<object, CommandSendType>, EnumCallBackExecutePeriod> callBack)
         {
             if (_registerCallbackCollection == null)
-                _registerCallbackCollection = new List<Action<object, TAccount, Guid, Action<object, CommandSendType>>>();
+                _registerCallbackCollection =
+                    new List<Func<object, TAccount, Guid, Action<object, CommandSendType>, EnumCallBackExecutePeriod
+                    >>();
 
             _registerCallbackCollection.Add(callBack);
         }
+
         #endregion
 
         /// <summary>
-        /// Remove extra call back
-        /// </summary>
-        /// <param name="callBack">Action call back</param>
-        #region RemoveRegisterCallback
-        public void RemoveRegisterCallback(Action<object, TAccount, Guid, Action<object, CommandSendType>> callBack)
-        {
-            if (_registerCallbackCollection == null)
-                _registerCallbackCollection = new List<Action<object, TAccount, Guid, Action<object, CommandSendType>>>();
-
-            _registerCallbackCollection.Remove(callBack);
-        }
-        #endregion
-
-        /// <summary>
-        /// Execute all register call back
+        ///     Execute all register call back
         /// </summary>
         /// <param name="data">Receive data</param>
         /// <param name="account">Specified account</param>
         /// <param name="id">Specified packet id</param>
         /// <param name="sendAction">Specified send action</param>
+
         #region ExecuteRegisterCallBack
+
         public void ExecuteRegisterCallBack(object data, TAccount account, Guid id, Action<object, CommandSendType>
             sendAction)
         {
-            _registerCallbackCollection.ForEach(s => s?.Invoke(data, account, id, sendAction));
+            _registerCallbackCollection?.ForEach(s => s?.Invoke(data, account, id, sendAction));
         }
+
         #endregion
 
         #endregion
@@ -95,9 +91,10 @@ namespace G9Common.CommandHandler
         #region Fields And Properties
 
         /// <summary>
-        /// Collection for save register call back for command
+        ///     Collection for save register call back for command
         /// </summary>
-        private List<Action<object, TAccount, Guid, Action<object, CommandSendType>>> _registerCallbackCollection;
+        private List<Func<object, TAccount, Guid, Action<object, CommandSendType>, EnumCallBackExecutePeriod>>
+            _registerCallbackCollection;
 
         /// <summary>
         ///     Access to method "ResponseService" in command
@@ -106,9 +103,10 @@ namespace G9Common.CommandHandler
 #if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
             ReadOnlyMemory<byte>,
 #else
-            byte[],
+                byte[],
 #endif
-            TAccount, Guid, Action<object, TAccount, Guid, Action<object, CommandSendType>>> AccessToMethodReceiveCommand;
+                TAccount, Guid, Action<object, TAccount, Guid, Action<object, CommandSendType>>>
+            AccessToMethodReceiveCommand;
 
         /// <summary>
         ///     Access to method "OnError" in command

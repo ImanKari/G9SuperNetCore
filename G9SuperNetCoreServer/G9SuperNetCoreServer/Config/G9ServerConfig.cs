@@ -57,7 +57,8 @@ namespace G9SuperNetCoreServer.Config
         public G9ServerConfig(string oServerName, IPAddress oIpAddress, ushort oPortNumber, SocketMode oMode,
             TimeSpan? oGetPingTimeOut = null, TimeSpan? oClearIdleSessionTimeOut = null, byte oCommandSize = 1,
             byte oBodySize = 8, ushort oMaxConnectionNumber = 0, ushort oMaxRequestPerSecond = 0,
-            bool oEnableAutoKickClientForMaxRequest = false, G9Encoding oEncodingAndDecoding = null
+            bool oEnableAutoKickClientForMaxRequest = false, G9Encoding oEncodingAndDecoding = null,
+            bool oIgnoreAccountIfNotExistInServer = true
         )
             : base(oIpAddress, oPortNumber, oMode, oCommandSize, oBodySize, oEncodingAndDecoding)
         {
@@ -77,6 +78,8 @@ namespace G9SuperNetCoreServer.Config
             ClearIdleSessionTimeOut = oClearIdleSessionTimeOut ?? TimeSpan.Zero;
             // Set get ping time out
             GetPingTimeOut = oGetPingTimeOut ?? TimeSpan.FromMilliseconds(3963);
+            // Set ignore account
+            IgnoreAccountIfNotExistInServer = oIgnoreAccountIfNotExistInServer;
         }
 
         #endregion
@@ -119,6 +122,11 @@ namespace G9SuperNetCoreServer.Config
         ///     Default value is 3963 millisecond
         /// </summary>
         public TimeSpan GetPingTimeOut { set; get; }
+
+        /// <summary>
+        /// Specified if account not exist in server ignore it for send data
+        /// </summary>
+        public bool IgnoreAccountIfNotExistInServer { set; get; }
 
         #endregion
     }
