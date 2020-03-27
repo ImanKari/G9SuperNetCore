@@ -123,6 +123,9 @@
   <data name="AccountAndSessionCreated" xml:space="preserve">
     <value>اکانت و نشست با موفقیت ایجاد شد.</value>
   </data>
+  <data name="ActionSendCommandCallBackCannotBeNull" xml:space="preserve">
+    <value>اکسشن برگشتی برای ارسال دستور یا کامند نمی تواند نال باشد</value>
+  </data>
   <data name="AddCommandSuccessfully" xml:space="preserve">
     <value>کامند با موفیت به سرور اضافه شد.</value>
   </data>
@@ -272,6 +275,9 @@
   </data>
   <data name="FailtOnWaitForConnection" xml:space="preserve">
     <value>در حالت انتظار برای اتصال کانکشن مشکلی ایجاد شده است</value>
+  </data>
+  <data name="FakeAccountAndSessionCreated" xml:space="preserve">
+    <value>اکانت جعلی و نشست جعلی با موفقیت ایجاد شد.</value>
   </data>
   <data name="IpAddress" xml:space="preserve">
     <value>آی پی آدرس</value>

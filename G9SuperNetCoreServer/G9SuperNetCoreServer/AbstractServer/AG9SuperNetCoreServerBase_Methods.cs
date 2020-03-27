@@ -13,6 +13,7 @@ using G9Common.ServerClient;
 using G9LogManagement.Enums;
 using G9SuperNetCoreServer.Abstarct;
 using G9SuperNetCoreServer.Enums;
+using G9SuperNetCoreServer.HelperClass;
 
 namespace G9SuperNetCoreServer.AbstractServer
 {
@@ -309,6 +310,70 @@ namespace G9SuperNetCoreServer.AbstractServer
 
         #endregion
 
+        /// <summary>
+        ///     Check validation before send command
+        /// </summary>
+        /// <param name="commandName">Specified command name</param>
+        /// <param name="typeOfCommandData">Specified type of command data</param>
+        /// <param name="checkCommandExists">Specified need to check command exists</param>
+        /// <param name="checkCommandSendType">Specified need to check send type</param>
+        /// <returns></returns>
+
+        #region CheckValidationBeforeForSend
+
+        private void CheckValidationForCommand(string commandName, Type typeOfCommandData, bool checkCommandExists,
+            bool checkCommandSendType)
+        {
+            // Check exists command
+            if (checkCommandExists && !_core.CommandHandler.CheckCommandExist(commandName))
+                throw new Exception($"{LogMessage.Command}\n{LogMessage.CommandName}: {commandName}");
+
+            // Check exists command
+            if (checkCommandSendType &&
+                _core.CommandHandler.GetCommandSendType(commandName) != typeOfCommandData)
+                throw new Exception(
+                    $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {typeOfCommandData}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     check validation for account
+        /// </summary>
+        /// <param name="accountUtilities">out account utilities if session identity exists</param>
+        /// <param name="sessionId">Specified session id</param>
+        /// <param name="commandName">Specified command name</param>
+        /// <param name="commandData">Specified command data</param>
+        /// <param name="customRequestId">Specified custom request id</param>
+        /// <param name="checkCommandExists">Specified need to check command exists</param>
+        /// <param name="checkCommandSendType">Specified need to check send type</param>
+        /// <returns>If validate true return true</returns>
+
+        #region CheckValidationForAccount
+
+        private bool CheckValidationForAccount(
+            out G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler> accountUtilities,
+            uint sessionId, string commandName, object commandData, Guid? customRequestId, bool checkCommandExists,
+            bool checkCommandSendType)
+        {
+            // Get account utilities by session id
+            accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
+
+            // Check config for exist account => if true and not exist account return
+            // Check session for robot => if true return
+            if (_core.Configuration.IgnoreAccountIfNotExistInServer && accountUtilities == null)
+                return false;
+
+            // If account is robot => use session send
+            if (accountUtilities.Account.Session.IsAiRobot)
+                accountUtilities.Account.Session.SendCommandByName(commandName, commandData, customRequestId,
+                    checkCommandExists, checkCommandSendType);
+
+            return true;
+        }
+
+        #endregion
+
         #region Send Command By Name
 
         /// <summary>
@@ -334,22 +399,13 @@ namespace G9SuperNetCoreServer.AbstractServer
         {
             try
             {
-                // Check exists command
-                if (checkCommandExists && !_core.CommandHandler.CheckCommandExist(commandName))
-                    throw new Exception($"{LogMessage.Command}\n{LogMessage.CommandName}: {commandName}");
-
-                // Check exists command
-                if (checkCommandSendType &&
-                    _core.CommandHandler.GetCommandSendType(commandName) != commandData.GetType())
-                    throw new Exception(
-                        $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
-
-                // Get account utilities by session id
-                var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
-
-                // Check config for exist account => if true and not exist account return
-                if (_core.Configuration.IgnoreAccountIfNotExistInServer && accountUtilities == null)
+                // Check validation for account
+                if (!CheckValidationForAccount(out var accountUtilities, sessionId, commandName, commandData,
+                    customRequestId, checkCommandExists, checkCommandSendType))
                     return;
+
+                // Check validation
+                CheckValidationForCommand(commandName, commandData.GetType(), checkCommandExists, checkCommandSendType);
 
                 // Ready data for send
                 var dataForSend = ReadyDataForSend(commandName, commandData, G9PacketDataType.StandardCommand,
@@ -396,22 +452,13 @@ namespace G9SuperNetCoreServer.AbstractServer
         {
             try
             {
-                // Check exists command
-                if (checkCommandExists && !_core.CommandHandler.CheckCommandExist(commandName))
-                    throw new Exception($"{LogMessage.Command}\n{LogMessage.CommandName}: {commandName}");
-
-                // Check exists command
-                if (checkCommandSendType &&
-                    _core.CommandHandler.GetCommandSendType(commandName) != commandData.GetType())
-                    throw new Exception(
-                        $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
-
-                // Get account utilities by session id
-                var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
-
-                // Check config for exist account => if true and not exist account return
-                if (_core.Configuration.IgnoreAccountIfNotExistInServer && accountUtilities == null)
+                // Check validation for account
+                if (!CheckValidationForAccount(out var accountUtilities, sessionId, commandName, commandData,
+                    customRequestId, checkCommandExists, checkCommandSendType))
                     return;
+
+                // Check validation
+                CheckValidationForCommand(commandName, commandData.GetType(), checkCommandExists, checkCommandSendType);
 
                 // Ready data for send
                 var dataForSend = ReadyDataForSend(commandName, commandData, G9PacketDataType.StandardCommand,
@@ -463,22 +510,13 @@ namespace G9SuperNetCoreServer.AbstractServer
         {
             try
             {
-                // Check exists command
-                if (checkCommandExists && !_core.CommandHandler.CheckCommandExist(commandName))
-                    throw new Exception($"{LogMessage.Command}\n{LogMessage.CommandName}: {commandName}");
-
-                // Check exists command
-                if (checkCommandSendType &&
-                    _core.CommandHandler.GetCommandSendType(commandName) != commandData.GetType())
-                    throw new Exception(
-                        $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
-
-                // Get account utilities by session id
-                var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
-
-                // Check config for exist account => if true and not exist account return
-                if (_core.Configuration.IgnoreAccountIfNotExistInServer && accountUtilities == null)
+                // Check validation for account
+                if (!CheckValidationForAccount(out var accountUtilities, sessionId, commandName, commandData,
+                    customRequestId, checkCommandExists, checkCommandSendType))
                     return;
+
+                // Check validation
+                CheckValidationForCommand(commandName, commandData.GetType(), checkCommandExists, checkCommandSendType);
 
                 // Ready data for send
                 var dataForSend = ReadyDataForSend(commandName, commandData, packetDataType, customRequestId);
@@ -528,22 +566,13 @@ namespace G9SuperNetCoreServer.AbstractServer
         {
             try
             {
-                // Check exists command
-                if (checkCommandExists && !_core.CommandHandler.CheckCommandExist(commandName))
-                    throw new Exception($"{LogMessage.Command}\n{LogMessage.CommandName}: {commandName}");
-
-                // Check exists command
-                if (checkCommandSendType &&
-                    _core.CommandHandler.GetCommandSendType(commandName) != commandData.GetType())
-                    throw new Exception(
-                        $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
-
-                // Get account utilities by session id
-                var accountUtilities = _core.GetAccountUtilitiesBySessionId(sessionId);
-
-                // Check config for exist account => if true and not exist account return
-                if (_core.Configuration.IgnoreAccountIfNotExistInServer && accountUtilities == null)
+                // Check validation for account
+                if (!CheckValidationForAccount(out var accountUtilities, sessionId, commandName, commandData,
+                    customRequestId, checkCommandExists, checkCommandSendType))
                     return;
+
+                // Check validation
+                CheckValidationForCommand(commandName, commandData.GetType(), checkCommandExists, checkCommandSendType);
 
                 // Ready data for send
                 var dataForSend = ReadyDataForSend(commandName, commandData, packetDataType, customRequestId);
@@ -589,15 +618,8 @@ namespace G9SuperNetCoreServer.AbstractServer
         {
             try
             {
-                // Check exists command
-                if (checkCommandExists && !_core.CommandHandler.CheckCommandExist(commandName))
-                    throw new Exception($"{LogMessage.Command}\n{LogMessage.CommandName}: {commandName}");
-
-                // Check exists command
-                if (checkCommandSendType &&
-                    _core.CommandHandler.GetCommandSendType(commandName) != commandData.GetType())
-                    throw new Exception(
-                        $"{LogMessage.CommandSendTypeNotCorrect}\n{LogMessage.CommandName}: {commandName}\n{LogMessage.SendTypeWithFunction}: {commandData.GetType()}\n{LogMessage.CommandSendType}: {_core.CommandHandler.GetCommandSendType(commandName)}");
+                // Check validation
+                CheckValidationForCommand(commandName, commandData.GetType(), checkCommandExists, checkCommandSendType);
 
                 // Ready data for send
                 var dataForSend = ReadyDataForSend(commandName, commandData, G9PacketDataType.StandardCommand,
@@ -611,8 +633,16 @@ namespace G9SuperNetCoreServer.AbstractServer
                 {
                     var i1 = i;
                     _core.ScrollingAllAccountUtilities(socketConnection =>
+                    {
+                        // Check validation
+                        if (!CheckValidationForAccount(out _, socketConnection.Account.Session.SessionId,
+                            commandName, commandData, customRequestId, checkCommandExists, checkCommandSendType))
+                            return;
+
+                        // Send
                         Send(socketConnection.SessionSocket, socketConnection.Account, packets[i1])
-                            .WaitOne(3699));
+                            .WaitOne(3699);
+                    });
                 }
             }
             catch (Exception ex)
@@ -651,6 +681,9 @@ namespace G9SuperNetCoreServer.AbstractServer
         {
             try
             {
+                // Check validation
+                CheckValidationForCommand(commandName, commandData.GetType(), checkCommandExists, checkCommandSendType);
+
                 // Check exists command
                 if (checkCommandExists && !_core.CommandHandler.CheckCommandExist(commandName))
                     throw new Exception($"{LogMessage.Command}\n{LogMessage.CommandName}: {commandName}");
@@ -673,8 +706,16 @@ namespace G9SuperNetCoreServer.AbstractServer
                 {
                     var i1 = i;
                     _core.ScrollingAllAccountUtilities(socketConnection =>
+                    {
+                        // Check validation
+                        if (!CheckValidationForAccount(out _, socketConnection.Account.Session.SessionId,
+                            commandName, commandData, customRequestId, checkCommandExists, checkCommandSendType))
+                            return;
+
+                        // Send
                         Send(socketConnection.SessionSocket, socketConnection.Account,
-                            packets[i1]));
+                            packets[i1]);
+                    });
                 }
             }
             catch (Exception ex)

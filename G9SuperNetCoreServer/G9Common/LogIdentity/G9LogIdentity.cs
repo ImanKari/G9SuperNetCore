@@ -119,6 +119,11 @@
         public const string CREATE_NEW_ACCOUNT = "CREATE_NEW_ACCOUNT";
 
         /// <summary>
+        ///     Log Identity => On create new fake account and fake session
+        /// </summary>
+        public const string CREATE_NEW_FAKE_ACCOUNT = "CREATE_NEW_FAKE_ACCOUNT";
+
+        /// <summary>
         ///     Log Identity => On user log USER_ID_ + 'SessionId'
         /// </summary>
         public const string USER_ID_ = "USER_ID_";

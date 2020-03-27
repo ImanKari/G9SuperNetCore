@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
-    <Version>2.2.3.0</Version>
+    <Version>2.2.4.0</Version>
     <Authors>Iman Kari</Authors>
     <Company>G9Studio</Company>
     <Description>G9 Super Net Core Client</Description>
@@ -35,8 +35,8 @@
 
   <PropertyGroup>
     <NuspecFile>G9SuperNetCoreClient.nuspec</NuspecFile>
-    <AssemblyVersion>2.2.2.3</AssemblyVersion>
-    <FileVersion>2.2.2.3</FileVersion>
+    <AssemblyVersion>2.2.4.0</AssemblyVersion>
+    <FileVersion>2.2.4.0</FileVersion>
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 

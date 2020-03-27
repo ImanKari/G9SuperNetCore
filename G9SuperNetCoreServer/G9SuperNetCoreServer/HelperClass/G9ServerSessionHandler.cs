@@ -47,6 +47,13 @@ namespace G9SuperNetCoreServer.HelperClass
         /// </summary>
         public Action<ushort> Core_SetCertificateNumber;
 
+        /// <summary>
+        ///     ### Execute From Session ###
+        ///     Run in session for specified account is robot or no
+        ///     bool => if true account is robot
+        /// </summary>
+        public Func<bool> Session_SpecifiedAccountIsRobot;
+
         #endregion
 
         #endregion

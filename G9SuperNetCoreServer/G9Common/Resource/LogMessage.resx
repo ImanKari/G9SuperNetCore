@@ -408,4 +408,10 @@
   <data name="FailAddCommandForGenericAccountType" xml:space="preserve">
     <value>Fail in add command because account generic type is not equal between server and command</value>
   </data>
+  <data name="FakeAccountAndSessionCreated" xml:space="preserve">
+    <value>FakeAccountAndSessionCreated</value>
+  </data>
+  <data name="ActionSendCommandCallBackCannotBeNull" xml:space="preserve">
+    <value>Action send command call back cannot be null</value>
+  </data>
 </root>

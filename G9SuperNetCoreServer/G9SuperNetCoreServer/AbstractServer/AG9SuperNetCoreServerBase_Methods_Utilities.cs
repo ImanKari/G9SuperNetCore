@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using G9Common.Enums;
+using G9Common.Packet;
 using G9Common.Resource;
 using G9Common.ServerClient;
 using G9LogManagement.Enums;
@@ -298,7 +300,8 @@ namespace G9SuperNetCoreServer.AbstractServer
                         case TypeOfCompare.Equal:
                             return _core
                                 .SelectAccountUtilities(s => s.Where(g =>
-                                    g.Value.Account.GetType().GetProperty(propertyName)?.GetValue(g.Value.Account, null) == value))
+                                    g.Value.Account.GetType().GetProperty(propertyName)
+                                        ?.GetValue(g.Value.Account, null) == value))
                                 .Take(takeCount)
                                 .Select(s => new G9SessionReport
                                 {
@@ -311,7 +314,8 @@ namespace G9SuperNetCoreServer.AbstractServer
                         case TypeOfCompare.NotEqual:
                             return _core
                                 .SelectAccountUtilities(s => s.Where(g =>
-                                    g.Value.Account.GetType().GetProperty(propertyName)?.GetValue(g.Value.Account, null) != value))
+                                    g.Value.Account.GetType().GetProperty(propertyName)
+                                        ?.GetValue(g.Value.Account, null) != value))
                                 .Take(takeCount)
                                 .Select(s => new G9SessionReport
                                 {
@@ -419,6 +423,46 @@ namespace G9SuperNetCoreServer.AbstractServer
             var serverUpTime = DateTime.Now - ServerStartDateTime;
             return
                 $"{LogMessage.ServerStartDateTime}: {ServerStartDateTime:yyyy/MM/dd HH:mm:ss}\n{LogMessage.ServerUpTime}: {serverUpTime:G}\n{LogMessage.ServerTotalSendBytes}: {TotalSendBytes:#,##0}\t{LogMessage.ServerTotalReceiveBytes}: {TotalReceiveBytes:#,##0}\n{LogMessage.ServerTotalSendPacket}: {TotalSendPacket:#,##0}\t{LogMessage.ServerTotalReceivePacket}: {TotalReceivePacket:#,##0}\n{LogMessage.TotalSessionFromStartServerCount}: {NumberOfSessionFromStartServer:#,##0}\t{LogMessage.CurrentSessionCount}: {NumberOfCurrentSession:#,##0}";
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     <para>Create fake account and add to server</para>
+        ///     <para>Used for robots and ai</para>
+        /// </summary>
+        /// <param name="receiveCommandCallBackForAccount"></param>
+        /// <returns></returns>
+
+        #region AddFakeAccount
+
+        public G9FakeAccountHandler<TAccount, TSession> AddFakeAccount(
+            Action<TAccount, string, object, Guid> receiveCommandCallBackForAccount)
+        {
+            // Create fake account
+            var acc = _core.AddFakeAccount(
+                // Check validation
+                receiveCommandCallBackForAccount ?? throw new ArgumentNullException(
+                    nameof(receiveCommandCallBackForAccount),
+                    LogMessage.ActionSendCommandCallBackCannotBeNull));
+
+            // Initialize send action
+            void CommandSend(string commandName, object commandData, Guid? customIdentity, bool checkCommandExists, bool checkCommandSendType)
+            {
+                // Check validation
+                CheckValidationForCommand(commandName, commandData.GetType(), checkCommandExists, checkCommandSendType);
+
+                // Initialize packet data
+                var packetData = ReadyDataForSend(commandName, commandData, G9PacketDataType.StandardCommand, customIdentity);
+
+                // Initialize packet
+                var packet = new G9SendAndReceivePacket(packetData.TotalPackets > 1 ? G9PacketType.MultiPacket : G9PacketType.OnePacket, G9PacketDataType.StandardCommand, commandName, packetData.FlushPackets(), customIdentity ?? Guid.Empty);
+
+                // Progress packet
+                _core.CommandHandler.G9CallHandler(packet, acc);
+            }
+
+            return new G9FakeAccountHandler<TAccount, TSession>(acc, receiveCommandCallBackForAccount, CommandSend);
         }
 
         #endregion

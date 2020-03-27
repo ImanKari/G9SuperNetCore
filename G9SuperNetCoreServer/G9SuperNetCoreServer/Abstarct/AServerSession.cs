@@ -26,6 +26,11 @@ namespace G9SuperNetCoreServer.Abstarct
         /// </summary>
         public ushort CertificateNumber { private set; get; }
 
+        /// <summary>
+        ///     Specified account is robot or no
+        /// </summary>
+        public bool IsAiRobot { private set; get; }
+
         #region LastCommand Utilities
 
         /// <summary>
@@ -145,6 +150,9 @@ namespace G9SuperNetCoreServer.Abstarct
 
             // Set account
             AccessToAccount = _sessionHandler.Core_SetAccount();
+
+            // Set is ai robot
+            IsAiRobot = _sessionHandler.Session_SpecifiedAccountIsRobot();
         }
 
         #endregion

@@ -79,6 +79,15 @@ namespace G9Common.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Action send command call back cannot be null.
+        /// </summary>
+        public static string ActionSendCommandCallBackCannotBeNull {
+            get {
+                return ResourceManager.GetString("ActionSendCommandCallBackCannotBeNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Command add successfully.
         /// </summary>
         public static string AddCommandSuccessfully {
@@ -525,6 +534,15 @@ namespace G9Common.Resource {
         public static string FailtOnWaitForConnection {
             get {
                 return ResourceManager.GetString("FailtOnWaitForConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FakeAccountAndSessionCreated.
+        /// </summary>
+        public static string FakeAccountAndSessionCreated {
+            get {
+                return ResourceManager.GetString("FakeAccountAndSessionCreated", resourceCulture);
             }
         }
         
