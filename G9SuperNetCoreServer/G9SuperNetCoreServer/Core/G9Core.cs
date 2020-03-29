@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using G9Common.CommandHandler;
+using G9Common.Enums;
 using G9Common.HelperClass;
 using G9Common.Interface;
 using G9Common.LogIdentity;
@@ -234,8 +234,15 @@ namespace G9SuperNetCoreServer.Core
 
         #region AddFakeAccount
 
-        public TAccount AddFakeAccount(Action<TAccount, string, object, Guid> sendCommandByName)
+        public G9FakeAccountHandler<TAccount, TSession> AddFakeAccount(
+            Action<G9FakeAccountHandler<TAccount, TSession>, string, object, Guid> receiveCallBack,
+            Action<TAccount, string, object, Guid?, bool, bool, CommandSendType> sendAction)
         {
+            // Initialize account and fake account 
+            var account = new TAccount();
+            var fakeAccount = new G9FakeAccountHandler<TAccount, TSession>(account, receiveCallBack, sendAction);
+
+            // Check maximum connection
             if (_maximumConnectionCounter >= Configuration.MaxConnectionNumber)
             {
                 if (Logging.CheckLoggingIsActive(LogsType.WARN))
@@ -243,13 +250,15 @@ namespace G9SuperNetCoreServer.Core
                         "On add fake account, reject.\nReason: limit max connection number",
                         G9LogIdentity.ACCEPT_CONNECTION, "Reject connection");
 
-                return null;
+                return default;
             }
 
+            // Set fake account
             var newAccountData =
                 CreateAccountByAcceptedSocket(new Socket(IPAddress.None.AddressFamily, SocketType.Stream,
-                    ProtocolType.Tcp), sendCommandByName);
+                    ProtocolType.Tcp), receiveCallBack, fakeAccount);
 
+            // set member
             if (newAccountData != null)
             {
                 if (Logging.CheckLoggingIsActive(LogsType.INFO))
@@ -262,10 +271,11 @@ namespace G9SuperNetCoreServer.Core
                 if (Logging.CheckLoggingIsActive(LogsType.INFO))
                     Logging.LogInformation(LogMessage.SuccessAccountAdded, G9LogIdentity.CREATE_NEW_FAKE_ACCOUNT,
                         LogMessage.CreateNewAccount);
-                return newAccountData.Account;
+
+                return fakeAccount;
             }
 
-            return null;
+            return default;
         }
 
         #endregion
@@ -386,8 +396,8 @@ namespace G9SuperNetCoreServer.Core
         /// </summary>
         /// <param name="acceptedSocket">connection socket</param>
         /// <param name="customSendCommandByName">
-        /// <para>When need custom send command</para>
-        /// <para>Use for fake account and robots</para>
+        ///     <para>When need custom send command</para>
+        ///     <para>Use for fake account and robots</para>
         /// </param>
         /// <returns>Return G9AccountUtilities account data</returns>
 
@@ -395,41 +405,51 @@ namespace G9SuperNetCoreServer.Core
 
         private G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>
             CreateAccountByAcceptedSocket(Socket acceptedSocket,
-                Action<TAccount, string, object, Guid> customSendCommandByName = null)
+                Action<G9FakeAccountHandler<TAccount, TSession>, string, object, Guid> customSendCommandByName = null,
+                G9FakeAccountHandler<TAccount, TSession>? customAccountForSet = null)
         {
             try
             {
                 // Initialize result
                 var result = new G9AccountUtilities<TAccount, G9ServerAccountHandler, G9ServerSessionHandler>();
 
+                // Specified account is ai robot
+                var isAiRobot = customSendCommandByName != null;
+
                 // Set action session receive request over limit
                 Action<uint> sessionReceiveRequestOverLimit;
-                if (customSendCommandByName != null)
-                    sessionReceiveRequestOverLimit = (sessionId) => { };
+                if (isAiRobot)
+                    sessionReceiveRequestOverLimit = sessionId => { };
                 else
-                    sessionReceiveRequestOverLimit = (sessionId) => _onSessionReceiveRequestOverTheLimitInSecond(GetAccountUtilitiesBySessionId(sessionId)
-                        .Account);
+                    sessionReceiveRequestOverLimit = sessionId => _onSessionReceiveRequestOverTheLimitInSecond(
+                        GetAccountUtilitiesBySessionId(sessionId)
+                            .Account);
 
                 // Instance session and pass requirement to constructor
                 var session = new TSession();
                 session.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(result.SessionHandler =
+                        // Set session handler
                         new G9ServerSessionHandler
                         {
                             // Set send commands
-                            Session_SendCommandByName = customSendCommandByName != null
+                            Session_SendCommandByName = isAiRobot
                                 ? (u, s, arg3, arg4, arg5, arg6) =>
                                 {
-                                    customSendCommandByName(result.Account, s, arg4, arg4 ?? Guid.Empty);
+                                    // ReSharper disable once PossibleInvalidOperationException
+                                    customSendCommandByName(customAccountForSet.Value, s, arg3, arg4 ?? Guid.Empty);
                                 }
                                 : _sendCommandByName,
-                            Session_SendCommandByNameAsync = customSendCommandByName != null
+                            Session_SendCommandByNameAsync = isAiRobot
                                 ? (u, s, arg3, arg4, arg5, arg6) =>
                                 {
-                                    customSendCommandByName(result.Account, s, arg4, arg4 ?? Guid.Empty);
+                                    // ReSharper disable once PossibleInvalidOperationException
+                                    customSendCommandByName(customAccountForSet.Value, s, arg3, arg4 ?? Guid.Empty);
                                 }
                                 : _sendCommandByNameAsync,
                             // Set ping duration
-                            PingDurationInMilliseconds = customSendCommandByName != null ? ushort.MaxValue : (ushort) Configuration.GetPingTimeOut.TotalMilliseconds,
+                            PingDurationInMilliseconds = isAiRobot
+                                ? ushort.MaxValue
+                                : (ushort) Configuration.GetPingTimeOut.TotalMilliseconds,
                             // Set event
                             Session_OnSessionReceiveRequestOverTheLimitInSecond = sessionReceiveRequestOverLimit,
                             // Set session encoding
@@ -437,13 +457,23 @@ namespace G9SuperNetCoreServer.Core
                             // Set account 
                             Core_SetAccount = () => result.Account,
                             // Set is ai robot
-                            Session_SpecifiedAccountIsRobot = () => customSendCommandByName != null
-                        }, _sessionIdentityCounter,
-                    ((IPEndPoint) acceptedSocket.RemoteEndPoint).Address);
+                            Session_SpecifiedAccountIsRobot = () => isAiRobot
+                        },
+                    // Set session id
+                    _sessionIdentityCounter,
+                    // Set ip address
+                    isAiRobot
+                        ? IPAddress.None
+                        : ((IPEndPoint) acceptedSocket.RemoteEndPoint).Address
+                );
+
+                // Ai robots authorization automatic
+                if (isAiRobot)
+                    result.SessionHandler.Core_AuthorizationClient();
 
                 // ########### Set requirement###########
                 // Set max request
-                result.SessionHandler.Core_SetMaxRequestRequirement(customSendCommandByName != null
+                result.SessionHandler.Core_SetMaxRequestRequirement(isAiRobot
                     ? ushort.MaxValue
                     : Configuration.MaxRequestPerSecond);
 
@@ -458,7 +488,10 @@ namespace G9SuperNetCoreServer.Core
                 result.SessionHandler.Core_SetCertificateNumber(certNumber);
 
                 // Instance account and pass session to constructor
-                var newAccount = result.Account = new TAccount();
+                // Set new account
+                var newAccount = result.Account = customAccountForSet.HasValue
+                    ? customAccountForSet.Value.Account
+                    : new TAccount();
                 newAccount.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(result.AccountHandler =
                     new G9ServerAccountHandler(), session);
 

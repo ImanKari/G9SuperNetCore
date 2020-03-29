@@ -1,4 +1,5 @@
 ﻿using System;
+using G9Common.Enums;
 using G9SuperNetCoreServer.Abstarct;
 
 namespace G9SuperNetCoreServer.HelperClass
@@ -18,7 +19,7 @@ namespace G9SuperNetCoreServer.HelperClass
         ///     <para>Arg4: Guid => requestId</para>
         /// </summary>
         // ReSharper disable once NotAccessedField.Local
-        private Action<TAccount, string, object, Guid> _receiveCommandCallBack;
+        private Action<G9FakeAccountHandler<TAccount, TSession>, string, object, Guid> _receiveCommandCallBack;
 
         /// <summary>
         ///     <para>Action for send ai robot command</para>
@@ -28,7 +29,7 @@ namespace G9SuperNetCoreServer.HelperClass
         ///     <para>Arg1: bool => checkCommandExists</para>
         ///     <para>Arg1: bool => checkCommandSendType</para>
         /// </summary>
-        private readonly Action<string, object, Guid?, bool, bool> _sendCommand;
+        private readonly Action<TAccount, string, object, Guid?, bool, bool, CommandSendType> _sendCommand;
 
         #endregion ### Fields And Properties ###
 
@@ -53,8 +54,9 @@ namespace G9SuperNetCoreServer.HelperClass
 
         #region G9FakeAccountHandler
 
-        public G9FakeAccountHandler(TAccount account, Action<TAccount, string, object, Guid> receiveCommandCallBack,
-            Action<string, object, Guid?, bool, bool> sendCommand)
+        public G9FakeAccountHandler(TAccount account,
+            Action<G9FakeAccountHandler<TAccount, TSession>, string, object, Guid> receiveCommandCallBack,
+            Action<TAccount, string, object, Guid?, bool, bool, CommandSendType> sendCommand)
         {
             Account = account;
             _receiveCommandCallBack = receiveCommandCallBack;
@@ -84,7 +86,8 @@ namespace G9SuperNetCoreServer.HelperClass
             bool checkCommandExists = true,
             bool checkCommandSendType = true)
         {
-            _sendCommand(commandName, commandData, customRequestId, checkCommandExists, checkCommandSendType);
+            _sendCommand(Account, commandName, commandData, customRequestId, checkCommandExists, checkCommandSendType,
+                CommandSendType.Synchronous);
         }
 
         #endregion
@@ -109,7 +112,8 @@ namespace G9SuperNetCoreServer.HelperClass
         public void SendCommandByNameAsync(string commandName, object commandData, Guid? customRequestId = null,
             bool checkCommandExists = true, bool checkCommandSendType = true)
         {
-            _sendCommand(commandName, commandData, customRequestId, checkCommandExists, checkCommandSendType);
+            _sendCommand(Account, commandName, commandData, customRequestId, checkCommandExists, checkCommandSendType,
+                CommandSendType.Asynchronous);
         }
 
         #endregion
@@ -175,7 +179,7 @@ namespace G9SuperNetCoreServer.HelperClass
         #region RemoveOldReceiveListenerAndAddNewListener
 
         public void RemoveOldReceiveListenerAndAddNewListener(
-            Action<TAccount, string, object, Guid> receiveCommandCallBack)
+            Action<G9FakeAccountHandler<TAccount, TSession>, string, object, Guid> receiveCommandCallBack)
         {
             _receiveCommandCallBack = receiveCommandCallBack;
         }

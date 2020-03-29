@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using G9Common.Enums;
+using G9Common.HelperClass;
 using G9Common.Packet;
 using G9Common.Resource;
 using G9Common.ServerClient;
@@ -437,32 +438,36 @@ namespace G9SuperNetCoreServer.AbstractServer
         #region AddFakeAccount
 
         public G9FakeAccountHandler<TAccount, TSession> AddFakeAccount(
-            Action<TAccount, string, object, Guid> receiveCommandCallBackForAccount)
+            Action<G9FakeAccountHandler<TAccount, TSession>, string, object, Guid> receiveCommandCallBackForAccount)
         {
+            // Initialize send action
+            void CommandSend(TAccount account, string commandName, object commandData, Guid? customIdentity,
+                bool checkCommandExists, bool checkCommandSendType, CommandSendType sendType)
+            {
+                // Check validation
+                CheckValidationForCommand(commandName, commandData.GetType(), checkCommandExists,
+                    checkCommandSendType);
+
+                // Set command name
+                commandName = commandName.GenerateStandardCommandName(_core.Configuration.CommandSize * 16);
+
+                // Initialize packet data
+                var packetData = ReadyDataForSend(commandName, commandData, G9PacketDataType.StandardCommand,
+                    customIdentity);
+
+                // unpacking request - Decrypt data if need
+                var receivePacket = _packetManagement.UnpackingRequestByData(packetData.FlushPackets());
+                
+                // Progress packet
+                _core.CommandHandler.G9CallHandler(receivePacket, account, sendType == CommandSendType.Synchronous);
+            }
+
             // Create fake account
-            var acc = _core.AddFakeAccount(
+            return _core.AddFakeAccount(
                 // Check validation
                 receiveCommandCallBackForAccount ?? throw new ArgumentNullException(
                     nameof(receiveCommandCallBackForAccount),
-                    LogMessage.ActionSendCommandCallBackCannotBeNull));
-
-            // Initialize send action
-            void CommandSend(string commandName, object commandData, Guid? customIdentity, bool checkCommandExists, bool checkCommandSendType)
-            {
-                // Check validation
-                CheckValidationForCommand(commandName, commandData.GetType(), checkCommandExists, checkCommandSendType);
-
-                // Initialize packet data
-                var packetData = ReadyDataForSend(commandName, commandData, G9PacketDataType.StandardCommand, customIdentity);
-
-                // Initialize packet
-                var packet = new G9SendAndReceivePacket(packetData.TotalPackets > 1 ? G9PacketType.MultiPacket : G9PacketType.OnePacket, G9PacketDataType.StandardCommand, commandName, packetData.FlushPackets(), customIdentity ?? Guid.Empty);
-
-                // Progress packet
-                _core.CommandHandler.G9CallHandler(packet, acc);
-            }
-
-            return new G9FakeAccountHandler<TAccount, TSession>(acc, receiveCommandCallBackForAccount, CommandSend);
+                    LogMessage.ActionSendCommandCallBackCannotBeNull), CommandSend);
         }
 
         #endregion
