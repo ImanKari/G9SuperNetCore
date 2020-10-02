@@ -471,7 +471,7 @@ namespace G9SuperNetCoreClient.AbstractClient
         /// </summary>
         /// <param name="clientSocket">Specify client socket</param>
         /// <param name="data">Specify data for send</param>
-        /// <param name="sendFoAuthorization">
+        /// <param name="sendForAuthorization">
         ///     <para>Specified send for authorization</para>
         ///     <para>If set true, no wait for authorization</para>
         /// </param>
@@ -485,10 +485,10 @@ namespace G9SuperNetCoreClient.AbstractClient
 #else
             byte[]
 #endif
-                data, bool sendFoAuthorization = false)
+                data, bool sendForAuthorization = false)
         {
             // Wait for authorization
-            while (!sendFoAuthorization && !_mainAccountUtilities.Account.Session.IsAuthorization)
+            while (!sendForAuthorization && !_mainAccountUtilities.Account.Session.IsAuthorization)
                 Thread.Sleep(9);
 
             // Set log
