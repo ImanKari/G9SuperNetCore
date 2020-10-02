@@ -10,6 +10,7 @@ using G9Common.Interface;
 using G9Common.LogIdentity;
 using G9Common.PacketManagement;
 using G9Common.Resource;
+using G9Common.ServerClient;
 using G9LogManagement.Enums;
 using G9SuperNetCoreClient.Abstract;
 using G9SuperNetCoreClient.Config;
@@ -21,7 +22,7 @@ using G9SuperNetCoreClient.Logging;
 namespace G9SuperNetCoreClient.AbstractClient
 {
     // ReSharper disable once InconsistentNaming
-    public abstract partial class AG9SuperNetCoreClientBase<TAccount, TSession>
+    public abstract partial class AG9SuperNetCoreClientBase<TAccount, TSession> : AG9ServerClientCommon<TAccount>
         where TAccount : AClientAccount<TSession>, new()
         where TSession : AClientSession, new()
     {
@@ -32,7 +33,6 @@ namespace G9SuperNetCoreClient.AbstractClient
         ///     <para>Initialize requirement And Set config</para>
         /// </summary>
         /// <param name="clientConfig">Specify client configuration</param>
-        /// <param name="commandAssembly">Specified command assembly (find command in specified assembly)</param>
         /// <param name="customLogging">Specified custom logging system</param>
         /// <param name="privateKeyForSslConnection">
         ///     <para>
@@ -45,12 +45,23 @@ namespace G9SuperNetCoreClient.AbstractClient
         ///     <para>Specify a unique identity string from client</para>
         ///     <para>Used for ssl connection</para>
         /// </param>
+        /// <param name="commandAssemblies">
+        ///     <para>Specified command assemblies (find command in specified assembly)</para>
+        ///     <para>If set null, mean all assembly access</para>
+        /// </param>
+        /// <param name="customAccount">If need set account with custom initialized account, Set it.</param>
+        /// <param name="customSession">If need set session with custom initialized session, Set it.</param>
 
         #region G9SuperNetCoreClientBase
 
-        protected AG9SuperNetCoreClientBase(G9ClientConfig clientConfig, Assembly commandAssembly,
-            IG9Logging customLogging, string privateKeyForSslConnection, string clientUniqueIdentity)
+        protected AG9SuperNetCoreClientBase(G9ClientConfig clientConfig, IG9Logging customLogging = null,
+            string privateKeyForSslConnection = null, string clientUniqueIdentity = null, Assembly[] commandAssemblies = null,
+            TAccount customAccount = null, TSession customSession = null)
         {
+            // Set command assemblies
+            // ReSharper disable once ConvertToNullCoalescingCompoundAssignment
+            commandAssemblies = commandAssemblies ?? AppDomain.CurrentDomain.GetAssemblies();
+
             // Set logging system
             _logging = customLogging ?? new G9LoggingClient();
 
@@ -61,11 +72,11 @@ namespace G9SuperNetCoreClient.AbstractClient
             _mainAccountUtilities =
                 new G9AccountUtilities<TAccount, G9ClientAccountHandler, G9ClientSessionHandler>
                 {
-                    Account = new TAccount()
+                    Account = customAccount ?? new TAccount()
                 };
-            
+
             // Initialize account and session
-            var session = new TSession();
+            var session = customSession ?? new TSession();
             session.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(_mainAccountUtilities.SessionHandler =
                 new G9ClientSessionHandler
                 {
@@ -74,7 +85,9 @@ namespace G9SuperNetCoreClient.AbstractClient
                     // Set send command async
                     Session_SendCommandByNameAsync = SendCommandByNameAsync,
                     // Set session encoding
-                    Session_GetSessionEncoding = () => Configuration.EncodingAndDecoding
+                    Session_GetSessionEncoding = () => Configuration.EncodingAndDecoding,
+                    // Set account 
+                    Core_SetAccount = () => _mainAccountUtilities.Account
                 }, 0, IPAddress.Any);
             _mainAccountUtilities.Account.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(
                 _mainAccountUtilities.AccountHandler = new G9ClientAccountHandler(), session);
@@ -96,8 +109,11 @@ namespace G9SuperNetCoreClient.AbstractClient
                     LogMessage.SuccessfulOperation);
 
             // Initialize command handler
-            _commandHandler = new G9CommandHandler<TAccount>(commandAssembly, _logging, Configuration.CommandSize,
+            _commandHandler = new G9CommandHandler<TAccount>(commandAssemblies, _logging, Configuration.CommandSize,
                 OnUnhandledCommandHandler);
+
+            // Set command call back
+            CommandHandlerCallback = _commandHandler;
 
             // ######################## Add default command ########################
             // G9 Echo Command
@@ -128,57 +144,6 @@ namespace G9SuperNetCoreClient.AbstractClient
                     : clientUniqueIdentity;
         }
 
-        #region Constructor Overloads
-
-        /// <summary>
-        ///     <para>Constructor</para>
-        ///     <para>Initialize requirement And Set config</para>
-        /// </summary>
-        /// <param name="clientConfig">Specify client configuration</param>
-        /// <param name="commandAssembly">Specified command assembly (find command in specified assembly)</param>
-        protected AG9SuperNetCoreClientBase(G9ClientConfig clientConfig, Assembly commandAssembly)
-            : this(clientConfig, commandAssembly, null, null, null)
-        {
-        }
-
-        /// <summary>
-        ///     <para>Constructor</para>
-        ///     <para>Initialize requirement And Set config</para>
-        /// </summary>
-        /// <param name="clientConfig">Specify client configuration</param>
-        /// <param name="commandAssembly">Specified command assembly (find command in specified assembly)</param>
-        /// <param name="customLogging">Specified custom logging system</param>
-        protected AG9SuperNetCoreClientBase(G9ClientConfig clientConfig, Assembly commandAssembly,
-            IG9Logging customLogging)
-            : this(clientConfig, commandAssembly, customLogging, null, null)
-        {
-        }
-
-        /// <summary>
-        ///     <para>Constructor</para>
-        ///     <para>Initialize requirement And Set config</para>
-        /// </summary>
-        /// <param name="clientConfig">Specify client configuration</param>
-        /// <param name="commandAssembly">Specified command assembly (find command in specified assembly)</param>
-        /// <param name="privateKeyForSslConnection">
-        ///     <para>
-        ///         Notice: This is not a certificate password, it is a private, shared key between the client and the server for
-        ///         secure connection (SSL)
-        ///     </para>
-        ///     <para>Specified custom private key</para>
-        /// </param>
-        /// <param name="clientUniqueIdentity">
-        ///     <para>Specify a unique identity string from client</para>
-        ///     <para>Used for ssl connection</para>
-        /// </param>
-        protected AG9SuperNetCoreClientBase(G9ClientConfig clientConfig, Assembly commandAssembly,
-            string privateKeyForSslConnection, string clientUniqueIdentity)
-            : this(clientConfig, commandAssembly, null, privateKeyForSslConnection, clientUniqueIdentity)
-        {
-        }
-
-        #endregion
-
         #endregion
 
         /// <summary>
@@ -194,7 +159,7 @@ namespace G9SuperNetCoreClient.AbstractClient
             try
             {
                 // Retrieve the socket from the state object.  
-                _clientSocket = (Socket)asyncResult.AsyncState;
+                _clientSocket = (Socket) asyncResult.AsyncState;
 
                 // Complete the connection.  
                 _clientSocket.EndConnect(asyncResult);
@@ -207,7 +172,6 @@ namespace G9SuperNetCoreClient.AbstractClient
 
                 if (IsSocketConnected(_clientSocket))
                 {
-
                     // Set log
                     if (_logging.CheckLoggingIsActive(LogsType.EVENT))
                     {
@@ -321,10 +285,10 @@ namespace G9SuperNetCoreClient.AbstractClient
             try
             {
                 // Retrieve the socket from the state object.  
-                var client = (Socket)asyncResult.AsyncState;
+                var client = (Socket) asyncResult.AsyncState;
 
                 // Complete sending the data to the remote device.  
-                var bytesSent = (ushort)client.EndSend(asyncResult);
+                var bytesSent = (ushort) client.EndSend(asyncResult);
 
                 // Signal that all bytes have been sent.  
                 _sendDone.Set();

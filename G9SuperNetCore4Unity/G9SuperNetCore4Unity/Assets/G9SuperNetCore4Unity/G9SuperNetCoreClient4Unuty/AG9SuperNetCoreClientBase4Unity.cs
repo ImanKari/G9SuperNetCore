@@ -10,6 +10,7 @@ using G9LogManagement.Enums;
 using G9SuperNetCoreClient.Abstract;
 using G9SuperNetCoreClient.Enums;
 using G9SuperNetCoreClient.Helper;
+using UnityEditor;
 
 // ReSharper disable once CheckNamespace
 namespace G9SuperNetCoreClient.AbstractClient
@@ -136,6 +137,7 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         #endregion
 
+        // TODO: Unity mode => Receive package add to queue
         /// <summary>
         ///     Helper for handle receive packet
         /// </summary>
@@ -166,10 +168,16 @@ namespace G9SuperNetCoreClient.AbstractClient
                         receivePacket.ChangePackageBodyByMultiPackage(
                             _stateObject.MultiPacketCollection[receivePacket.RequestId]);
 
-                        // if authorization request => wait to finish progress
-                        // Progress packet
-                        _commandHandler.G9CallHandler(receivePacket, _mainAccountUtilities.Account,
-                            isAuthorizationCommand);
+                        // TODO: Unity mode => Add to queue
+                        var packet = receivePacket;
+                        var finish = isAuthorizationCommand;
+                        G9SuperNetCoreClient4UnityHelper.ReceiveAction.Enqueue(b =>
+                        {
+                            // if authorization request => wait to finish progress
+                            // Progress packet
+                            _commandHandler.G9CallHandler(packet, _mainAccountUtilities.Account,
+                                finish || b);
+                        });
                     }
                 }
                 else
@@ -204,7 +212,14 @@ namespace G9SuperNetCoreClient.AbstractClient
             else
             {
                 // Progress packet
-                _commandHandler.G9CallHandler(receivePacket, _mainAccountUtilities.Account);
+                // TODO: Unity mode => Add to queue
+                var packet = receivePacket;
+                G9SuperNetCoreClient4UnityHelper.ReceiveAction.Enqueue(b =>
+                {
+                    // if authorization request => wait to finish progress
+                    // Progress packet
+                    _commandHandler.G9CallHandler(packet, _mainAccountUtilities.Account, b);
+                });
             }
 
             #endregion
@@ -212,6 +227,7 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         #endregion
 
+        // TODO: Unity mode => Send package don't need queue
         /// <summary>
         ///     Send data
         ///     Handle for send

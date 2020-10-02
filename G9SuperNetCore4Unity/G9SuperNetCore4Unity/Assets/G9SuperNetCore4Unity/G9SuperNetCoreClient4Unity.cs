@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using G9Common.Enums;
@@ -18,7 +17,7 @@ public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
     /// <summary>
     ///     Specified version of Super Net Core 4 Unity
     /// </summary>
-    public const string Version = "2.2.1.1";
+    public const string Version = "2.2.3.0";
 
     #region Fields And Properties
 
@@ -133,7 +132,8 @@ public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
 
     #region Initialize
 
-    public static async Task<G9SuperNetCoreSocketClient<TAccount, TSession>> Initialize<TAccount, TSession>()
+    public static async Task<G9SuperNetCoreSocketClient<TAccount, TSession>> Initialize<TAccount, TSession>(
+        TAccount gameAccount)
         where TAccount : AClientAccount<TSession>, new()
         where TSession : AClientSession, new()
     {
@@ -151,12 +151,12 @@ public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
             _g9SuperNetCoreClient = _enableSecureConnection
                 ? new G9SuperNetCoreSocketClient<TAccount, TSession>(
                     new G9ClientConfig(IPAddress.Parse(_serverIpAddress), _port, SocketMode.Tcp),
-                    Assembly.GetExecutingAssembly(),
-                    _privateKey,
-                    _uniqueIdentity)
+                    privateKeyForSslConnection: _privateKey,
+                    clientUniqueIdentity: _uniqueIdentity,
+                    customAccount: gameAccount)
                 : new G9SuperNetCoreSocketClient<TAccount, TSession>(
                     new G9ClientConfig(IPAddress.Parse(_serverIpAddress), _port, SocketMode.Tcp),
-                    Assembly.GetExecutingAssembly());
+                    customAccount: gameAccount);
 
             // Set disconnect action
             DisconnectServerMethod = () =>

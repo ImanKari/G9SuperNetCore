@@ -82,6 +82,13 @@ namespace G9Common.Abstract
         /// </summary>
         public Func<G9Encoding> Session_GetSessionEncoding;
 
+        /// <summary>
+        ///     ### Execute From Session ###
+        ///     Set account for session
+        ///     AAccount => Specified account
+        /// </summary>
+        public Func<AAccount> Core_SetAccount;
+
         #endregion
 
         #endregion

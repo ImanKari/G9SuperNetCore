@@ -10,26 +10,28 @@ namespace G9Common.HelperClass
     public static class VType
     {
         /// <summary>
-        ///     Get driced types
+        ///     Get derived types
         /// </summary>
         /// <param name="baseType">Specify base type</param>
-        /// <param name="assembly">Specify assembly</param>
+        /// <param name="assemblies">Specify assemblies for search</param>
         /// <returns>List of types</returns>
 
         #region GetDerivedTypes
 
-        public static List<Type> GetDerivedTypes(Type baseType, Assembly assembly)
+        public static List<Type> GetDerivedTypes(Type baseType, Assembly[] assemblies)
         {
-            // Get all types from the given assembly
-            var types = assembly.GetTypes();
             var derivedTypes = new List<Type>();
-
-            for (int i = 0, count = types.Length; i < count; i++)
+            foreach (var assembly in assemblies)
             {
-                var type = types[i];
-                if (IsSubclassOf(type, baseType)) derivedTypes.Add(type);
-            }
+                // Get all types from the given assembly
+                var types = assembly.GetTypes();
 
+                for (int i = 0, count = types.Length; i < count; i++)
+                {
+                    var type = types[i];
+                    if (IsSubclassOf(type, baseType)) derivedTypes.Add(type);
+                }
+            }
             return derivedTypes;
         }
 

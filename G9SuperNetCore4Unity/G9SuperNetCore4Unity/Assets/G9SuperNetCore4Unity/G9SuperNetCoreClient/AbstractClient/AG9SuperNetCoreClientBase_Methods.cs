@@ -10,17 +10,19 @@ using G9Common.LogIdentity;
 using G9Common.Packet;
 using G9Common.PacketManagement;
 using G9Common.Resource;
+using G9Common.ServerClient;
 using G9LogManagement.Enums;
 using G9SuperNetCoreClient.Abstract;
 using G9SuperNetCoreClient.Enums;
 using G9SuperNetCoreClient.Helper;
+using UnityEditor;
 using Debug = UnityEngine.Debug;
 
 // ReSharper disable once CheckNamespace
 namespace G9SuperNetCoreClient.AbstractClient
 {
     // ReSharper disable once InconsistentNaming
-    public abstract partial class AG9SuperNetCoreClientBase<TAccount, TSession>
+    public abstract partial class AG9SuperNetCoreClientBase<TAccount, TSession> : AG9ServerClientCommon<TAccount>
         where TAccount : AClientAccount<TSession>, new()
         where TSession : AClientSession, new()
     {
@@ -35,6 +37,11 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         public async Task<bool> StartConnection()
         {
+#if UNITY_EDITOR
+            // اگر در محیط بازی سازی، بازی فعال نبود باید از اجرا اسکریپت جلوگیری کند
+            if (!EditorApplication.isPlaying) return false;
+#endif
+
             return await Task.Run(async () =>
             {
                 // Set log
@@ -164,7 +171,9 @@ namespace G9SuperNetCoreClient.AbstractClient
                     // Set send command async
                     Session_SendCommandByNameAsync = SendCommandByNameAsync,
                     // Set session encoding
-                    Session_GetSessionEncoding = () => Configuration.EncodingAndDecoding
+                    Session_GetSessionEncoding = () => Configuration.EncodingAndDecoding,
+                    // Set account 
+                    Core_SetAccount = () => _mainAccountUtilities.Account
                 }, 0, IPAddress.Any);
             _mainAccountUtilities.Account.InitializeAndHandlerAccountAndSessionAutomaticFirstTime(
                 _mainAccountUtilities.AccountHandler = new G9ClientAccountHandler(), session);
@@ -513,7 +522,7 @@ namespace G9SuperNetCoreClient.AbstractClient
         /// </param>
         /// <returns>Return => Task int specify byte to send. if don't send return 0</returns>
 
-        #region SendCommandByNameAsync
+        #region SendCommandAsync
 
         public void SendCommandAsync<TCommand, TTypeSend>(TTypeSend commandData, Guid? customRequestId = null,
             bool checkCommandExists = true,

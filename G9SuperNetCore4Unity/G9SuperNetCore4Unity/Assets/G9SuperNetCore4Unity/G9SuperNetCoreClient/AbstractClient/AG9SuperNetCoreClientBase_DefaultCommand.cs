@@ -6,13 +6,14 @@ using G9Common.Enums;
 using G9Common.HelperClass;
 using G9Common.LogIdentity;
 using G9Common.Resource;
+using G9Common.ServerClient;
 using G9LogManagement.Enums;
 using G9SuperNetCoreClient.Abstract;
 using G9SuperNetCoreClient.Enums;
 
 namespace G9SuperNetCoreClient.AbstractClient
 {
-    public abstract partial class AG9SuperNetCoreClientBase<TAccount, TSession>
+    public abstract partial class AG9SuperNetCoreClientBase<TAccount, TSession> : AG9ServerClientCommon<TAccount>
         where TAccount : AClientAccount<TSession>, new()
         where TSession : AClientSession, new()
     {

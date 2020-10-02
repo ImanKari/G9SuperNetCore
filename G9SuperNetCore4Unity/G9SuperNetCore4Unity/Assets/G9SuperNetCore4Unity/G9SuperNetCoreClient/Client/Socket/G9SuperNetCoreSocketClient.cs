@@ -10,25 +10,11 @@ namespace G9SuperNetCoreClient.Client.Socket
         where TAccount : AClientAccount<TSession>, new()
         where TSession : AClientSession, new()
     {
-        public G9SuperNetCoreSocketClient(G9ClientConfig clientConfig, Assembly commandAssembly,
-            IG9Logging customLogging, string privateKeyForSslConnection, string clientUniqueIdentity) : base(
-            clientConfig, commandAssembly, customLogging, privateKeyForSslConnection, privateKeyForSslConnection)
-        {
-        }
-
-        public G9SuperNetCoreSocketClient(G9ClientConfig clientConfig, Assembly commandAssembly,
-            IG9Logging customLogging) : base(clientConfig, commandAssembly, customLogging)
-        {
-        }
-
-        public G9SuperNetCoreSocketClient(G9ClientConfig clientConfig, Assembly commandAssembly)
-            : base(clientConfig, commandAssembly)
-        {
-        }
-
-        public G9SuperNetCoreSocketClient(G9ClientConfig clientConfig, Assembly commandAssembly,
-            string privateKeyForSslConnection, string clientUniqueIdentity) : base(clientConfig, commandAssembly,
-            privateKeyForSslConnection, clientUniqueIdentity)
+        public G9SuperNetCoreSocketClient(G9ClientConfig clientConfig, IG9Logging customLogging = null,
+            string privateKeyForSslConnection = null, string clientUniqueIdentity = null,
+            Assembly[] commandAssemblies = null,
+            TAccount customAccount = null, TSession customSession = null) : base(clientConfig, customLogging,
+            privateKeyForSslConnection, clientUniqueIdentity, commandAssemblies, customAccount, customSession)
         {
         }
     }

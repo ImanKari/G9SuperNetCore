@@ -23,9 +23,6 @@ namespace G9SuperNetCoreClient.AbstractClient
             while (ReceiveAction.Any())
                 ReceiveAction.Dequeue()(true);
 
-            while (SendAction.Any())
-                SendAction.Dequeue()(true);
-
             while (EventsQueue.Any())
                 EventsQueue.Dequeue()();
         }
@@ -34,19 +31,13 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         #endregion End Start Methods
 
-        #region Start Fields And Properties
+        #region Fields And Properties
 
         /// <summary>
         ///     <para>Queue for save receive action</para>
         ///     <para>bool => If true wait action execute finish (Sync)</para>
         /// </summary>
         public static readonly Queue<Action<bool>> ReceiveAction = new Queue<Action<bool>>();
-
-        /// <summary>
-        ///     <para>Queue for save send action</para>
-        ///     <para>bool => If true wait action execute finish (Sync)</para>
-        /// </summary>
-        public static readonly Queue<Action<bool>> SendAction = new Queue<Action<bool>>();
 
         /// <summary>
         ///     <para>Queue for save events action</para>

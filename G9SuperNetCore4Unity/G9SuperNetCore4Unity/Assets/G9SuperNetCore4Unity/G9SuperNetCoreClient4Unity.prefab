@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Validation: 1
-  ServerIpAddress: 192.168.1.103
+  ServerIpAddress: 192.168.1.105
   Port: 9639
   EnableSecureConnection: 0
   PrivateKey: 9ZdBx9VQ6D97XZwFlTjqR6QtL1hXZhkCIQCFTw1vlf9QO5ZdxnuqjfSeXj2A4hibPQdEiMu/mEgp2lIX5Tbvvskmz7ue7F1MYEWybe8kdq9ByLTQPBEuEMoiJxQr7Nqj
@@ -66,9 +66,10 @@ MonoBehaviour:
   IsEnableExceptionLogging: 1
   IsEnableErrorLogging: 1
   IsEnableWarningLogging: 1
-  IsEnableInformationLogging: 1
-  IsEnableEventLogging: 1
+  IsEnableInformationLogging: 0
+  IsEnableEventLogging: 0
   TextForDebug: {fileID: 0}
+  NumberOfLogIgnore: 99
 --- !u!114 &1343730141823950795
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using G9LogManagement.Enums;
 using G9LogManagement.Structures;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -100,6 +101,11 @@ public class G9Logging4Unity : MonoBehaviour
     // ReSharper disable once UnusedMember.Local
     private void Start()
     {
+#if UNITY_EDITOR
+        // اگر در محیط بازی سازی، بازی فعال نبود باید از اجرا اسکریپت جلوگیری کند
+        if (!EditorApplication.isPlaying) return;
+#endif
+
         _staticIsEnableExceptionLogging = IsEnableExceptionLogging;
         _staticIsEnableErrorLogging = IsEnableErrorLogging;
         _staticIsEnableWarningLogging = IsEnableWarningLogging;

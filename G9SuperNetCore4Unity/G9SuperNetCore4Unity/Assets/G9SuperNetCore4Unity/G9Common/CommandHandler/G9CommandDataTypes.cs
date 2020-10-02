@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using G9Common.Abstract;
-using G9Common.HelperClass;
+using G9Common.Enums;
 
 namespace G9Common.CommandHandler
 {
@@ -31,9 +32,10 @@ namespace G9Common.CommandHandler
 #if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
             ReadOnlyMemory<byte>,
 #else
-                byte[],
+                    byte[],
 #endif
-                TAccount, Guid> accessToMethodReceiveCommand,
+                    TAccount, Guid, Action<object, TAccount, Guid, Action<object, CommandSendType>>>
+                accessToMethodReceiveCommand,
             Action<Exception, TAccount> accessToMethodOnErrorInCommand,
             Type commandReceiveType,
             Type commandSendType)
@@ -46,9 +48,64 @@ namespace G9Common.CommandHandler
 
         #endregion
 
+        /// <summary>
+        ///     Add extra call back for command
+        /// </summary>
+        /// <param name="callBack">Action call back</param>
+
+        #region AddRegisterCallback
+
+        public void AddRegisterCallback(
+            Func<object, TAccount, Guid, Action<object, CommandSendType>, EnumCallBackExecutePeriod> callBack)
+        {
+            if (_registerCallbackCollection == null)
+                _registerCallbackCollection =
+                    new List<Func<object, TAccount, Guid, Action<object, CommandSendType>, EnumCallBackExecutePeriod
+                    >>();
+
+            _registerCallbackCollection.Add(callBack);
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Execute all register call back
+        /// </summary>
+        /// <param name="data">Receive data</param>
+        /// <param name="account">Specified account</param>
+        /// <param name="id">Specified packet id</param>
+        /// <param name="sendAction">Specified send action</param>
+
+        #region ExecuteRegisterCallBack
+
+        public void ExecuteRegisterCallBack(object data, TAccount account, Guid id, Action<object, CommandSendType>
+            sendAction)
+        {
+            // If not exist return
+            if (_registerCallbackCollection == null) return;
+
+            // If exists loop and execute
+            for (var i = _registerCallbackCollection.Count - 1; i >= 0; i--)
+            {
+                var type = _registerCallbackCollection[i]?.Invoke(data, account, id, sendAction);
+
+                // Remove if type is just once
+                if (type.HasValue && type == EnumCallBackExecutePeriod.JustOnce)
+                    _registerCallbackCollection.RemoveAt(i);
+            }
+        }
+
+        #endregion
+
         #endregion
 
         #region Fields And Properties
+
+        /// <summary>
+        ///     Collection for save register call back for command
+        /// </summary>
+        private List<Func<object, TAccount, Guid, Action<object, CommandSendType>, EnumCallBackExecutePeriod>>
+            _registerCallbackCollection;
 
         /// <summary>
         ///     Access to method "ResponseService" in command
@@ -57,9 +114,10 @@ namespace G9Common.CommandHandler
 #if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
             ReadOnlyMemory<byte>,
 #else
-            byte[],
+                byte[],
 #endif
-            TAccount, Guid> AccessToMethodReceiveCommand;
+                TAccount, Guid, Action<object, TAccount, Guid, Action<object, CommandSendType>>>
+            AccessToMethodReceiveCommand;
 
         /// <summary>
         ///     Access to method "OnError" in command

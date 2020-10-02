@@ -15,6 +15,11 @@ public class G9SuperNetCoreClient4UnityInitializeSample : MonoBehaviour
         get;
     }
 
+    /// <summary>
+    ///     Specified custom game account for client
+    /// </summary>
+    [Header("Custom game account for client")]
+    public ClientAccountSample GameAccount;
 
     /// <summary>
     ///     Run automatic in first time just one time
@@ -32,7 +37,7 @@ public class G9SuperNetCoreClient4UnityInitializeSample : MonoBehaviour
         // Make the game run as fast as possible
         Application.targetFrameRate = 60;
         // Initialize client
-        G9SuperNetCoreClient = await G9SuperNetCoreClient4Unity.Initialize<ClientAccountSample, ClientSessionSample>();
+        G9SuperNetCoreClient = await G9SuperNetCoreClient4Unity.Initialize<ClientAccountSample, ClientSessionSample>(GameAccount);
         await G9SuperNetCoreClient.StartConnection();
     }
 

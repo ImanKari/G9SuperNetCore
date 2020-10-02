@@ -5,13 +5,14 @@ using G9Common.CommandHandler;
 using G9Common.HelperClass;
 using G9Common.Interface;
 using G9Common.PacketManagement;
+using G9Common.ServerClient;
 using G9SuperNetCoreClient.Abstract;
 using G9SuperNetCoreClient.Config;
 using G9SuperNetCoreClient.Helper;
 
 namespace G9SuperNetCoreClient.AbstractClient
 {
-    public abstract partial class AG9SuperNetCoreClientBase<TAccount, TSession>
+    public abstract partial class AG9SuperNetCoreClientBase<TAccount, TSession> : AG9ServerClientCommon<TAccount>
         where TAccount : AClientAccount<TSession>, new()
         where TSession : AClientSession, new()
     {
@@ -63,6 +64,12 @@ namespace G9SuperNetCoreClient.AbstractClient
         private ushort _packetSize;
 
         /// <summary>
+        ///     <para>Specified reconnect is enable or no</para>
+        ///     <para>If is enable reject other reconnect request</para>
+        /// </summary>
+        private bool _reconnectModeEnable;
+
+        /// <summary>
         ///     Specify count for try reconnect
         /// </summary>
         private sbyte _reconnectTryCount;
@@ -71,6 +78,11 @@ namespace G9SuperNetCoreClient.AbstractClient
         ///     State object handle client task
         /// </summary>
         private G9SuperNetCoreStateObjectClient _stateObject;
+
+        /// <summary>
+        ///     <para>If is enable reject other request for call OnUnableToConnectHandler</para>
+        /// </summary>
+        private bool _unableToConnectFlag;
 
         /// <summary>
         ///     Specified client connected date time
@@ -83,15 +95,9 @@ namespace G9SuperNetCoreClient.AbstractClient
         public TAccount MainAccount => _mainAccountUtilities.Account;
 
         /// <summary>
-        ///     <para>Specified reconnect is enable or no</para>
-        ///     <para>If is enable reject other reconnect request</para>
+        ///     Specified client is Authorization
         /// </summary>
-        private bool _reconnectModeEnable;
-
-        /// <summary>
-        ///     <para>If is enable reject other request for call OnUnableToConnectHandler</para>
-        /// </summary>
-        private bool _unableToConnectFlag;
+        public bool IsAuthorization => _mainAccountUtilities?.Account?.Session?.IsAuthorization ?? false;
 
         #region Send And Receive Bytes
 
