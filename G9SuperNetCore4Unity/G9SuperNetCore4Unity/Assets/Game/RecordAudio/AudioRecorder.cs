@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using G9SuperNetCoreServerSampleApp_GameServer.Commands;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -50,24 +51,15 @@ public class AudioRecorder : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     {
         if (!_enableRecord) return;
 
-        if (Time.time - _time <= 0.5) return;
+        if (Time.time - _time <= 0.2) return;
 
         //End the recording when the mouse comes back up, then play it
         Microphone.End("");
 
-        //Trim the audioclip by the length of the recording
-        var recordingNew = AudioClip.Create(recording.name,
-            (int) ((Time.time - startRecordingTime) * recording.frequency), recording.channels, recording.frequency,
-            false);
         var data = new float[(int) ((Time.time - startRecordingTime) * recording.frequency)];
         recording.GetData(data, 0);
-        recordingNew.SetData(data, 0);
-        recording = recordingNew;
-        Debug.Log(data.Length);
-
-        //Play recording
-        audioSource.clip = recording;
-        audioSource.Play();
+        
+        G9SuperNetCoreClient4UnityInitializeGameClient.G9SuperNetCoreClient.SendCommandAsync<CVoice, float[]>(data);
 
         //Start the recording, the length of 300 gives it a cap of 5 minutes
         recording = Microphone.Start("", false, 300, 6999);

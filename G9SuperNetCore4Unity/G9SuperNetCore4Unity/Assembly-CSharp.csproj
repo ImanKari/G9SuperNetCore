@@ -66,6 +66,7 @@
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient\Sample\ClientSessionSample.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient4Unity.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\HelperClass\G9Encoding.cs" />
+    <Compile Include="Assets\Game\Command\CVoice.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Enums\G9ReservedCommandName.cs" />
     <Compile Include="Assets\Game\RecordAudio\AudioRecorder.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\CommandHandler\G9CommandHandler.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient\AbstractClient\AG9SuperNetCoreClientBase.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\HelperClass\G9SslCertificate.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient\Helper\G9SuperNetCoreStateObjectClient.cs" />
+    <Compile Include="Assets\Game\LookAtCameraYonly.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Abstract\AG9SuperNetCoreStateObjectBase.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Enums\EnumCallBackExecutePeriod.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Enums\SendTypeForCommand.cs" />
@@ -136,7 +138,6 @@
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient4UnityInitializeSample.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient\Sample\ClientAccountSample.cs" />
     <Compile Include="Assets\Game\OtherCharacterHandler.cs" />
-    <Compile Include="Assets\Game\LookAtCameraYonly.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

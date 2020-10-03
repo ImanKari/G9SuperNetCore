@@ -1,7 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using G9SuperNetCoreServerSampleApp_GameServer.AccountAndSession;
-using G9SuperNetCoreServerSampleApp_GameServer.Commands;
 using G9SuperNetCoreServerSampleApp_GameServer.Commands.Struct;
 using UnityEngine;
 
@@ -49,6 +46,16 @@ public class GameCore : MonoBehaviour
         if (!GameAccountCollection.ContainsKey(dtPlayerMove.PlayerIdentity)) return;
         GameAccountCollection[dtPlayerMove.PlayerIdentity]
             .MoveCharacter(dtPlayerMove.NewPosition.ConvertSimpleToMain());
+    }
+
+    public void PlayVoice(float[] voiceData)
+    {
+        var voiceAudioSource = gameObject.AddComponent<AudioSource>();
+        var recordingNew = AudioClip.Create("", voiceData.Length, 1, 6999, false);
+        recordingNew.SetData(voiceData, 0);
+        voiceAudioSource.clip = recordingNew;
+        voiceAudioSource.loop = false;
+        voiceAudioSource.Play();
     }
 
 }

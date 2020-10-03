@@ -64,5 +64,13 @@ namespace G9SuperNetCoreServerSampleApp_GameServer.Core
             }
         }
 
+        public static void VoiceRecord(GameAccount gameAccount, float[] voiceData)
+        {
+            foreach (var account in GameAccountCollection.Where(s => s.Key != gameAccount.PlayerIdentity))
+            {
+                account.Value.Session.SendCommandAsync<CVoice, float[]>(voiceData);
+            }
+        }
+
     }
 }
