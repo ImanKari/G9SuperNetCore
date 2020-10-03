@@ -1,4 +1,5 @@
-﻿using G9SuperNetCoreServerSampleApp_GameServer.Commands;
+﻿using System.IO;
+using G9SuperNetCoreServerSampleApp_GameServer.Commands;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -59,7 +60,7 @@ public class AudioRecorder : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
         var data = new float[(int) ((Time.time - startRecordingTime) * recording.frequency)];
         recording.GetData(data, 0);
         
-        G9SuperNetCoreClient4UnityInitializeGameClient.G9SuperNetCoreClient.SendCommandAsync<CVoice, float[]>(data);
+        //G9SuperNetCoreClient4UnityInitializeGameClient.G9SuperNetCoreClient.SendCommandAsync<CVoice, float[]>(data);
 
         //Start the recording, the length of 300 gives it a cap of 5 minutes
         recording = Microphone.Start("", false, 300, 6999);
