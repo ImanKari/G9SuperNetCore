@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -90,6 +91,10 @@ namespace G9SuperNetCoreClientSampleApp
                     //    clients[i].SendCommandAsync<CounterCommand, int>(0);
                     //}
                     Console.WriteLine("Active counter for all clients...");
+                }
+                else if (message == "FILE")
+                {
+                    client1.SendCommandAsync<FileTransfer, byte[]>(File.ReadAllBytes("G9-Logo-G9Studio.png"));
                 }
                 else
                 {

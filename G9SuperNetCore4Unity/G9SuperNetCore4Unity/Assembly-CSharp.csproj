@@ -22,7 +22,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Temp\Bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;UNITY_2020_1_6;UNITY_2020_1;UNITY_2020;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_2017_4_OR_NEWER;UNITY_2018_1_OR_NEWER;UNITY_2018_2_OR_NEWER;UNITY_2018_3_OR_NEWER;UNITY_2018_4_OR_NEWER;UNITY_2019_1_OR_NEWER;UNITY_2019_2_OR_NEWER;UNITY_2019_3_OR_NEWER;UNITY_2019_4_OR_NEWER;UNITY_2020_1_OR_NEWER;UNITY_INCLUDE_TESTS;ENABLE_AR;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_EVENT_QUEUE;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_TEXTURE_STREAMING;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_VR;ENABLE_WEBCAM;ENABLE_UNITYWEBREQUEST;ENABLE_WWW;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_COLLAB_SOFTLOCKS;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_CLOUD_SERVICES_NATIVE_CRASH_REPORTING;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_DIRECTOR_AUDIO;ENABLE_DIRECTOR_TEXTURE;ENABLE_MANAGED_JOBS;ENABLE_MANAGED_TRANSFORM_JOBS;ENABLE_MANAGED_ANIMATION_JOBS;ENABLE_MANAGED_AUDIO_JOBS;ENABLE_RUNTIME_PERMISSIONS;ENABLE_ENGINE_CODE_STRIPPING;ENABLE_ONSCREEN_KEYBOARD;INCLUDE_DYNAMIC_GI;ENABLE_MONO_BDWGC;ENABLE_SCRIPTING_GC_WBARRIERS;PLATFORM_SUPPORTS_MONO;ENABLE_VIDEO;PLATFORM_ANDROID;UNITY_ANDROID;UNITY_ANDROID_API;ENABLE_EGL;ENABLE_NETWORK;ENABLE_RUNTIME_GI;ENABLE_CRUNCH_TEXTURE_COMPRESSION;UNITY_CAN_SHOW_SPLASH_SCREEN;UNITY_HAS_GOOGLEVR;UNITY_HAS_TANGO;ENABLE_SPATIALTRACKING;UNITY_ASTC_ONLY_DECOMPRESS;PLATFORM_EXTENDS_VULKAN_DEVICE;PLATFORM_HAS_MULTIPLE_SWAPCHAINS;ENABLE_UNITYADS_RUNTIME;UNITY_UNITYADS_API;ENABLE_MONO;NET_4_6;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_UNITY_COLLECTIONS_CHECKS;ENABLE_BURST_AOT;UNITY_TEAM_LICENSE;UNITY_PRO_LICENSE;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_DIRECTOR;ENABLE_LOCALIZATION;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_TILEMAP;ENABLE_TIMELINE;ENABLE_LEGACY_INPUT_MANAGER;CSHARP_7_OR_LATER;CSHARP_7_3_OR_NEWER;DEVELOPMENT_BUILD</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;UNITY_2020_1_6;UNITY_2020_1;UNITY_2020;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_2017_4_OR_NEWER;UNITY_2018_1_OR_NEWER;UNITY_2018_2_OR_NEWER;UNITY_2018_3_OR_NEWER;UNITY_2018_4_OR_NEWER;UNITY_2019_1_OR_NEWER;UNITY_2019_2_OR_NEWER;UNITY_2019_3_OR_NEWER;UNITY_2019_4_OR_NEWER;UNITY_2020_1_OR_NEWER;PLATFORM_ARCH_64;UNITY_64;UNITY_INCLUDE_TESTS;ENABLE_AR;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_EVENT_QUEUE;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_TEXTURE_STREAMING;ENABLE_VIRTUALTEXTURING;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_VR;ENABLE_WEBCAM;ENABLE_UNITYWEBREQUEST;ENABLE_WWW;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_COLLAB_SOFTLOCKS;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_DIRECTOR_AUDIO;ENABLE_DIRECTOR_TEXTURE;ENABLE_MANAGED_JOBS;ENABLE_MANAGED_TRANSFORM_JOBS;ENABLE_MANAGED_ANIMATION_JOBS;ENABLE_MANAGED_AUDIO_JOBS;INCLUDE_DYNAMIC_GI;ENABLE_MONO_BDWGC;ENABLE_SCRIPTING_GC_WBARRIERS;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;ENABLE_VIDEO;PLATFORM_STANDALONE;PLATFORM_STANDALONE_WIN;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_OUT_OF_PROCESS_CRASH_HANDLER;ENABLE_CLUSTER_SYNC;ENABLE_CLUSTERINPUT;GFXDEVICE_WAITFOREVENT_MESSAGEPUMP;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_4_6;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_UNITY_COLLECTIONS_CHECKS;ENABLE_BURST_AOT;UNITY_TEAM_LICENSE;UNITY_PRO_LICENSE;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_DIRECTOR;ENABLE_LOCALIZATION;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_TILEMAP;ENABLE_TIMELINE;ENABLE_LEGACY_INPUT_MANAGER;CSHARP_7_OR_LATER;CSHARP_7_3_OR_NEWER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>0169</NoWarn>
@@ -48,13 +48,16 @@
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <UnityProjectGenerator>Package</UnityProjectGenerator>
     <UnityProjectType>Game:1</UnityProjectType>
-    <UnityBuildTarget>Android:13</UnityBuildTarget>
+    <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2020.1.6f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Game\Command\Struct\G9DtSingTotalPlayers.cs" />
+    <Compile Include="Assets\Game\SocketClient\G9SuperNetCoreClient4UnityInitializeGameClient.cs" />
+    <Compile Include="Assets\Game\Command\CPlayerDisconnected.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Enums\G9PacketDataType.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\LogIdentity\G9LogIdentity.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\JsonHelper\G9JsonHelper.cs" />
@@ -64,6 +67,7 @@
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient4Unity.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\HelperClass\G9Encoding.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Enums\G9ReservedCommandName.cs" />
+    <Compile Include="Assets\Game\RecordAudio\AudioRecorder.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\CommandHandler\G9CommandHandler.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Configuration\AG9BaseConfig.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\PacketManagement\G9PacketManagement.cs" />
@@ -76,20 +80,28 @@
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient\Enums\ClientStopReason.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Abstract\ASession.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient\Abstract\AClientAccount.cs" />
+    <Compile Include="Assets\Game\AccountAndSession\GameSession.cs" />
+    <Compile Include="Assets\Game\Command\Struct\SimpleVector3.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Enums\EncodingTypes.cs" />
+    <Compile Include="Assets\Game\Canvas\CanvasFormIpAndPort.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Enums\CloseReason.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient4Unuty\AG9SuperNetCoreClientBase4Unity.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\HelperClass\G9EncryptAndDecryptDataWithCertificate.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\HelperClass\G9CommandChecker.cs" />
+    <Compile Include="Assets\Game\Command\CPlayerMove.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Abstract\ASessionHandler.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\HelperClass\VType.cs" />
+    <Compile Include="Assets\Game\AccountAndSession\GameAccount.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient\Enums\DisconnectReason.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Enums\SocketMode.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Logging4Unity\G9LogItem.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient\Logging\G9LoggingClient.cs" />
+    <Compile Include="Assets\Game\Command\CPlayerConnected.cs" />
+    <Compile Include="Assets\Game\GameCharacterHandler.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient\Client\Socket\G9SuperNetCoreSocketClient.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Packet\PacketSplitHandler.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Abstract\AAccount.cs" />
+    <Compile Include="Assets\Game\Command\CGetPlayersPosition.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient4UnityEditor.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient\Helper\G9ClientSessionHandler.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient\Helper\G9ClientAccountHandler.cs" />
@@ -109,6 +121,7 @@
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Logging4Unity\G9Logging4Unity.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Delegates\G9Delegates.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Events4Unity\G9Events4Unity.cs" />
+    <Compile Include="Assets\Game\Command\Struct\G9DtPlayerMove.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Enums\G9PacketType.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient\AbstractClient\AG9SuperNetCoreClientBase_Methods.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Abstract\AG9Command.cs" />
@@ -116,14 +129,38 @@
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient\AbstractClient\AG9SuperNetCoreClientBase_Events.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\Packet\G9SendAndReceivePacket.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\AESEncryptionDecryption\AES128.cs" />
+    <Compile Include="Assets\Game\Core\GameCore.cs" />
     <Compile Include="Assets\G9LogAndEventsHandler\G9EventHandler.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient4Unuty\G9SuperNetCoreClient4UnityHelper.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9Common\CommandHandler\G9CommandDataTypes.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient4UnityInitializeSample.cs" />
     <Compile Include="Assets\G9SuperNetCore4Unity\G9SuperNetCoreClient\Sample\ClientAccountSample.cs" />
+    <Compile Include="Assets\Game\OtherCharacterHandler.cs" />
+    <Compile Include="Assets\Game\LookAtCameraYonly.cs" />
   </ItemGroup>
   <ItemGroup>
+     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader" />
      <None Include="Assets\G9SuperNetCore4Unity\Library\Newtonsoft\Newtonsoft.Json.dll" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader" />
+     <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF.shader" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile SSD.shader" />
+     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Properties.cginc" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc" />
+     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
+     <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_Sprite.shader" />
     <Reference Include="UnityEngine">
       <HintPath>E:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
@@ -150,6 +187,12 @@
     </Reference>
     <Reference Include="UnityEngine.ClothModule">
       <HintPath>E:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.ClothModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClusterInputModule">
+      <HintPath>E:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.ClusterInputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClusterRendererModule">
+      <HintPath>E:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.ClusterRendererModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>E:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.CoreModule.dll</HintPath>
@@ -294,6 +337,9 @@
     </Reference>
     <Reference Include="UnityEngine.VideoModule">
       <HintPath>E:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.VideoModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VirtualTexturingModule">
+      <HintPath>E:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.VirtualTexturingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.WindModule">
       <HintPath>E:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.WindModule.dll</HintPath>

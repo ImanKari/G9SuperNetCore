@@ -27,6 +27,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{2BEA98
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{B6EA05E5-0F0D-4F0E-B76B-1B54DA5C8CFA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "G9SuperNetCoreServerSampleApp_GameServer", "G9SuperNetCoreServerSampleApp_GameServer\G9SuperNetCoreServerSampleApp_GameServer.csproj", "{1C008DD3-FFE7-4CDA-B820-0E3C134D329A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{11790D4A-81E1-433B-AEB5-9B8A087E90BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11790D4A-81E1-433B-AEB5-9B8A087E90BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11790D4A-81E1-433B-AEB5-9B8A087E90BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C008DD3-FFE7-4CDA-B820-0E3C134D329A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C008DD3-FFE7-4CDA-B820-0E3C134D329A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C008DD3-FFE7-4CDA-B820-0E3C134D329A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C008DD3-FFE7-4CDA-B820-0E3C134D329A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -70,6 +76,7 @@ Global
 		{11790D4A-81E1-433B-AEB5-9B8A087E90BD} = {256C1084-C0DD-46C4-9415-2D40D5F3F3FA}
 		{2BEA982F-727D-4833-8992-404264C2BFBB} = {B0452076-25BE-492B-87A6-74DEC4B4BB74}
 		{B6EA05E5-0F0D-4F0E-B76B-1B54DA5C8CFA} = {B0452076-25BE-492B-87A6-74DEC4B4BB74}
+		{1C008DD3-FFE7-4CDA-B820-0E3C134D329A} = {256C1084-C0DD-46C4-9415-2D40D5F3F3FA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6D5E07D9-A894-4205-B312-8E437C4318A8}

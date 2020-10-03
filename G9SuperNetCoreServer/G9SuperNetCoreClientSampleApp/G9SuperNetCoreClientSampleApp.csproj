@@ -7,6 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="G9-Logo-G9Studio.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="G9-Logo-G9Studio.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\G9SuperNetCoreClient\G9SuperNetCoreClient.csproj" />
   </ItemGroup>
 

@@ -112,18 +112,6 @@ public class G9SuperNetCoreClient4Unity : G9SuperNetCoreClient4UnityHelper
     #endregion
 
     /// <summary>
-    ///     Start is called before the first frame update
-    /// </summary>
-
-    #region Start
-
-    private void Start()
-    {
-    }
-
-    #endregion
-
-    /// <summary>
     ///     Initialize client with custom account and session
     /// </summary>
     /// <typeparam name="TAccount">Specified type of account</typeparam>

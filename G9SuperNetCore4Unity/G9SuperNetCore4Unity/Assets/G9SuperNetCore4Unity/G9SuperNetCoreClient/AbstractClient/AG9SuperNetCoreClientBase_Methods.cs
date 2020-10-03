@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -16,7 +15,6 @@ using G9SuperNetCoreClient.Abstract;
 using G9SuperNetCoreClient.Enums;
 using G9SuperNetCoreClient.Helper;
 using UnityEditor;
-using Debug = UnityEngine.Debug;
 
 // ReSharper disable once CheckNamespace
 namespace G9SuperNetCoreClient.AbstractClient
@@ -35,7 +33,7 @@ namespace G9SuperNetCoreClient.AbstractClient
 
         #region StartConnection
 
-        public async Task<bool> StartConnection()
+        public async Task<bool> StartConnection(string ipAddress = null, int port = 0)
         {
 #if UNITY_EDITOR
             // اگر در محیط بازی سازی، بازی فعال نبود باید از اجرا اسکریپت جلوگیری کند
@@ -56,7 +54,13 @@ namespace G9SuperNetCoreClient.AbstractClient
                     await Disconnect();
 
                     // Establish the remote endpoint for the socket.  
-                    var remoteEndPoint = new IPEndPoint(Configuration.IpAddress, Configuration.PortNumber);
+                    var remoteEndPoint = new IPEndPoint(
+                        string.IsNullOrEmpty(ipAddress)
+                            ? Configuration.IpAddress
+                            : IPAddress.Parse(ipAddress),
+                        port == 0
+                            ? Configuration.PortNumber
+                            : port);
 
                     // Create a TCP/IP socket.  
                     var client = new Socket(Configuration.IpAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
