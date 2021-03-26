@@ -15,7 +15,7 @@ namespace G9SuperNetCoreServerSampleApp_GameServer
     {
         private static async Task Main(string[] args)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.Red;  
             Console.WriteLine(
                 $@"
         __________ _____                      _____            __        __  _   __     __  _____              
@@ -26,9 +26,10 @@ namespace G9SuperNetCoreServerSampleApp_GameServer
                  G9STUDIO /_/ GAME SERVER - V: {Assembly.GetExecutingAssembly().GetName().Version}
 ");
 
+            // ReSharper disable once LocalizableElement
             Console.WriteLine("Hello World!");
             Console.ResetColor();
-
+             
             const string privateKey =
                 "9ZdBx9VQ6D97XZwFlTjqR6QtL1hXZhkCIQCFTw1vlf9QO5ZdxnuqjfSeXj2A4hibPQdEiMu/mEgp2lIX5Tbvvskmz7ue7F1MYEWybe8kdq9ByLTQPBEuEMoiJxQr7Nqj";
 
