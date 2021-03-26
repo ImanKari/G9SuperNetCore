@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
-    <Version>2.2.4.3</Version>
+    <Version>2.2.4.4</Version>
     <Authors>Iman Kari</Authors>
     <Company>G9Studio</Company>
     <Description>G9 Super Net Core Client - Easy Socket Client</Description>
@@ -38,8 +38,8 @@
   </Target>
 
   <PropertyGroup>
-    <AssemblyVersion>2.2.4.3</AssemblyVersion>
-    <FileVersion>2.2.4.3</FileVersion>
+    <AssemblyVersion>2.2.4.4</AssemblyVersion>
+    <FileVersion>2.2.4.4</FileVersion>
     <LangVersion>8.0</LangVersion>
     <Product>G9 Super Net Core Client</Product>
     <PackageIcon>G9-Icon.png</PackageIcon>
@@ -47,7 +47,7 @@
     <PackageTags>Socket Client SocketProgramming</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <PackageReleaseNotes>- Fixed Version 2.2.4.3</PackageReleaseNotes>
-    <PackageProjectUrl>http://www.G9TM.com/</PackageProjectUrl>
+    <PackageProjectUrl>http://www.G9TM.com</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ImanKari/G9SuperNetCore</RepositoryUrl>
   </PropertyGroup>
 
