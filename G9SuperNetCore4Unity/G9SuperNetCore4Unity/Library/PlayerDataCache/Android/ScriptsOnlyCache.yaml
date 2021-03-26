@@ -3,6 +3,7 @@ ScriptsOnlyBuild:
     Assembly-CSharp.dll:
     - AudioRecorder
     - CanvasFormIpAndPort
+    - FrameAttackHandler
     - G9Events4Unity
     - G9Logging4Unity
     - G9SuperNetCoreClient4Unity
@@ -10,9 +11,16 @@ ScriptsOnlyBuild:
     - G9SuperNetCoreServerSampleApp_GameServer.AccountAndSession.GameAccount
     - GameCharacterHandler
     - GameCore
+    - LookAtCameraYonly
     - OtherCharacterHandler
     Unity.Rider.Editor.dll:
     - Packages.Rider.Editor.UnitTesting.CallbackData
+    Unity.TextMeshPro.dll:
+    - TMPro.TMP_FontAsset
+    - TMPro.TMP_Settings
+    - TMPro.TMP_SpriteAsset
+    - TMPro.TMP_StyleSheet
+    - TMPro.TextMeshProUGUI
     UnityEditor.TestRunner.dll:
     - UnityEditor.TestTools.TestRunner.Api.CallbacksHolder
     - UnityEditor.TestTools.TestRunner.TestListCacheData
@@ -48,56 +56,80 @@ ScriptsOnlyBuild:
       Script: {instanceID: 0}
     - Class: 48
       Script: {instanceID: 0}
+    - Class: 49
+      Script: {instanceID: 0}
     - Class: 65
+      Script: {instanceID: 0}
+    - Class: 74
       Script: {instanceID: 0}
     - Class: 81
       Script: {instanceID: 0}
     - Class: 82
+      Script: {instanceID: 0}
+    - Class: 83
+      Script: {instanceID: 0}
+    - Class: 91
+      Script: {instanceID: 0}
+    - Class: 95
       Script: {instanceID: 0}
     - Class: 104
       Script: {instanceID: 0}
     - Class: 108
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 11800}
+      Script: {instanceID: 11826}
     - Class: 114
-      Script: {instanceID: 11824}
+      Script: {instanceID: 11828}
     - Class: 114
-      Script: {instanceID: 11842}
+      Script: {instanceID: 11872}
     - Class: 114
-      Script: {instanceID: 12016}
+      Script: {instanceID: 12046}
     - Class: 114
-      Script: {instanceID: 12052}
+      Script: {instanceID: 12082}
     - Class: 114
-      Script: {instanceID: 12060}
+      Script: {instanceID: 12090}
     - Class: 114
-      Script: {instanceID: 12202}
+      Script: {instanceID: 12234}
     - Class: 114
-      Script: {instanceID: 12522}
+      Script: {instanceID: 12554}
     - Class: 114
-      Script: {instanceID: 12596}
+      Script: {instanceID: 12592}
     - Class: 114
-      Script: {instanceID: 12790}
+      Script: {instanceID: 12628}
     - Class: 114
-      Script: {instanceID: 12886}
+      Script: {instanceID: 12822}
     - Class: 114
-      Script: {instanceID: 13030}
+      Script: {instanceID: 12918}
     - Class: 114
-      Script: {instanceID: 13060}
+      Script: {instanceID: 13062}
     - Class: 114
-      Script: {instanceID: 13586}
+      Script: {instanceID: 13092}
     - Class: 114
-      Script: {instanceID: 13688}
+      Script: {instanceID: 13318}
     - Class: 114
-      Script: {instanceID: 13704}
+      Script: {instanceID: 13334}
     - Class: 114
-      Script: {instanceID: 13904}
+      Script: {instanceID: 13552}
     - Class: 114
-      Script: {instanceID: 13954}
+      Script: {instanceID: 13606}
     - Class: 114
-      Script: {instanceID: 14002}
+      Script: {instanceID: 13620}
     - Class: 114
-      Script: {instanceID: 14098}
+      Script: {instanceID: 13722}
+    - Class: 114
+      Script: {instanceID: 13738}
+    - Class: 114
+      Script: {instanceID: 13810}
+    - Class: 114
+      Script: {instanceID: 13938}
+    - Class: 114
+      Script: {instanceID: 13988}
+    - Class: 114
+      Script: {instanceID: 14036}
+    - Class: 114
+      Script: {instanceID: 14132}
+    - Class: 114
+      Script: {instanceID: 23518}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -112,6 +144,10 @@ ScriptsOnlyBuild:
       Script: {instanceID: 0}
     - Class: 196
       Script: {instanceID: 0}
+    - Class: 198
+      Script: {instanceID: 0}
+    - Class: 199
+      Script: {instanceID: 0}
     - Class: 213
       Script: {instanceID: 0}
     - Class: 218
@@ -125,6 +161,8 @@ ScriptsOnlyBuild:
     - Class: 238
       Script: {instanceID: 0}
     - Class: 850595691
+      Script: {instanceID: 0}
+    - Class: 1953259897
       Script: {instanceID: 0}
   scriptHashData:
   - hash:
@@ -357,7 +395,7 @@ ScriptsOnlyBuild:
     className: ScrollRect
   - hash:
       serializedVersion: 2
-      Hash: bd1d46e20d728de67336c9453fede6b6
+      Hash: 285a666963b405d3410321e9d7c1d918
     assemblyName: Assembly-CSharp.dll
     namespaceName: G9SuperNetCoreServerSampleApp_GameServer.AccountAndSession
     className: GameAccount
@@ -375,7 +413,7 @@ ScriptsOnlyBuild:
     className: TMP_SpriteAnimator
   - hash:
       serializedVersion: 2
-      Hash: 58093c82f6ac79815a81e2846eab4789
+      Hash: 350a9100d3a8968295f7816652a9c73b
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: GameCharacterHandler
@@ -471,6 +509,12 @@ ScriptsOnlyBuild:
     className: AudioTrack
   - hash:
       serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: LookAtCameraYonly
+  - hash:
+      serializedVersion: 2
       Hash: ae83e830e7a90c0aff918c4c2e520825
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.UI
@@ -519,7 +563,7 @@ ScriptsOnlyBuild:
     className: TMP_ColorGradient
   - hash:
       serializedVersion: 2
-      Hash: aeff78e639f08bc71ee33e6e6003d145
+      Hash: b5366eeef8dbd9a48fd7378e3e3ef78e
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: GameCore
@@ -633,11 +677,17 @@ ScriptsOnlyBuild:
     className: PlayableTrack
   - hash:
       serializedVersion: 2
-      Hash: 9228dc09d5eb11217ffa904828680e9a
+      Hash: 0a8bfb70ab54f8e0f83804ae07988868
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: OtherCharacterHandler
+  - hash:
+      serializedVersion: 2
+      Hash: 6dd1d7d9c8ad1c0b8b941339f1e37fa2
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: FrameAttackHandler
   platform: 13
   scenePathNames:
   - Assets/Scenes/GameTest.unity
-  playerPath: D:/Project/G9SuperNetCore/G9SuperNetCore4Unity/G9SuperNetCore4Unity/Compile/Android/App6.apk
+  playerPath: D:/Project/G9SuperNetCore/G9SuperNetCore4Unity/G9SuperNetCore4Unity/Compile/Android/App7.apk

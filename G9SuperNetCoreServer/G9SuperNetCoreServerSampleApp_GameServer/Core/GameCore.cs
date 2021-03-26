@@ -39,7 +39,9 @@ namespace G9SuperNetCoreServerSampleApp_GameServer.Core
                         PlayerData = GameAccountCollection.Select(s => new G9DtPlayerMove()
                         {
                             PlayerIdentity = s.Value.PlayerIdentity,
-                            NewPosition = s.Value.LastPlayerPosition
+                            NewPosition = s.Value.LastPlayerPosition,
+                            Dead = s.Value.Dead,
+                            Kill = s.Value.Kill
                         }).ToArray()
                     });
                 GameAccountCollection.Add(PlayerCounter, gameAccount);
@@ -60,7 +62,11 @@ namespace G9SuperNetCoreServerSampleApp_GameServer.Core
             foreach (var account in GameAccountCollection.Where(s => s.Key != gameAccount.PlayerIdentity))
             {
                 account.Value.Session.SendCommandAsync<CPlayerMove, G9DtPlayerMove>(new G9DtPlayerMove()
-                    {NewPosition = gameAccount.LastPlayerPosition, PlayerIdentity = gameAccount.PlayerIdentity});
+                    {NewPosition = gameAccount.LastPlayerPosition,
+                        PlayerIdentity = gameAccount.PlayerIdentity,
+                        Dead = gameAccount.Dead,
+                        Kill = gameAccount.Kill
+                    });
             }
         }
 
@@ -70,6 +76,14 @@ namespace G9SuperNetCoreServerSampleApp_GameServer.Core
             {
                 account.Value.Session.SendCommandAsync<CVoice, float[]>(voiceData);
             }
+        }
+
+        public static void Attack(GameAccount gameAccount, long attackIdentity)
+        {
+            gameAccount.Kill++;
+            if (GameAccountCollection.ContainsKey(attackIdentity))
+                GameAccountCollection[attackIdentity].Dead++;
+            _accessToServer.SendCommandToAllAsync<CAttack, long>(attackIdentity);
         }
 
     }

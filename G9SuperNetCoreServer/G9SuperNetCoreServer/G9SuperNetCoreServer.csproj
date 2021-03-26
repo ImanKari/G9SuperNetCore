@@ -4,30 +4,41 @@
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>2.2.4.0</Version>
+    <Version>2.2.4.3</Version>
     <Authors>Iman Kari</Authors>
     <Company>G9Studio</Company>
-    <Description>G9 Super Net Core Server</Description>
-    <Copyright>2018 - 2019</Copyright>
+    <Description>G9 Super Net Core Server - Easy Socket Server</Description>
+    <Copyright>G9Studio - 2021</Copyright>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\G9Common\G9Common.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <None Include="G9-Icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <None Include="LICENSE.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\G9Common\G9Common.csproj" />
+  </ItemGroup>
+
   <PropertyGroup>
-    <NuspecFile>G9SuperNetCoreServer.nuspec</NuspecFile>
-    <AssemblyVersion>2.2.4.0</AssemblyVersion>
-    <FileVersion>2.2.4.0</FileVersion>
+    <AssemblyVersion>2.2.4.3</AssemblyVersion>
+    <FileVersion>2.2.4.3</FileVersion>
     <LangVersion>8.0</LangVersion>
+    <Product>G9 Super Net Core Server</Product>
+    <PackageProjectUrl>http://www.G9TM.com/</PackageProjectUrl>
+    <PackageIcon>G9-Icon.png</PackageIcon>
+    <RepositoryUrl>https://github.com/ImanKari/G9SuperNetCore</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <PackageTags>Socket Server SocketProgramming</PackageTags>
+    <PackageReleaseNotes>- Fixed Version 2.2.4.3</PackageReleaseNotes>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
   
 </Project>

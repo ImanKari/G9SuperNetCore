@@ -6,8 +6,10 @@ public class GameCore : MonoBehaviour
 {
     public static long PlayerCounter;
 
-    private static readonly SortedDictionary<long, OtherCharacterHandler> GameAccountCollection
+    public static readonly SortedDictionary<long, OtherCharacterHandler> GameAccountCollection
         = new SortedDictionary<long, OtherCharacterHandler>();
+
+    public GameCharacterHandler MainCharacter;
 
     public OtherCharacterHandler PlayerObject;
 
@@ -21,6 +23,8 @@ public class GameCore : MonoBehaviour
                 playerData.NewPosition.ConvertSimpleToMain(),
                 PlayerObject.transform.rotation);
             otherPlayer.PlayerIdentity = playerData.PlayerIdentity;
+            otherPlayer.Kill = playerData.Kill;
+            otherPlayer.Dead = playerData.Dead;
             GameAccountCollection.Add(playerData.PlayerIdentity, otherPlayer);
         }
     }
@@ -46,6 +50,8 @@ public class GameCore : MonoBehaviour
         if (!GameAccountCollection.ContainsKey(dtPlayerMove.PlayerIdentity)) return;
         GameAccountCollection[dtPlayerMove.PlayerIdentity]
             .MoveCharacter(dtPlayerMove.NewPosition.ConvertSimpleToMain());
+        GameAccountCollection[dtPlayerMove.PlayerIdentity].Dead = dtPlayerMove.Dead;
+        GameAccountCollection[dtPlayerMove.PlayerIdentity].Kill = dtPlayerMove.Kill;
     }
 
     public void PlayVoice(float[] voiceData)
@@ -58,4 +64,17 @@ public class GameCore : MonoBehaviour
         voiceAudioSource.Play();
     }
 
+    public void HandleAttack(long accountIdentity)
+    {
+        if (MainCharacter.AccessToGameAccount.PlayerIdentity == accountIdentity)
+        {
+            MainCharacter.AccessToGameAccount.Dead++;
+            MainCharacter.ReceiveAttack();
+        }
+        else if (GameAccountCollection.ContainsKey(accountIdentity))
+        {
+            GameAccountCollection[accountIdentity].ReceiveAttack();
+            GameAccountCollection[accountIdentity].Dead++;
+        }
+    }
 }

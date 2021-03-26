@@ -12,6 +12,10 @@ namespace G9SuperNetCoreServerSampleApp_GameServer.AccountAndSession
 
         public GameCore AccessToGameCore;
 
+        public int Kill;
+
+        public int Dead;
+
         public override void OnSessionClosed(DisconnectReason reason)
         {
         }

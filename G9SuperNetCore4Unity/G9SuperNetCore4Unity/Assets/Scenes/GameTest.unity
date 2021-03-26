@@ -887,6 +887,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameCore
       objectReference: {fileID: 0}
+    - target: {fileID: 8271511100133570840, guid: 9040974331d379b488ad0bcbc248540f,
+        type: 3}
+      propertyPath: MainCharacter
+      value: 
+      objectReference: {fileID: 745912316}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9040974331d379b488ad0bcbc248540f, type: 3}
 --- !u!114 &4022242587412511856 stripped
@@ -971,7 +976,7 @@ PrefabInstance:
     - target: {fileID: 791414733198417337, guid: a84d832921bb6e149adc58a8ff7f687e,
         type: 3}
       propertyPath: m_RootOrder
-      value: 7
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 791414733198417337, guid: a84d832921bb6e149adc58a8ff7f687e,
         type: 3}
@@ -997,6 +1002,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2138806658, guid: fd686e140c316ec408bf0e554b827db0, type: 3}
+      propertyPath: Player
+      value: 
+      objectReference: {fileID: 745912316}
     - target: {fileID: 5678568992483941257, guid: fd686e140c316ec408bf0e554b827db0,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -1112,11 +1121,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas
       objectReference: {fileID: 0}
-    - target: {fileID: 5678568993126951655, guid: fd686e140c316ec408bf0e554b827db0,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fd686e140c316ec408bf0e554b827db0, type: 3}
 --- !u!1 &5678568992555773211 stripped
@@ -1170,7 +1174,7 @@ PrefabInstance:
     - target: {fileID: 1731445893705649176, guid: 7c46892f5ab95264e9daf8be0404a772,
         type: 3}
       propertyPath: m_RootOrder
-      value: 8
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 1731445893705649176, guid: 7c46892f5ab95264e9daf8be0404a772,
         type: 3}

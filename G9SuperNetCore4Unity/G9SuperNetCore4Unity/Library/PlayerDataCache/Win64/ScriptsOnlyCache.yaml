@@ -3,6 +3,7 @@ ScriptsOnlyBuild:
     Assembly-CSharp.dll:
     - AudioRecorder
     - CanvasFormIpAndPort
+    - FrameAttackHandler
     - G9Events4Unity
     - G9Logging4Unity
     - G9SuperNetCoreClient4Unity
@@ -20,14 +21,6 @@ ScriptsOnlyBuild:
     - TMPro.TMP_SpriteAsset
     - TMPro.TMP_StyleSheet
     - TMPro.TextMeshProUGUI
-    UnityEditor.Graphs.dll:
-    - UnityEditor.Graphs.AnimationBlendTree.Graph
-    - UnityEditor.Graphs.AnimationBlendTree.GraphGUI
-    - UnityEditor.Graphs.AnimationStateMachine.AnyStateNode
-    - UnityEditor.Graphs.AnimationStateMachine.Graph
-    - UnityEditor.Graphs.AnimationStateMachine.GraphGUI
-    - UnityEditor.Graphs.AnimationStateMachine.StateNode
-    - UnityEditor.Graphs.AnimatorControllerTool
     UnityEditor.TestRunner.dll:
     - UnityEditor.TestTools.TestRunner.Api.CallbacksHolder
     - UnityEditor.TestTools.TestRunner.TestListCacheData
@@ -86,55 +79,57 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 11826}
     - Class: 114
-      Script: {instanceID: 11850}
+      Script: {instanceID: 11828}
     - Class: 114
-      Script: {instanceID: 11868}
+      Script: {instanceID: 11872}
     - Class: 114
-      Script: {instanceID: 12042}
+      Script: {instanceID: 12046}
     - Class: 114
-      Script: {instanceID: 12078}
+      Script: {instanceID: 12082}
     - Class: 114
-      Script: {instanceID: 12086}
+      Script: {instanceID: 12090}
     - Class: 114
-      Script: {instanceID: 12228}
+      Script: {instanceID: 12234}
     - Class: 114
-      Script: {instanceID: 12548}
+      Script: {instanceID: 12554}
     - Class: 114
-      Script: {instanceID: 12586}
+      Script: {instanceID: 12592}
     - Class: 114
-      Script: {instanceID: 12622}
+      Script: {instanceID: 12628}
     - Class: 114
-      Script: {instanceID: 12816}
+      Script: {instanceID: 12822}
     - Class: 114
-      Script: {instanceID: 12912}
+      Script: {instanceID: 12918}
     - Class: 114
-      Script: {instanceID: 13056}
+      Script: {instanceID: 13062}
     - Class: 114
-      Script: {instanceID: 13086}
+      Script: {instanceID: 13092}
     - Class: 114
-      Script: {instanceID: 13312}
+      Script: {instanceID: 13318}
     - Class: 114
-      Script: {instanceID: 13328}
+      Script: {instanceID: 13334}
     - Class: 114
-      Script: {instanceID: 13546}
+      Script: {instanceID: 13552}
     - Class: 114
-      Script: {instanceID: 13600}
+      Script: {instanceID: 13606}
     - Class: 114
-      Script: {instanceID: 13614}
+      Script: {instanceID: 13620}
     - Class: 114
-      Script: {instanceID: 13716}
+      Script: {instanceID: 13722}
     - Class: 114
-      Script: {instanceID: 13732}
+      Script: {instanceID: 13738}
     - Class: 114
-      Script: {instanceID: 13804}
+      Script: {instanceID: 13810}
     - Class: 114
-      Script: {instanceID: 13932}
+      Script: {instanceID: 13938}
     - Class: 114
-      Script: {instanceID: 13982}
+      Script: {instanceID: 13988}
     - Class: 114
-      Script: {instanceID: 14030}
+      Script: {instanceID: 14036}
     - Class: 114
-      Script: {instanceID: 14126}
+      Script: {instanceID: 14132}
+    - Class: 114
+      Script: {instanceID: 23518}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -148,6 +143,10 @@ ScriptsOnlyBuild:
     - Class: 195
       Script: {instanceID: 0}
     - Class: 196
+      Script: {instanceID: 0}
+    - Class: 198
+      Script: {instanceID: 0}
+    - Class: 199
       Script: {instanceID: 0}
     - Class: 213
       Script: {instanceID: 0}
@@ -396,7 +395,7 @@ ScriptsOnlyBuild:
     className: ScrollRect
   - hash:
       serializedVersion: 2
-      Hash: bd1d46e20d728de67336c9453fede6b6
+      Hash: 285a666963b405d3410321e9d7c1d918
     assemblyName: Assembly-CSharp.dll
     namespaceName: G9SuperNetCoreServerSampleApp_GameServer.AccountAndSession
     className: GameAccount
@@ -414,7 +413,7 @@ ScriptsOnlyBuild:
     className: TMP_SpriteAnimator
   - hash:
       serializedVersion: 2
-      Hash: a111f17104e21fb46b6572d47b031981
+      Hash: 350a9100d3a8968295f7816652a9c73b
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: GameCharacterHandler
@@ -564,7 +563,7 @@ ScriptsOnlyBuild:
     className: TMP_ColorGradient
   - hash:
       serializedVersion: 2
-      Hash: aeff78e639f08bc71ee33e6e6003d145
+      Hash: b5366eeef8dbd9a48fd7378e3e3ef78e
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: GameCore
@@ -678,10 +677,16 @@ ScriptsOnlyBuild:
     className: PlayableTrack
   - hash:
       serializedVersion: 2
-      Hash: a59ab7d04d7f41585016fb09aa782213
+      Hash: 0a8bfb70ab54f8e0f83804ae07988868
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: OtherCharacterHandler
+  - hash:
+      serializedVersion: 2
+      Hash: 6dd1d7d9c8ad1c0b8b941339f1e37fa2
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: FrameAttackHandler
   platform: 19
   scenePathNames:
   - Assets/Scenes/GameTest.unity

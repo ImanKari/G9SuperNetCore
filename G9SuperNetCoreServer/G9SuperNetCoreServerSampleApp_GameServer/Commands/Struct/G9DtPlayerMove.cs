@@ -4,6 +4,10 @@
     {
         public long PlayerIdentity;
 
+        public int Kill;
+
+        public int Dead;
+
         public SimpleVector3 NewPosition;
     }
 }

@@ -11,6 +11,10 @@ namespace G9SuperNetCoreServerSampleApp_GameServer.AccountAndSession
 
         public long PlayerIdentity;
 
+        public int Kill;
+
+        public int Dead;
+
         public override void OnSessionClosed(DisconnectReason reason)
         {
             GameCore.RemoveGameAccount(this);
