@@ -40,7 +40,7 @@ steps:
     command: custom
     custom: nuget
     arguments: >
-      push $(Pipeline.Workspace)/**/G9SuperNetCore/G9SuperNetCoreServer/bin/Release/*.nupkg
+      push $(Pipeline.Workspace)/**/G9SuperNetCoreServer/G9SuperNetCoreServer/bin/Release/*.nupkg
       -s https://api.nuget.org/v3/index.json
       -k $(NuGetApiKey) 
       --skip-duplicate
@@ -51,7 +51,7 @@ steps:
     command: custom
     custom: nuget
     arguments: >
-      push $(Pipeline.Workspace)/**/G9SuperNetCore/G9SuperNetCoreClient/bin/Release/*.nupkg
+      push $(Pipeline.Workspace)/**/G9SuperNetCoreServer/G9SuperNetCoreClient/bin/Release/*.nupkg
       -s https://api.nuget.org/v3/index.json
       -k $(NuGetApiKey) 
       --skip-duplicate
