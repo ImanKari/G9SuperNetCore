@@ -35,7 +35,7 @@ steps:
     configuration: '$(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
-  displayName: "Publish Server nuget packages to nuget.org"
+  displayName: "Publish Common Library nuget packages to nuget.org"
   inputs:
     command: custom
     custom: nuget
