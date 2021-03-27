@@ -2,8 +2,8 @@
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
-using G9Common.Enums;
-using G9Common.HelperClass;
+using G9SuperNetCoreCommon.Enums;
+using G9SuperNetCoreCommon.HelperClass;
 using G9SuperNetCoreServer.Config;
 using G9SuperNetCoreServer.Server.Socket;
 using G9SuperNetCoreServerSampleApp_GameServer.AccountAndSession;

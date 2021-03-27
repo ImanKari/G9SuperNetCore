@@ -3,9 +3,9 @@ using System;
 #endif
 using System.ComponentModel;
 using System.Text;
-using G9Common.Enums;
+using G9SuperNetCoreCommon.Enums;
 
-namespace G9Common.HelperClass
+namespace G9SuperNetCoreCommon.HelperClass
 {
     /// <summary>
     ///     Encoding management

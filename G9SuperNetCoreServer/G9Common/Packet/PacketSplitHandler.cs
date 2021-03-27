@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using G9Common.Resource;
+using G9SuperNetCoreCommon.Resource;
 
-namespace G9Common.Packet
+namespace G9SuperNetCoreCommon.Packet
 {
     /// <summary>
     ///     Class Used for packet split handler

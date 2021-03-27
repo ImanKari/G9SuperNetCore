@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading;
-using G9Common.Delegates;
-using G9Common.LogIdentity;
-using G9Common.Packet;
-using G9Common.Resource;
-using G9Common.ServerClient;
+using G9SuperNetCoreCommon.Delegates;
+using G9SuperNetCoreCommon.LogIdentity;
+using G9SuperNetCoreCommon.Packet;
+using G9SuperNetCoreCommon.Resource;
+using G9SuperNetCoreCommon.ServerClient;
 using G9LogManagement.Enums;
 using G9SuperNetCoreClient.Abstract;
 using G9SuperNetCoreClient.Enums;

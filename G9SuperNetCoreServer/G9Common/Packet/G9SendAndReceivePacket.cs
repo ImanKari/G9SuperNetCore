@@ -1,9 +1,9 @@
 ﻿using System;
-using G9Common.Enums;
-using G9Common.Interface;
-using G9Common.Resource;
+using G9SuperNetCoreCommon.Enums;
+using G9SuperNetCoreCommon.Interface;
+using G9SuperNetCoreCommon.Resource;
 
-namespace G9Common.Packet
+namespace G9SuperNetCoreCommon.Packet
 {
     public class G9SendAndReceivePacket : IG9SendAndReceivePackage
     {

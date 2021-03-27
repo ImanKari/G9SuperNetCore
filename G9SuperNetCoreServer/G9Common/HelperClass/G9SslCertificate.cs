@@ -4,13 +4,13 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using G9Common.Resource;
+using G9SuperNetCoreCommon.Resource;
 #endif
 using System;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 
-namespace G9Common.HelperClass
+namespace G9SuperNetCoreCommon.HelperClass
 {
     public class G9SslCertificate
     {

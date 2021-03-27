@@ -1,5 +1,5 @@
 ﻿using System;
-using G9Common.Abstract;
+using G9SuperNetCoreCommon.Abstract;
 
 namespace G9SuperNetCoreServer.HelperClass
 {

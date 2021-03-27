@@ -1,10 +1,10 @@
 ﻿using System;
-using G9Common.Abstract;
-using G9Common.CommandHandler;
-using G9Common.Enums;
-using G9Common.Interface;
+using G9SuperNetCoreCommon.Abstract;
+using G9SuperNetCoreCommon.CommandHandler;
+using G9SuperNetCoreCommon.Enums;
+using G9SuperNetCoreCommon.Interface;
 
-namespace G9Common.ServerClient
+namespace G9SuperNetCoreCommon.ServerClient
 {
     // ReSharper disable once InconsistentNaming
     public class AG9ServerClientCommon<TAccount>

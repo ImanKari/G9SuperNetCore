@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using G9Common.Abstract;
-using G9Common.Enums;
+using G9SuperNetCoreCommon.Abstract;
+using G9SuperNetCoreCommon.Enums;
 
-namespace G9Common.CommandHandler
+namespace G9SuperNetCoreCommon.CommandHandler
 {
     /// <summary>
     ///     Class Command data type -> used for save command class information

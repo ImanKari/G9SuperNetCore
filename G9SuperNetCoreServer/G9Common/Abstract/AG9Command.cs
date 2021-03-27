@@ -1,10 +1,10 @@
 ﻿using System;
-using G9Common.CommandHandler;
-using G9Common.Enums;
-using G9Common.Interface;
-using G9Common.JsonHelper;
+using G9SuperNetCoreCommon.CommandHandler;
+using G9SuperNetCoreCommon.Enums;
+using G9SuperNetCoreCommon.Interface;
+using G9SuperNetCoreCommon.JsonHelper;
 
-namespace G9Common.Abstract
+namespace G9SuperNetCoreCommon.Abstract
 {
     // Abstract class for command
 

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Net;
-using G9Common.Enums;
-using G9Common.HelperClass;
-using G9Common.Resource;
+using G9SuperNetCoreCommon.Enums;
+using G9SuperNetCoreCommon.HelperClass;
+using G9SuperNetCoreCommon.Resource;
 
-namespace G9Common.Configuration
+namespace G9SuperNetCoreCommon.Configuration
 {
     public abstract class AG9BaseConfig
     {

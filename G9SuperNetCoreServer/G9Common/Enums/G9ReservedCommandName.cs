@@ -1,4 +1,4 @@
-﻿namespace G9Common.Enums
+﻿namespace G9SuperNetCoreCommon.Enums
 {
     public enum G9ReservedCommandName
     {

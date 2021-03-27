@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using G9Common.Resource;
+using G9SuperNetCoreCommon.Resource;
 
-namespace G9Common.HelperClass
+namespace G9SuperNetCoreCommon.HelperClass
 {
     /// <summary>
     ///     Encrypt Decrypt management by fpx certificates

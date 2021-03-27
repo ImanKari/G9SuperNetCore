@@ -1,4 +1,4 @@
-﻿namespace G9Common.HelperClass
+﻿namespace G9SuperNetCoreCommon.HelperClass
 {
     public static class G9CommandChecker
     {

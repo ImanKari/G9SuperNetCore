@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using G9Common.Enums;
-using G9Common.HelperClass;
-using G9Common.LogIdentity;
-using G9Common.Resource;
-using G9Common.ServerClient;
+using G9SuperNetCoreCommon.Enums;
+using G9SuperNetCoreCommon.HelperClass;
+using G9SuperNetCoreCommon.LogIdentity;
+using G9SuperNetCoreCommon.Resource;
+using G9SuperNetCoreCommon.ServerClient;
 using G9LogManagement.Enums;
 using G9SuperNetCoreServer.Abstarct;
 using G9SuperNetCoreServer.Enums;

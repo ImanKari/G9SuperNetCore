@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using G9Common.Interface;
+using G9SuperNetCoreCommon.Interface;
 using G9LogManagement;
 using G9LogManagement.Enums;
 

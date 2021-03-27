@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace G9Common.Interface
+namespace G9SuperNetCoreCommon.Interface
 {
     public interface IG9CommandWithSend : IG9CommandName
     {

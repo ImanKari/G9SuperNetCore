@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
-using G9Common.Packet;
+using G9SuperNetCoreCommon.Packet;
 
-namespace G9Common.Abstract
+namespace G9SuperNetCoreCommon.Abstract
 {
     /// <summary>
     ///     State object for reading client data asynchronously

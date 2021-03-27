@@ -1,16 +1,16 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using G9Common.Configuration;
-using G9Common.Enums;
-using G9Common.HelperClass;
-using G9Common.Interface;
-using G9Common.LogIdentity;
-using G9Common.Packet;
-using G9Common.Resource;
+using G9SuperNetCoreCommon.Configuration;
+using G9SuperNetCoreCommon.Enums;
+using G9SuperNetCoreCommon.HelperClass;
+using G9SuperNetCoreCommon.Interface;
+using G9SuperNetCoreCommon.LogIdentity;
+using G9SuperNetCoreCommon.Packet;
+using G9SuperNetCoreCommon.Resource;
 using G9LogManagement.Enums;
 
-namespace G9Common.PacketManagement
+namespace G9SuperNetCoreCommon.PacketManagement
 {
     /// <summary>
     ///     Class packet management

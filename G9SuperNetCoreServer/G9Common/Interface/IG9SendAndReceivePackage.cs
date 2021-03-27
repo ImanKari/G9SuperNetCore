@@ -1,7 +1,7 @@
 ﻿using System;
-using G9Common.Enums;
+using G9SuperNetCoreCommon.Enums;
 
-namespace G9Common.Interface
+namespace G9SuperNetCoreCommon.Interface
 {
     /// <summary>
     ///     Package for send and receive between server and client

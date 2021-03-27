@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using G9LogManagement.Enums;
 
-namespace G9Common.Interface
+namespace G9SuperNetCoreCommon.Interface
 {
     public interface IG9Logging
     {

@@ -1,6 +1,6 @@
 ﻿using System;
-using G9Common.Abstract;
-using G9Common.Enums;
+using G9SuperNetCoreCommon.Abstract;
+using G9SuperNetCoreCommon.Enums;
 using G9SuperNetCoreServerSampleApp_GameServer.AccountAndSession;
 using G9SuperNetCoreServerSampleApp_GameServer.Commands.Struct;
 using G9SuperNetCoreServerSampleApp_GameServer.Core;

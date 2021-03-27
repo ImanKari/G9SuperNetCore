@@ -1,4 +1,4 @@
-﻿namespace G9Common.HelperClass
+﻿namespace G9SuperNetCoreCommon.HelperClass
 {
     public struct G9ServerCommandMessage
     {

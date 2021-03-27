@@ -1,4 +1,4 @@
-﻿namespace G9Common.Interface
+﻿namespace G9SuperNetCoreCommon.Interface
 {
     public interface IG9CommandName
     {

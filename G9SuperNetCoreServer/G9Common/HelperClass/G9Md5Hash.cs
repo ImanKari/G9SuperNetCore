@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace G9Common.HelperClass
+namespace G9SuperNetCoreCommon.HelperClass
 {
     public static class G9Md5Hash
     {

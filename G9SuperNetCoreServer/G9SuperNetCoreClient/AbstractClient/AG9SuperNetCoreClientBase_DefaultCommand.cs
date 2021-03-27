@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using G9Common.Enums;
-using G9Common.HelperClass;
-using G9Common.LogIdentity;
-using G9Common.Resource;
-using G9Common.ServerClient;
+using G9SuperNetCoreCommon.Enums;
+using G9SuperNetCoreCommon.HelperClass;
+using G9SuperNetCoreCommon.LogIdentity;
+using G9SuperNetCoreCommon.Resource;
+using G9SuperNetCoreCommon.ServerClient;
 using G9LogManagement.Enums;
 using G9SuperNetCoreClient.Abstract;
 using G9SuperNetCoreClient.Enums;

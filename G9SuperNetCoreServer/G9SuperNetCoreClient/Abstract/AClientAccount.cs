@@ -1,4 +1,4 @@
-﻿using G9Common.Abstract;
+﻿using G9SuperNetCoreCommon.Abstract;
 using G9SuperNetCoreClient.Enums;
 using G9SuperNetCoreClient.Helper;
 

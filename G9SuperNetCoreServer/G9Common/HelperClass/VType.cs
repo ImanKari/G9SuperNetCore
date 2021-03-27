@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace G9Common.HelperClass
+namespace G9SuperNetCoreCommon.HelperClass
 {
     /// <summary>
     ///     Helper class for derived types

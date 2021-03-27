@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
-using G9Common.HelperClass;
-using G9Common.Interface;
+using G9SuperNetCoreCommon.HelperClass;
+using G9SuperNetCoreCommon.Interface;
 using G9SuperNetCoreServer.Abstarct;
 using G9SuperNetCoreServer.AbstractServer;
 using G9SuperNetCoreServer.Config;

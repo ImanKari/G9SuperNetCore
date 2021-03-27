@@ -1,6 +1,6 @@
-﻿using G9Common.Resource;
+﻿using G9SuperNetCoreCommon.Resource;
 
-namespace G9Common.Abstract
+namespace G9SuperNetCoreCommon.Abstract
 {
 #if UNITY_2018_1_OR_NEWER
     public abstract class AAccount : MonoBehaviour

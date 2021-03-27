@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using G9Common.Interface;
+using G9SuperNetCoreCommon.Interface;
 using G9SuperNetCoreClient.Abstract;
 using G9SuperNetCoreClient.AbstractClient;
 using G9SuperNetCoreClient.Config;

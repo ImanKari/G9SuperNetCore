@@ -1,4 +1,4 @@
-﻿namespace G9Common.LogIdentity
+﻿namespace G9SuperNetCoreCommon.LogIdentity
 {
     public struct G9LogIdentity
     {

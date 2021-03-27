@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29230.47
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "G9SuperNetCoreServer", "G9SuperNetCoreServer\G9SuperNetCoreServer.csproj", "{28F58D99-C2DB-47BF-9F06-D0B1CBC0817C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "G9Common", "G9Common\G9Common.csproj", "{34CA2AE0-5027-40EF-8CEE-6992F14CCE7C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "G9SuperNetCoreCommon", "G9Common\G9SuperNetCoreCommon.csproj", "{34CA2AE0-5027-40EF-8CEE-6992F14CCE7C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1-Common", "1-Common", "{87E996F5-CE34-410F-BDBD-019D42210F4F}"
 EndProject
@@ -27,7 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{2BEA98
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{B6EA05E5-0F0D-4F0E-B76B-1B54DA5C8CFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "G9SuperNetCoreServerSampleApp_GameServer", "G9SuperNetCoreServerSampleApp_GameServer\G9SuperNetCoreServerSampleApp_GameServer.csproj", "{1C008DD3-FFE7-4CDA-B820-0E3C134D329A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "G9SuperNetCoreServerSampleApp_GameServer", "G9SuperNetCoreServerSampleApp_GameServer\G9SuperNetCoreServerSampleApp_GameServer.csproj", "{1C008DD3-FFE7-4CDA-B820-0E3C134D329A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

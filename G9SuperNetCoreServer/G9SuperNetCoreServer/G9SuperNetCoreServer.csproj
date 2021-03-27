@@ -4,7 +4,7 @@
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>2.2.4.4</Version>
+    <Version>2.2.4.5</Version>
     <Authors>Iman Kari</Authors>
     <Company>G9Studio</Company>
     <Description>G9 Super Net Core Server - Easy Socket Server</Description>
@@ -24,12 +24,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\G9Common\G9Common.csproj" />
+    <ProjectReference Include="..\G9Common\G9SuperNetCoreCommon.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
-    <AssemblyVersion>2.2.4.4</AssemblyVersion>
-    <FileVersion>2.2.4.4</FileVersion>
+    <AssemblyVersion>2.2.4.5</AssemblyVersion>
+    <FileVersion>2.2.4.5</FileVersion>
     <LangVersion>8.0</LangVersion>
     <Product>G9 Super Net Core Server</Product>
     <PackageProjectUrl>http://www.G9TM.com</PackageProjectUrl>
@@ -37,7 +37,7 @@
     <RepositoryUrl>https://github.com/ImanKari/G9SuperNetCore</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>Socket Server SocketProgramming</PackageTags>
-    <PackageReleaseNotes>- Fixed Version 2.2.4.4</PackageReleaseNotes>
+    <PackageReleaseNotes>- Fixed Version 2.2.4.5</PackageReleaseNotes>
     <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
   

@@ -1,6 +1,6 @@
 ﻿using System;
-using G9Common.Enums;
-using G9Common.Resource;
+using G9SuperNetCoreCommon.Enums;
+using G9SuperNetCoreCommon.Resource;
 using G9SuperNetCoreClient.Abstract;
 using G9SuperNetCoreClient.Enums;
 

@@ -1,4 +1,4 @@
-﻿namespace G9Common.Enums
+﻿namespace G9SuperNetCoreCommon.Enums
 {
     /// <summary>
     ///     <para>Specified call back execute period for command</para>

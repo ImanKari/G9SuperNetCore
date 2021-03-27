@@ -1,8 +1,8 @@
 ﻿using System;
-using G9Common.Abstract;
-using G9Common.Packet;
+using G9SuperNetCoreCommon.Abstract;
+using G9SuperNetCoreCommon.Packet;
 
-namespace G9Common.Delegates
+namespace G9SuperNetCoreCommon.Delegates
 {
     /// <summary>
     ///     Delegate management

@@ -1,10 +1,10 @@
 ﻿#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
 using System;
 #endif
-using G9Common.HelperClass;
+using G9SuperNetCoreCommon.HelperClass;
 using Newtonsoft.Json;
 
-namespace G9Common.JsonHelper
+namespace G9SuperNetCoreCommon.JsonHelper
 {
     public static class G9JsonHelper
     {

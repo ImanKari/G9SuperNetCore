@@ -1,5 +1,5 @@
 ﻿using System;
-using G9Common.Enums;
+using G9SuperNetCoreCommon.Enums;
 
 namespace G9SuperNetCoreServer.DefaultServerCommands
 {

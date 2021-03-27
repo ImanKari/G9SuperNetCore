@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Net;
-using G9Common.Configuration;
-using G9Common.Enums;
-using G9Common.HelperClass;
+using G9SuperNetCoreCommon.Configuration;
+using G9SuperNetCoreCommon.Enums;
+using G9SuperNetCoreCommon.HelperClass;
 
 namespace G9SuperNetCoreServer.Config
 {

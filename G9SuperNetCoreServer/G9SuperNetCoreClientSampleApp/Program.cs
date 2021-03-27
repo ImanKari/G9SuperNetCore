@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using G9Common.Enums;
+using G9SuperNetCoreCommon.Enums;
 using G9SuperNetCoreClient.Client.Socket;
 using G9SuperNetCoreClient.Config;
 using G9SuperNetCoreClient.Sample;

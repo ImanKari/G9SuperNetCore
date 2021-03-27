@@ -1,7 +1,7 @@
 ﻿using System;
-using G9Common.HelperClass;
+using G9SuperNetCoreCommon.HelperClass;
 
-namespace G9Common.Abstract
+namespace G9SuperNetCoreCommon.Abstract
 {
     public abstract class ASessionHandler
     {

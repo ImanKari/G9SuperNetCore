@@ -1,6 +1,6 @@
 ﻿using System.Net.Sockets;
 
-namespace G9Common.HelperClass
+namespace G9SuperNetCoreCommon.HelperClass
 {
     public class G9AccountUtilities<TAccount, TAccountHandler, TSessionHandler>
     {

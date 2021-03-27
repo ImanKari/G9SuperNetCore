@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
-using G9Common.Abstract;
-using G9Common.Enums;
+using G9SuperNetCoreCommon.Abstract;
+using G9SuperNetCoreCommon.Enums;
 using G9SuperNetCoreServer.HelperClass;
 
 namespace G9SuperNetCoreServer.Abstarct

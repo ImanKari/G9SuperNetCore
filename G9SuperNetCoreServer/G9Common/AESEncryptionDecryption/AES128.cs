@@ -3,7 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace G9Common.AESEncryptionDecryption
+namespace G9SuperNetCoreCommon.AESEncryptionDecryption
 {
     /// <summary>
     ///     Encryption Decryption AES 128

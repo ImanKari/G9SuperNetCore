@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Net;
-using G9Common.HelperClass;
-using G9Common.Interface;
-using G9Common.Resource;
+using G9SuperNetCoreCommon.HelperClass;
+using G9SuperNetCoreCommon.Interface;
+using G9SuperNetCoreCommon.Resource;
 
-namespace G9Common.Abstract
+namespace G9SuperNetCoreCommon.Abstract
 {
     /// <summary>
     ///     Class for management session

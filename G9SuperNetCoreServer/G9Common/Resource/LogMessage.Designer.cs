@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace G9Common.Resource {
+namespace G9SuperNetCoreCommon.Resource {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace G9Common.Resource {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("G9Common.Resource.LogMessage", typeof(LogMessage).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("G9SuperNetCoreCommon.Resource.LogMessage", typeof(LogMessage).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

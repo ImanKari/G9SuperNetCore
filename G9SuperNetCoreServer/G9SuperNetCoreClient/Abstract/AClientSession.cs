@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Net;
-using G9Common.Abstract;
+using G9SuperNetCoreCommon.Abstract;
 using G9SuperNetCoreClient.Helper;
 
 namespace G9SuperNetCoreClient.Abstract

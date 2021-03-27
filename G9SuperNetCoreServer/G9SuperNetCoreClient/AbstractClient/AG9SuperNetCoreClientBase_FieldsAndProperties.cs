@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Threading;
-using G9Common.CommandHandler;
-using G9Common.HelperClass;
-using G9Common.Interface;
-using G9Common.PacketManagement;
-using G9Common.ServerClient;
+using G9SuperNetCoreCommon.CommandHandler;
+using G9SuperNetCoreCommon.HelperClass;
+using G9SuperNetCoreCommon.Interface;
+using G9SuperNetCoreCommon.PacketManagement;
+using G9SuperNetCoreCommon.ServerClient;
 using G9SuperNetCoreClient.Abstract;
 using G9SuperNetCoreClient.Config;
 using G9SuperNetCoreClient.Helper;
